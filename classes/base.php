@@ -9,6 +9,7 @@
 
 abstract class Base
 {
+    protected $_id;
     protected $type;
     
     public function __construct($type)

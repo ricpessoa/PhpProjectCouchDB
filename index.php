@@ -1,45 +1,43 @@
 <?php
 include 'lib/bones.php';
 
+//TODO: Refinar esta parte 
+define('ADMIN_USER', ''); //need define the admin
+define('ADMIN_PASSWORD', ''); // ned define the admin
+
 get('/', function($app) {
 	$app->set('message', 'Welcome Back!');
 	$app->render('home');
 });
 
 get('/signup', function($app) {
-	$app->render('signup');
-});
-
-get('/say/:message', function($app) {
-	$app->set('message', $app->request('message'));
-	$app->render('home');
+	$app->render('user/signup');
 });
 
 post('/signup', function($app) {
-    $user = new stdClass;
-    $user->name = $app->form('name');
-    $user->email = $app->form('email');
-    echo json_encode($user);
+	$user = new User();
+	$user->full_name = $app->form('full_name');
+	$user->email = $app->form('email');
+	$user->signup($app->form('username'), $app->form('password'));
+	
+	$app->set('success', 'Thanks for Signing Up ' . $user->full_name . '!');
+	$app->render('home');
+});
 
-    $curl = curl_init();
-    // curl options
-    $options = array(
-    CURLOPT_URL => 'localhost:5984/verge',
-    CURLOPT_POSTFIELDS => json_encode($user),
-    CURLOPT_HTTPHEADER => array ("Content-Type: application/json"),
-    CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => "utf-8",
-    CURLOPT_HEADER => false,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_AUTOREFERER => true
-    );
-    
-    curl_setopt_array($curl, $options);
-    curl_exec($curl);
-    curl_close($curl);
-    $app->set('message', 'Thanks for Signing Up ' . $app->
-    form('name') . '!');
-    $app->render('home');
+get('/login', function($app) {
+	$app->render('user/login');
+});
 
+post('/login', function($app) {
+	$user = new User();
+	$user->name = $app->form('username');
+	$user->login($app->form('password'));
+	
+	$app->set('success', 'You are now logged in!');
+	$app->render('home');
+});
+
+get('/logout', function($app) {
+  User::logout();
+  $app->redirect('/');
 });

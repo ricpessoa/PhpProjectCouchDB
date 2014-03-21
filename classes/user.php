@@ -1,19 +1,13 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 class User extends Base
 {
-    public $name;
-    public $email;
-    protected $full_name;
-    protected $salt;
-    protected $password_sha;
-    protected $roles;
+	protected $name;
+	protected $email;
+	protected $full_name;
+  protected $salt;
+  protected $password_sha;
+  protected $roles;
 	
 	public function __construct()
 	{
@@ -80,11 +74,5 @@ class User extends Base
       return false;
     }
   }
-  
-  public function to_json() {
-      return json_encode(get_object_vars($this));
-      
-  }
-
 	
 }

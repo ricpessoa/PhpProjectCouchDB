@@ -8,4 +8,6 @@ and open the template in the editor.
     Author     : rpessoa
 */
 
-body {background:#e4e4e4;}
+.page-header {margin-top: 50px;}
+input {height: 20px;}
+
