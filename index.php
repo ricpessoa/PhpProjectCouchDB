@@ -1,6 +1,7 @@
 <?php
 include 'lib/bones.php';
 
+//TODO: NEED REDIFINE THE CREDENTIALS TO COUCHDB
 define('ADMIN_USER', '');
 define('ADMIN_PASSWORD', '');
 
