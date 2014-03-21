@@ -61,17 +61,39 @@ class User extends Base
     session_destroy();
   }
   
-  public static function currentUser() {
-    session_start();
+  public static function current_user() {
+    //session_start();
     return $_SESSION['username'];
     session_write_close();
   }
   
-  public static function isAuthenticated() {
-    if (self::currentUser()) {
+  public static function is_authenticated() {
+    if (self::current_user()) {
       return true;
     } else {
       return false;
+    }
+  }
+  
+  public static function get_by_username($username = null) {
+    $bones = new Bones();
+    $bones->couch->setDatabase('_users');
+    $bones->couch->login(ADMIN_USER, ADMIN_PASSWORD);
+    $user = new User();
+    
+    try {
+      $document = $bones->couch->get('org.couchdb.user:' . $username)->body;
+      $user->_id = $document->_id;
+      $user->name = $document->name;
+      $user->email = $document->email;
+      $user->full_name = $document->full_name;
+      return $user;
+    } catch (SagCouchException $e) {
+        if($e->getCode() == "404") {
+          $bones->error404();
+        } else {
+          $bones->error500();
+        }
     }
   }
 	

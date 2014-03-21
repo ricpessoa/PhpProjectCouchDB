@@ -1,13 +1,8 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 18-Mar-2014, 12:12:25
-    Author     : rpessoa
-*/
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
 
-.page-header {margin-top: 50px;}
-input {height: 20px;}
-
+.post-item {padding: 10px 0 10px 0;}
+.post-item .span8 {margin-top: 20px; border-bottom: 1px solid #ccc;}
+.post-item .span1 a {color:red;}
