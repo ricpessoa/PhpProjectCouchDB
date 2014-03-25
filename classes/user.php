@@ -16,7 +16,8 @@ class User extends Base {
     public function signup($username, $password) {
         $bones = new Bones();
         $bones->couch->setDatabase('_users');
-        $bones->couch->login(ADMIN_USER, ADMIN_PASSWORD);
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+
 
         $this->roles = array();
         $this->name = preg_replace('/[^a-z0-9-]/', '', strtolower($username));
@@ -77,7 +78,7 @@ class User extends Base {
     public static function get_by_username($username = null) {
         $bones = new Bones();
         $bones->couch->setDatabase('_users');
-        $bones->couch->login(ADMIN_USER, ADMIN_PASSWORD);
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
         $user = new User();
 
         try {

@@ -2,11 +2,6 @@
 
 include 'lib/bones.php';
 
-//TODO: NEED REDIFINE THE CREDENTIALS TO COUCHDB
-define('ADMIN_USER', 'admin');
-define('ADMIN_PASSWORD', 'admin');
-
-
 get('/', function($app) {
     $app->set('message', 'Welcome Back!');
     $app->render('home');
