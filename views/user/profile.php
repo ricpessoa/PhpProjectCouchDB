@@ -12,6 +12,7 @@
             <div class="well sidebar-nav">
                 <ul class="nav nav-list">
                     <li><h3>User Information</h3></li>
+                    <li><img src="<?php echo $user->gravatar('100'); ?>" /></li>
                     <li><b>Username:</b> <?php echo $user->name; ?></li>
                     <li><b>Email:</b> <?php echo $user->email; ?></li>
                 </ul>

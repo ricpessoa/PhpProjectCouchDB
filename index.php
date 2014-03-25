@@ -3,8 +3,8 @@
 include 'lib/bones.php';
 
 //TODO: NEED REDIFINE THE CREDENTIALS TO COUCHDB
-define('ADMIN_USER', '');
-define('ADMIN_PASSWORD', '');
+define('ADMIN_USER', 'admin');
+define('ADMIN_PASSWORD', 'admin');
 
 
 get('/', function($app) {
@@ -64,15 +64,11 @@ post('/post', function($app) {
     }
 });
 
-get('/post/delete/:id/:rev', function($app) {
-    $post = new Post();
-    $post->_id = $app->request('id');
-    $post->_rev = $app->request('rev');
-    $post->delete();
-
-    $app->set('success', 'Your post has been deleted');
-    $app->redirect('/user/' . User::current_user());
+delete('/post/delete/:id/:rev', function($app) {
+$post = new Post();
+$post->_id = $app->request('id');
+$post->_rev = $app->request('rev');
+$post->delete();
 });
-
 
 resolve();
