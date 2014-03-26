@@ -60,10 +60,10 @@ post('/post', function($app) {
 });
 
 delete('/post/delete/:id/:rev', function($app) {
-$post = new Post();
-$post->_id = $app->request('id');
-$post->_rev = $app->request('rev');
-$post->delete();
+    $post = new Post();
+    $post->_id = $app->request('id');
+    $post->_rev = $app->request('rev');
+    $post->delete();
 });
 
 resolve();
