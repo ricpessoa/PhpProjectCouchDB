@@ -13,11 +13,16 @@ class User extends Base {
         parent::__construct('user');
     }
 
-    public function signup($username, $password) {
+    public function signup($username, $password, $email) {
         $bones = new Bones();
         $bones->couch->setDatabase('_users');
         $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
 
+        if (!$this->isValidEmail($email)) {
+            $bones->set('error', 'A user with this email already exists.');
+            $bones->render('user/signup');
+            exit;
+        }
 
         $this->roles = array();
         $this->name = preg_replace('/[^a-z0-9-]/', '', strtolower($username));
@@ -94,6 +99,27 @@ class User extends Base {
             } else {
                 $bones->error500();
             }
+        }
+    }
+
+    public function isValidEmail($email) {
+        $bones = new Bones();
+        $bones->couch->setDatabase('_users');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+
+        try {
+            $rows = $bones->couch->get('_design/application/_view/get_users_by_email?key="' . $email . '"')->body->rows;
+        } catch (SagCouchException $e) {
+            if ($e->getCode() == "401") {
+                return FALSE;
+            }
+        }
+
+
+        if ($rows) {
+            return FALSE;
+        } else {
+            return TRUE;
         }
     }
 

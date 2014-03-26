@@ -15,7 +15,7 @@ post('/signup', function($app) {
     $user = new User();
     $user->full_name = $app->form('full_name');
     $user->email = $app->form('email');
-    $user->signup($app->form('username'), $app->form('password'));
+    $user->signup($app->form('username'), $app->form('password'), $app->form('email'));
 
     $app->set('success', 'Thanks for Signing Up ' . $user->full_name . '!');
     $app->render('home');
