@@ -12,6 +12,7 @@ class Post extends Base {
 
     public function create() {
         $bones = new Bones();
+        $bones->couch->setDatabase($_SESSION['username']);
 
         $this->_id = $bones->couch->generateIDs(1)->body->uuids[0];
         $this->date_created = date('r');
@@ -26,6 +27,8 @@ class Post extends Base {
 
     public function get_posts_by_user($username) {
         $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
         $posts = array();
 
         foreach ($bones->couch->get('_design/application/_view/posts_by_user?key="' . $username . '"&descending=true&reduce=false')->body->rows as $_post) {
@@ -44,7 +47,7 @@ class Post extends Base {
 
     public function get_post_count_by_user($username) {
         $bones = new Bones();
-
+        $bones->couch->setDatabase($username);
         $rows = $bones->couch->get('_design/application/_view/posts_by_user?key="' . $username . '"&reduce=true')->body->rows;
 
         if ($rows) {

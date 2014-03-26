@@ -40,11 +40,16 @@ get('/logout', function($app) {
 });
 
 get('/user/:username', function($app) {
-    $app->set('user', User::get_by_username($app->request('username')));
-    $app->set('is_current_user', ($app->request('username') == User::current_user() ? true : false));
-    $app->set('posts', Post::get_posts_by_user($app->request('username')));
-    $app->set('post_count', Post::get_post_count_by_user($app->request('username')));
-    $app->render('user/profile');
+    if ($app->request('username') == User::current_user()) {
+        $app->set('user', User::get_by_username($app->request('username')));
+        $app->set('is_current_user', ($app->request('username') == User::current_user() ? true : false));
+        $app->set('posts', Post::get_posts_by_user($app->request('username')));
+        $app->set('post_count', Post::get_post_count_by_user($app->request('username')));
+        $app->render('user/profile');
+    }else{
+        $app->redirect('/user/' . User::current_user());
+    }
+
 });
 
 post('/post', function($app) {

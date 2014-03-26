@@ -32,12 +32,36 @@ class User extends Base {
 
         try {
             $bones->couch->put($this->_id, $this->to_json());
+            //$bones->couch->send("PUT", "/".$this->name); 
         } catch (SagCouchException $e) {
             if ($e->getCode() == "409") {
                 $bones->set('error', 'A user with this name already exists.');
                 $bones->render('user/signup');
                 exit;
             }
+        }
+        $this->creatDBForUser($username);
+    }
+
+    public function creatDBForUser($username) {
+        $bones = new Bones();
+        $bones->couch->setDatabase('_users');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+        try {
+            $bones->couch->createDatabase($this->name);
+        } catch (SagCouchException $exc) {
+            echo $exc->getTraceAsString();
+            $bones->set('error', 'A user with this name already exists.');
+            exit;
+        }
+
+        $bones->couch->setDatabase($username);
+        $doc_json = '{"_id": "_design/application","language": "javascript","views": {"posts_by_user": {"map": "function(doc) {\nif (doc.type == ' . "'".post."'" .') {\n\temit(doc.user, doc);\n}\n}","reduce": "_count"}}}';
+        try {
+            $bones->couch->post($doc_json);
+        } catch (SagCouchException $exc) {
+            echo $exc->getTraceAsString();
+            $bones->set('error', 'Problem creating user');
         }
     }
 
@@ -92,6 +116,7 @@ class User extends Base {
             $user->name = $document->name;
             $user->email = $document->email;
             $user->full_name = $document->full_name;
+
             return $user;
         } catch (SagCouchException $e) {
             if ($e->getCode() == "404") {
