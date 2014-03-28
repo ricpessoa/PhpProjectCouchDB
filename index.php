@@ -46,10 +46,9 @@ get('/user/:username', function($app) {
         $app->set('posts', Post::get_posts_by_user($app->request('username')));
         $app->set('post_count', Post::get_post_count_by_user($app->request('username')));
         $app->render('user/profile');
-    }else{
+    } else {
         $app->redirect('/user/' . User::current_user());
     }
-
 });
 
 post('/post', function($app) {
@@ -72,7 +71,33 @@ delete('/post/delete/:id/:rev', function($app) {
 });
 
 get('/safezone/show', function($app) {
-    $app->render('safezone/show');
+    if (User::is_authenticated()) {
+        $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
+        $app->render('safezone/show');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
 });
 
-resolve();
+post('/safezone', function($app) {
+    if (User::is_authenticated()) {
+        //$app->set('success', 'Yes we receive the action to insert');
+        //$app->render('/safezone/show');
+        $safezone = new Safezone();
+        $safezone->address = "Rua Teste";
+        $safezone->name = "Rua Teste";
+        $safezone->latitude = 123;
+        $safezone->longitude = 123456;
+        $safezone->radius = 255;
+        $safezone->notification = "[in-out]";
+        //$safezone->timestamp = getTime();
+
+        $safezone->create();
+        $app->set('success', 'Yes we receive the action to insert');
+        $app->redirect('/safezone/show');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
