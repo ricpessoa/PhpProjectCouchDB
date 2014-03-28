@@ -71,4 +71,8 @@ delete('/post/delete/:id/:rev', function($app) {
     $post->delete();
 });
 
+get('/safezone/show', function($app) {
+    $app->render('safezone/show');
+});
+
 resolve();
