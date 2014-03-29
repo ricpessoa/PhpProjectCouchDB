@@ -80,6 +80,15 @@ get('/safezone/show', function($app) {
     }
 });
 
+get('/safezone/new', function($app) {
+    if (User::is_authenticated()) {
+        $app->render('safezone/new');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
 post('/safezone', function($app) {
     if (User::is_authenticated()) {
         //$app->set('success', 'Yes we receive the action to insert');
