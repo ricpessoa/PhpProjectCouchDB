@@ -4,7 +4,7 @@
 -->
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqUwWysKF_x_SkHDgB-q_NeaqBHpPTlME&sensor=false"></script>
 <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3)" type="text/javascript"></script>
-<script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.jsF') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
 
 <style type="text/css">
     #map {
@@ -15,6 +15,8 @@
     <div class="row-fluid">
         <div class="span4">
             <!--Sidebar left content to TABLE SAFEZONE-->
+            <?php //var_dump($safezones); ?>
+
             <table class="table table-striped">
                 <caption>
                     <form action="<?php echo $this->make_route('/safezone') ?>" method="post">	
@@ -31,7 +33,9 @@
                     <tbody>
                         <?php
                         $i = 1;
+                        $str_safezones = "";
                         foreach ($safezones as $safezone):
+                          $str_safezones .= $safezone->to_jsonString();
                             ?>
 
                             <tr>
@@ -39,7 +43,8 @@
                                 <td><?php echo $safezone->name; ?></td>
                                 <td>Edit Delete</td>
                             </tr>
-                            <?php $i = $i + 1;
+                            <?php
+                            $i = $i + 1;
                         endforeach;
                         ?>
 
@@ -57,11 +62,13 @@
     $(document).ready(function() {
         //var map = new mxn.Mapstraction('map', 'openlayers');
         window.map = new mxn.Mapstraction('map', 'googlev3');
-        var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
+        //var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
         //map.addExtras();
         map.enableScrollWheelZoom();
         //window.geocoder = new google.maps.Geocoder();
-        map.setCenterAndZoom(latlon, 10);
+        //map.setCenterAndZoom(latlon, 10);
+        //console.log('<?php echo "[" .substr($str_safezones, 0, -1)."]"; ?>');
+        getSafezones('<?php echo '{"safezones"'.":[" .substr($str_safezones, 0, -1)."]}"; ?>')
     });
 
 
