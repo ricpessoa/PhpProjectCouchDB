@@ -3,11 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/PhpProjectTutorial/classes/post.php</file>
             <file>file:/var/www/PhpProjectTutorial/views/safezone/show.php</file>
+            <file>file:/var/www/PhpProjectTutorial/views/safezone/new.php</file>
             <file>file:/var/www/PhpProjectTutorial/index.php</file>
-            <file>file:/var/www/PhpProjectTutorial/views/user/profile.php</file>
-            <file>file:/var/www/PhpProjectTutorial/classes/user.php</file>
+            <file>file:/var/www/PhpProjectTutorial/public/js/master.js</file>
+            <file>file:/var/www/PhpProjectTutorial/public/css/master.css</file>
+            <file>file:/var/www/PhpProjectTutorial/public/js/mapfunctions.js</file>
         </group>
     </open-files>
 </project-private>

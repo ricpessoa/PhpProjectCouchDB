@@ -45,8 +45,8 @@
                                 <td><?php echo $i; ?></td>
                                 <td><?php echo $safezone->name; ?></td>
                                 <td>
-                                    <button id="edit_safezone" class="btn btn-info">Edit</button>
-                                    <button id="edit_safezone" class="btn btn-danger">Delete</button>
+                                    <button id="edit_safezone" class="btn btn-info btn-small">Edit</button>
+                                    <button id="edit_safezone" class="btn btn-danger btn-small">Delete</button>
                                 </td>
                             </tr>
                             <?php
