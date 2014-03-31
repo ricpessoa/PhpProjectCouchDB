@@ -5,10 +5,8 @@
         <group>
             <file>file:/var/www/PhpProjectTutorial/views/safezone/show.php</file>
             <file>file:/var/www/PhpProjectTutorial/views/safezone/new.php</file>
-            <file>file:/var/www/PhpProjectTutorial/index.php</file>
-            <file>file:/var/www/PhpProjectTutorial/public/js/master.js</file>
             <file>file:/var/www/PhpProjectTutorial/public/css/master.css</file>
-            <file>file:/var/www/PhpProjectTutorial/public/js/mapfunctions.js</file>
+            <file>file:/var/www/PhpProjectTutorial/views/user/login.php</file>
         </group>
     </open-files>
 </project-private>

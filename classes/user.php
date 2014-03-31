@@ -56,7 +56,15 @@ class User extends Base {
         }
 
         $bones->couch->setDatabase($username);
-        $doc_json = '{"_id": "_design/application","language": "javascript","views": {"posts_by_user": {"map": "function(doc) {\nif (doc.type == ' . "'".post."'" .') {\n\temit(doc.user, doc);\n}\n}","reduce": "_count"}}}';
+        //$doc_json = '{"_id": "_design/application","language": "javascript","views": {"posts_by_user": {"map": "function(doc) {\nif (doc.type == ' . "'".post."'" .') {\n\temit(doc.user, doc);\n}\n}","reduce": "_count"}}}';
+        $doc_json = '{"_id": "_design/application","language": "javascript","views": '
+                . '{"posts_by_user": '
+                . '{"map": "function(doc) {\nif (doc.type == ' . "'".post."'" .') '
+                . '{\n\temit(doc.user, doc);\n}\n}","reduce": "_count"},'
+                . '"getSafezones": {'
+                . '"map": "function(doc) {\n  if(doc.type == '. "'".safezone."'" .')\n '
+                . 'emit(doc._id, doc);\n}"}'
+                . '}}';
         try {
             $bones->couch->post($doc_json);
         } catch (SagCouchException $exc) {
