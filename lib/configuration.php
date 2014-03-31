@@ -7,6 +7,7 @@ class Configuration {
     private $db_port = '5984';
     private $db_database = 'verge';
     private $db_database_admins = '_users';
+    private $db_database_sensors = 'sensors';
     private $db_admin_user = 'admin';
     private $db_admin_password = 'admin';
     //private $db_admin_user = 'rpessoa';

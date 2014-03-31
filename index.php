@@ -70,24 +70,34 @@ delete('/post/delete/:id/:rev', function($app) {
     $post->delete();
 });
 
-get('/safezone/show', function($app) {
+get('/safezone/showsafezones', function($app) {
     if (User::is_authenticated()) {
         $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
-        $app->render('safezone/show');
+        $app->render('/safezone/showsafezones');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
     }
 });
 
-get('/safezone/new', function($app) {
+get('/safezone/newsafezone', function($app) {
     if (User::is_authenticated()) {
-        $app->render('safezone/new');
+        $app->render('/safezone/newsafezone');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
     }
 });
+
+get('/sensors/newsensor', function($app) {
+    if (User::is_authenticated()) {
+        $app->render('/sensors/newsensor');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
 
 post('/safezone', function($app) {
     if (User::is_authenticated()) {
