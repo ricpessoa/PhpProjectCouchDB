@@ -18,7 +18,11 @@ class Device extends Base {
 
         $str = $this->to_json();
         $arr = json_decode($str, true);
-
+        
+        /*foreach ($arr['sensors'] as $key => $values) {
+            unset($arr['sensors']);
+        }*/
+        
         foreach ($this->sensors as $sensor) {
             if ($sensor != null)
                 array_push($arr['sensors'], $sensor->to_json());
@@ -32,11 +36,11 @@ class Device extends Base {
                 exit;
             }
         }
-       /* try {
-            $bones->couch->put($this->_id, $arr);
-        } catch (SagCouchException $e) {
-            $bones->error500($e);
-        }*/
+        /* try {
+          $bones->couch->put($this->_id, $arr);
+          } catch (SagCouchException $e) {
+          $bones->error500($e);
+          } */
     }
 
 }
