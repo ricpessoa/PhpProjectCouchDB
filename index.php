@@ -98,51 +98,40 @@ get('/devices/newdevice', function($app) {
     }
 });
 
-/*
-  {
-  "device": {
-  "_id": "mac_address",
-  "sensors": [
-  {
-  "_id": "uuid",
-  "type": "Temperature",
-  "min_temp": 22,
-  "max_temp": 25
-  },
-  {
-  "_id": "uuid",
-  "type": "GPS"
-  },
-  {
-  "_id": "uuid",
-  "type": "panic button"
-  }
-  ]
-  }
-  }
- *  */
-
 post('/device', function($app) {
     if (User::is_authenticated()) {
         $device = new Device();
         $device->_id = $app->form('mac_address');
-        //$str = $app->form('mac_address');
+        $device->sensors = array();
+        //$myArray = array();
         if ($app->form('check_temperature_send') == "1") {
-            $str.=" check_temperature true; ";
-            $str.=$app->form('min_temp_notification');
-            $str.=$app->form('max_temp_notification');
+            $temperature = new Temperature();
+            $temperature->min_temperature = $app->form('min_temp_notification');
+            $temperature->max_temperatrue = $app->form('max_temp_notification');
+            //$device->sensors [] = $temperature;
+            array_push($device->sensors, $temperature);
+            //$myArray[] = $temperature;
         }
         if ($app->form('check_gps_send') == "1") {
-            // $str.=" check_gps true; ";
+            $sensorGPS = new Sensor("GPS");
+            $sensorGPS->name_sensor = "Sensor GPS";
+            array_push($device->sensors, $sensorGPS);
+            //$myArray[] = $sensorGPS;
         }
         if ($app->form('check_panic_bt_send') == "1") {
-            //$str.=" check_panic_bt true; ";
+            $sensorPanic = new Sensor("panic_button");
+            $sensorPanic->name_sensor = "Panic Button";
+            array_push($device->sensors, $sensorPanic);
+            //$myArray[] = $sensorPanic;
         }
 
+        //$device->sensors = $myArray;
 
-        $app->set('success', 'Yes we receive the action to insert ' . $str);
+        $device->create();
 
+        $app->set('success', 'device saved' );
         $app->render('/devices/newdevice');
+        
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
