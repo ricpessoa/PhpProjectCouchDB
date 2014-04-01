@@ -91,6 +91,7 @@ get('/safezone/newsafezone', function($app) {
 
 get('devices/showdevices', function($app) {
     if (User::is_authenticated()) {
+        $app->set('devices', Device::getDevices(User::current_user()));
         $app->render('/devices/showdevices');
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -137,9 +138,8 @@ post('/device', function($app) {
 
         $device->create();
 
-        $app->set('success', 'Yes device saved' );
+        $app->set('success', 'Yes device saved');
         $app->render('/devices/newdevice');
-        
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');

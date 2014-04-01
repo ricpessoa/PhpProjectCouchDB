@@ -154,7 +154,7 @@
         </div>
     </div>
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Login <i class="icon-ok icon-white"></i></button><br />
+        <button type="submit" class="btn btn-primary">Add Device <i class="icon-ok icon-white"></i></button><br />
     </div>
 </form>
 

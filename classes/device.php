@@ -18,11 +18,12 @@ class Device extends Base {
 
         $str = $this->to_json();
         $arr = json_decode($str, true);
-        
-        /*foreach ($arr['sensors'] as $key => $values) {
-            unset($arr['sensors']);
-        }*/
-        
+
+        //remove all empty array objects :S
+        foreach ($arr['sensors'] as $key => $values) {
+            unset($arr['sensors'][$key]);
+        }
+
         foreach ($this->sensors as $sensor) {
             if ($sensor != null)
                 array_push($arr['sensors'], $sensor->to_json());
@@ -36,11 +37,30 @@ class Device extends Base {
                 exit;
             }
         }
-        /* try {
-          $bones->couch->put($this->_id, $arr);
-          } catch (SagCouchException $e) {
-          $bones->error500($e);
-          } */
+    }
+
+    public function getDevices($username) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+        $devices = array();
+        /*
+          protected $name_device;
+          protected $sensors;
+          protected $timestamp;
+         *  */
+        foreach ($bones->couch->get('_design/application/_view/getDevices')->body->rows as $_device) {
+            $device = new Device();
+            $device->_id = $_device->id;
+            $device->_rev = $_device->value->_rev;
+            $device->name_device = $_device->value->name_device;
+            $device->timestamp = $_device->value->timestamp;
+            $device->sensors = $_device->value->sensors;
+
+            array_push($devices, $device);
+        }
+
+        return $devices;
     }
 
 }
