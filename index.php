@@ -89,9 +89,60 @@ get('/safezone/newsafezone', function($app) {
     }
 });
 
-get('/sensors/newsensor', function($app) {
+get('/devices/newdevice', function($app) {
     if (User::is_authenticated()) {
-        $app->render('/sensors/newsensor');
+        $app->render('/devices/newdevice');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
+/*
+  {
+  "device": {
+  "_id": "mac_address",
+  "sensors": [
+  {
+  "_id": "uuid",
+  "type": "Temperature",
+  "min_temp": 22,
+  "max_temp": 25
+  },
+  {
+  "_id": "uuid",
+  "type": "GPS"
+  },
+  {
+  "_id": "uuid",
+  "type": "panic button"
+  }
+  ]
+  }
+  }
+ *  */
+
+post('/device', function($app) {
+    if (User::is_authenticated()) {
+        $device = new Device();
+        $device->_id = $app->form('mac_address');
+        //$str = $app->form('mac_address');
+        if ($app->form('check_temperature_send') == "1") {
+            $str.=" check_temperature true; ";
+            $str.=$app->form('min_temp_notification');
+            $str.=$app->form('max_temp_notification');
+        }
+        if ($app->form('check_gps_send') == "1") {
+            // $str.=" check_gps true; ";
+        }
+        if ($app->form('check_panic_bt_send') == "1") {
+            //$str.=" check_panic_bt true; ";
+        }
+
+
+        $app->set('success', 'Yes we receive the action to insert ' . $str);
+
+        $app->render('/devices/newdevice');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
