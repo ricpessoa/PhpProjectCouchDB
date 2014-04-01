@@ -9,5 +9,5 @@ CouchDB (Save the information in NoSQL database)<br>
 JavaScript / jQuery<br>
 HTML<br>
 Bootstrap <br>
-MapStraction (to show in map the safezones) <br>
+MapStraction (to show geofences in map) <br>
 
