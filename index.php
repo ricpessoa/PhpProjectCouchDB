@@ -112,25 +112,25 @@ post('/device', function($app) {
     if (User::is_authenticated()) {
         $device = new Device();
         $device->_id = $app->form('mac_address');
+        $name_device = $app->form('name_device');
+        if (trim($name_device) != '') {
+            $device->name_device =$name_device;
+        }
         $myArray = array();
         if ($app->form('check_temperature_send') == "1") {
             $temperature = new Temperature();
             $temperature->min_temperature = $app->form('min_temp_notification');
             $temperature->max_temperatrue = $app->form('max_temp_notification');
-            //$device->sensors [] = $temperature;
-            //array_push($device->sensors, $temperature);
             $myArray[] = $temperature;
         }
         if ($app->form('check_gps_send') == "1") {
             $sensorGPS = new Sensor("GPS");
             $sensorGPS->name_sensor = "Sensor GPS";
-            //array_push($device->sensors, $sensorGPS);
             $myArray[] = $sensorGPS;
         }
         if ($app->form('check_panic_bt_send') == "1") {
             $sensorPanic = new Sensor("panic_button");
             $sensorPanic->name_sensor = "Panic Button";
-            //array_push($device->sensors, $sensorPanic);
             $myArray[] = $sensorPanic;
         }
 

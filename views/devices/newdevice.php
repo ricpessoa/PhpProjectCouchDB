@@ -65,29 +65,21 @@
                 $('#check_panic_bt_send').attr('checked', false);
             }
         });
-
-        /*$('#check_gps_send').val("1");
-         $('#check_gps_send').attr('checked', true);
-         
-         $('#check_panic_bt_send').val("1");
-         $('#check_panic_bt_send').attr('checked', true);
-         $('#check_gps_send').val("0");
-         $('#check_panic_bt_send').val("0");*/
-
-
-
-        /*$('#check_gps').click(function() {
-         if ($('#check_gps').is(':checked')) {
-         $('#div_propreties_gps').collapse('show');
-         } else {
-         $('#div_propreties_gps').collapse('hide');
-         }
-         });*/
     });
 </script>
 
 <form action="<?php echo $this->make_route('/device') ?>" method="post">
     <legend>Add Device</legend>
+    <div class="control-group">
+        <label class="control-label">Name device:</label>
+        <div class="controls">
+            <input 
+                id="name_device"
+                name="name_device"
+                type="text" />
+            <p class="help-block">*not required</p>
+        </div>
+    </div>
     <div class="control-group">
         <label class="control-label">MAC Address:</label>
         <div class="controls">
