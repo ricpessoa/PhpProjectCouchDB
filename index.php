@@ -77,7 +77,7 @@ get('/safezone/showsafezones', function($app) {
         if ($numSafezones != 0) {
             $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
         }
-        $app->render('safezone/show');
+        $app->render('safezone/showsafezones');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');

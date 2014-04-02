@@ -5,7 +5,7 @@
     </div>
 <?php }
 ?>
-<form action="<?php echo $this->make_route('/safezone/new') ?>" method="get">	
+<form action="<?php echo $this->make_route('/safezone/newsafezones') ?>" method="get">	
     <button id="create_safezone" class="btn btn-success">Add Safezone</button>
 </form>
 <?php if ($numberSafezones != 0) { ?>
@@ -26,9 +26,6 @@
         <div class="row-fluid">
             <div class="span4">
                 <!--Sidebar left content to TABLE SAFEZONE-->
-
-
-
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -51,7 +48,7 @@
                                 <td><?php echo $safezone->name; ?></td>
                                 <td>
                                     <button id="edit_safezone" class="btn btn-info btn-small">Edit</button>
-                                    <button id="delete_safezone" class="btn btn-danger btn-small">Delete</button>
+                                    <button id="delete_safezone" class="btn btn-danger btn-small" data-toggle="modal<?php echo $i;?>" data-target="#myModalDeleteSafezone">Delete</button>
                                 </td>
                             </tr>
                             <?php
@@ -64,6 +61,25 @@
             <div class="span8">
                 <!--Body content to MAP-->
                 <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal DELETE-->
+    <div class="modal fade" id="myModalDeleteSafezone" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Delete Safezone</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to permanently delete the Safezone?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </div>
             </div>
         </div>
     </div>

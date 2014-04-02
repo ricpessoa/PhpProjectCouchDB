@@ -13,8 +13,6 @@
     function updateTextInput(val) {
         console.log("updateTextInput" + (objJsonSafezone.safezones.length - 1) + "," + val);
         document.getElementById('radius').value = val;
-
-
         changeRadiusOfMarker(objJsonSafezone.safezones.length - 1, val);
     }
     function updateSlider(val) {

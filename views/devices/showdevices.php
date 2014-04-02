@@ -3,8 +3,8 @@
     <div class = "alert alert-info">
         Do not have devices to add press "Add Device"
     </div>
-    <?php
-}   ?>
+<?php }
+?>
 <form action="<?php echo $this->make_route('/devices/newdevice') ?>" method="get">	
     <button id="create_safezone" class="btn btn-success">Add Device</button>
 </form>
@@ -35,10 +35,11 @@
                         ?></td>
                     <td><?php echo $device->_id; ?></td>
                     <td>
-                        <form style="margin-bottom: 0px;"action="<?php echo $this->make_route('/devices/newdevice') ?>" method="get">
-                            <button id="edit_device" class="btn btn-info btn-small">Edit</button>
-                            <button id="delete_device" class="btn btn-danger btn-small">Delete</button>
-                        </form>
+                        <!--<form style="margin-bottom: 0px;"action="<?php echo $this->make_route('/devices/newdevice') ?>" method="get">-->
+                        <button id="edit_device" class="btn btn-info btn-small">Edit</button>
+                        <!--</form>-->
+                        <button id="delete_device" class="btn btn-danger btn-small" data-toggle="modal" data-target="#myModalDeleteDevice">Delete</button>
+                        <button data-toggle="modal" data-id="<?php echo $device->_id; ?>" data-rev="<?php echo $device->_rev; ?>" title="Add this item" class="open-AddBookDialog btn btn-danger" href="#addBookDialog">New Delete</button>
                     </td>
                 </tr>
                 <tr>
@@ -49,8 +50,8 @@
                                 $j = 0;
                                 foreach ($device->sensors as $sensor):
                                     ?>
-                                    <tr style="background-color: #CCFFFF">
-                                           <!-- <td>Sensor <?php echo $j; ?></td>-->
+                                    <tr<!--style="background-color: #CCFFFF"-->
+                                               <!-- <td>Sensor <?php echo $j; ?></td>-->
                                         <td>Sensor <?php echo $sensor->type; ?></td>
                                         <td>Options</td>
                                     </tr>
@@ -68,5 +69,71 @@
             ?>
         </tbody>
     </table>
-<?php
+
+
+    <!-- Modal DELETE-->
+    <div class="modal fade" id="myModalDeleteDevice" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Delete Device</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to permanently delete the Device?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="addBookDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <!--<div class="modal-header">
+            <button class="close" data-dismiss="modal">×</button>
+            <h3>Modal header</h3>
+        </div>
+        <div class="modal-body">
+            <p>some content</p>
+            <input type="text" name="docID" id="docID" value=""/>
+            <input type="text" name="docREV" id="docREV" value=""/>
+        </div>-->
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Delete Device</h4>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to permanently delete the Device?
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="deleteSafezone" name="deleteSafezone" type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).on("click", ".open-AddBookDialog", function() {
+            var myDocId = $(this).data('id');
+            var myDocRev = $(this).data('rev');
+            var finalURL = '/device/delete/' + myDocId + '/' + myDocRev;
+            console.log("url:" + finalURL);
+            //$(".modal-body #docID").val(myDocId);
+            //$(".modal-body #docREV").val(myDocRev);
+            //$(".modal-footer #deleteSafezone").attr('href', '/PhpProjectTutorial/post/delete/bbbe194c3d63570156ebfd6f640002a4/1-1855d23396fe20c1bcdbf73dd49cce27');
+            $(".modal-footer #deleteSafezone").attr('href', 'http://google.pt');
+
+        });
+        $(document).on("click", ".deleteSafezone", function() {
+            console.log("Click on delete safezone");
+        });
+    </script>
+    <?php
 }?>
