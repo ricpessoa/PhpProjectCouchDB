@@ -72,7 +72,11 @@ delete('/post/delete/:id/:rev', function($app) {
 
 get('/safezone/show', function($app) {
     if (User::is_authenticated()) {
-        $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
+        $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
+        $app->set('numberSafezones', $numSafezones);
+        if ($numSafezones != 0) {
+            $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
+        }
         $app->render('safezone/show');
     } else {
         $app->set('error', 'You must be logged in to do that.');
