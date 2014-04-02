@@ -1,4 +1,5 @@
 <?php
+
 header('Content-Type: text/html; charset=utf-8'); //add this line for special characters 
 
 define('ROOT', __DIR__ . '/..');

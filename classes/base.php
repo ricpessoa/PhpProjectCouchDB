@@ -23,7 +23,6 @@ abstract class Base
     if (isset($this->_rev) === false) {
 			unset($this->_rev);
 		}
-    
     return json_encode(get_object_vars($this));
   }
 }
