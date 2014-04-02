@@ -57,8 +57,9 @@ class Post extends Base {
         }
     }
 
-    public function delete() {
+    public function delete($username) {
         $bones = new Bones();
+        $bones->couch->setDatabase($username);
 
         try {
             $bones->couch->delete($this->_id, $this->_rev);

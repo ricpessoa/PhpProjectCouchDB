@@ -64,10 +64,12 @@ post('/post', function($app) {
 });
 
 delete('/post/delete/:id/:rev', function($app) {
-    $post = new Post();
-    $post->_id = $app->request('id');
-    $post->_rev = $app->request('rev');
-    $post->delete();
+    if (User::is_authenticated()) {
+        $post = new Post();
+        $post->_id = $app->request('id');
+        $post->_rev = $app->request('rev');
+        $post->delete(User::current_user());
+    }
 });
 
 get('/safezone/showsafezones', function($app) {
@@ -158,8 +160,8 @@ post('/device', function($app) {
 
 post('/safezone', function($app) {
     if (User::is_authenticated()) {
-        //$app->set('success', 'Yes we receive the action to insert');
-        //$app->render('/safezone/show');
+//$app->set('success', 'Yes we receive the action to insert');
+//$app->render('/safezone/show');
         $safezone = new Safezone();
         $safezone->address = "Rua Teste";
         $safezone->name = "Rua Teste";
@@ -167,7 +169,7 @@ post('/safezone', function($app) {
         $safezone->longitude = 123456;
         $safezone->radius = 255;
         $safezone->notification = "[in-out]";
-        //$safezone->timestamp = getTime();
+//$safezone->timestamp = getTime();
 
         $safezone->create();
         $app->set('success', 'Yes we receive the action to insert');
