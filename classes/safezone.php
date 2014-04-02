@@ -35,9 +35,9 @@ class Safezone extends Base {
 
         $safezones = array();
 
-        foreach ($bones->couch->get('_design/application/_view/getSafezones')->body->rows as $_safezone) {
+        foreach ($bones->couch->get('_design/application/_view/getSafezones?reduce=false')->body->rows as $_safezone) {
             $safezone = new Safezone();
-            $safezone->_id = $_safezone->id;
+            $safezone->_id = $_safezone->value->_id;
             $safezone->_rev = $_safezone->value->_rev;
             $safezone->address = $_safezone->value->address;
             $safezone->name = $_safezone->value->name;
@@ -53,19 +53,31 @@ class Safezone extends Base {
         return $safezones;
     }
 
+    public function get_safezones_count_by_user($username) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+        $rows = $bones->couch->get('_design/application/_view/getSafezones?reduce=true')->body->rows;
+
+        if ($rows) {
+            return $rows[0]->value;
+        } else {
+            return 0;
+        }
+    }
+
     public function to_jsonString() {
         /* {_id: "safezone_02ecaf49b81af1a242b668984a001e64", _rev: "3-e299c8e0c31ae0d21c47ca60f5a8002f", address: "Rua Santa Maria Madalena", latitude: 41.112841, longitude: -8.629528, radius: 500, type: "safezone", notification: "[in-out]", name: "Rua Santa Maria Madalena"} */
         return '{'
-        .'"_id":'.'"'.$this->_id.'",'
-        .'"_rev":'.'"'.$this->_rev.'",'
-        .'"address":'. '"'.$this->address.'",'
-        .'"name":'.'"'.$this->name.'",'
-        .'"latitude":'.'"'. $this->latitude.'",'
-        .'"longitude":'.'"'.$this->longitude.'",'
-        .'"radius":'.'"'.$this->radius.'",'
-        .'"notification":'.'"'.$this->notification.'",'
-        .'"timestamp":'.'"'. $this->timestamp.'"'
-        .'},';
+                . '"_id":' . '"' . $this->_id . '",'
+                . '"_rev":' . '"' . $this->_rev . '",'
+                . '"address":' . '"' . $this->address . '",'
+                . '"name":' . '"' . $this->name . '",'
+                . '"latitude":' . '"' . $this->latitude . '",'
+                . '"longitude":' . '"' . $this->longitude . '",'
+                . '"radius":' . '"' . $this->radius . '",'
+                . '"notification":' . '"' . $this->notification . '",'
+                . '"timestamp":' . '"' . $this->timestamp . '"'
+                . '},';
     }
 
 }
