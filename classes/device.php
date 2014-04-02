@@ -49,7 +49,7 @@ class Device extends Base {
           protected $sensors;
           protected $timestamp;
          *  */
-        foreach ($bones->couch->get('_design/application/_view/getDevices')->body->rows as $_device) {
+        foreach ($bones->couch->get('_design/application/_view/getDevices?descending=true&reduce=false')->body->rows as $_device) {
             $device = new Device();
             $device->_id = $_device->id;
             $device->_rev = $_device->value->_rev;
@@ -61,6 +61,19 @@ class Device extends Base {
         }
 
         return $devices;
+    }
+
+    public function getNumberOfDevices($username) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+
+        $rows = $bones->couch->get('_design/application/_view/getDevices?descending=true&reduce=true')->body->rows;
+        if ($rows) {
+            return $rows[0]->value;
+        } else {
+            return 0;
+        }
     }
 
 }

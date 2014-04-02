@@ -91,7 +91,12 @@ get('/safezone/newsafezone', function($app) {
 
 get('devices/showdevices', function($app) {
     if (User::is_authenticated()) {
-        $app->set('devices', Device::getDevices(User::current_user()));
+        $numberOfDevices = Device::getNumberOfDevices(User::current_user());
+        $app->set('numberDevices', $numberOfDevices);
+
+        if ($numberOfDevices != 0) {
+            $app->set('devices', Device::getDevices(User::current_user()));
+        }
         $app->render('/devices/showdevices');
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -114,7 +119,7 @@ post('/device', function($app) {
         $device->_id = $app->form('mac_address');
         $name_device = $app->form('name_device');
         if (trim($name_device) != '') {
-            $device->name_device =$name_device;
+            $device->name_device = $name_device;
         }
         $myArray = array();
         if ($app->form('check_temperature_send') == "1") {
