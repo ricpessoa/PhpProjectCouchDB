@@ -68,8 +68,7 @@ function getSafezones(dataSafezone) {
 
         nameAddress = objJsonSafezone.safezones[x].address;
 
-        constructInfoBubbleToSafezone(marker, objJsonSafezone.safezones[x].name, objJsonSafezone.safezones[x].address, objJsonSafezone.safezones[x].latitude, objJsonSafezone.safezones[x].longitude, objJsonSafezone.safezones[x]['radius']
-                );
+        constructInfoBubbleToSafezone(marker, objJsonSafezone.safezones[x].name, objJsonSafezone.safezones[x].address, objJsonSafezone.safezones[x].latitude, objJsonSafezone.safezones[x].longitude, objJsonSafezone.safezones[x]['radius']);
         //if (update)
         //   marker.setDraggable(true);
 
@@ -91,7 +90,6 @@ function constructInfoBubbleToSafezone(marker, name, addr, lat, lon, safetyRadiu
         marker.setInfoBubble("<h3><strong>" + addr + "</strong></h3> <br>lat: " + lat + " lon: " + lon + " Radius : " + safetyRadius + "<br>");
     else
         marker.setInfoBubble("<h3><strong>" + name + "</strong></h3><br>address:" + addr + " <br>lat: " + lat + " lon: " + lon + " safetyRadius: " + safetyRadius + "<br>");
-
 }
 
 
@@ -222,45 +220,48 @@ function searchAddress() {
     });
 }
 
-function insertSafezoneInMap(nameAddress,lat,lng,draggable){
+function insertSafezoneInMap(nameAddress, lat, lng, draggable) {
     var latlonOfSafezone = new mxn.LatLonPoint(lat, lng);
     var marker = new mxn.Marker(latlonOfSafezone);
-    var safezone = new mxn.Radius(latlonOfSafezone,20); //20 is a quality and point of safezone
+    var safezone = new mxn.Radius(latlonOfSafezone, 20); //20 is a quality and point of safezone
     var radiusOfSafezone = 500;
-    var poly = safezone.getPolyline(radiusOfSafezone/1000, '#00F');
+    var poly = safezone.getPolyline(radiusOfSafezone / 1000, '#00F');
     map.addPolyline(poly);
     if (!update) {
-      arrayOfSafezones.push(safezone);
-      //var safezone_id ="Safezone-Bend-"+generateUUID();
-      var safezone_id = "safezone_"+getCurrentTimeInMilliSeconds();
-      var dataJsonSend = '{"_id":"'+safezone_id+'","name":"'+nameAddress+'","address":"'+nameAddress+'","latitude":'+lat+',"longitude":'+lng+',"radius":'+radiusOfSafezone+',"notifications":"all","timestamp":1234567890}';
-    }else{
-      arrayOfSafezones.pop();
-      arrayOfSafezones.push(safezone);
-      objJsonSafezone.safezones[objJsonSafezone.safezones.length-1].address = nameAddress;
-      objJsonSafezone.safezones[objJsonSafezone.safezones.length-1].latitude = lat;
-      objJsonSafezone.safezones[objJsonSafezone.safezones.length-1].longitude = lng;
-    };
-    constructInfoBubbleToSafezone(marker,nameAddress,nameAddress,nameAddress,lat,lng,radiusOfSafezone);
+        arrayOfSafezones.push(safezone);
+        //var safezone_id ="Safezone-Bend-"+generateUUID();
+        var safezone_id = "safezone_" + getCurrentTimeInMilliSeconds();
+        var dataJsonSend = '{"_id":"' + safezone_id + '","name":"' + nameAddress + '","address":"' + nameAddress + '","latitude":' + lat + ',"longitude":' + lng + ',"radius":' + radiusOfSafezone + ',"notifications":"all","timestamp":1234567890}';
+    } else {
+        arrayOfSafezones.pop();
+        arrayOfSafezones.push(safezone);
+        objJsonSafezone.safezones[objJsonSafezone.safezones.length - 1].address = nameAddress;
+        objJsonSafezone.safezones[objJsonSafezone.safezones.length - 1].latitude = lat;
+        objJsonSafezone.safezones[objJsonSafezone.safezones.length - 1].longitude = lng;
+    }
+    ;
+    constructInfoBubbleToSafezone(marker, nameAddress, nameAddress, nameAddress, lat, lng, radiusOfSafezone);
 
     marker.setDraggable(draggable);
     map.addMarker(marker);
-  
+
     if (!update) {
-      arrayMarkersSafezones.push(marker);
-      objJsonSafezone.safezones.push(jQuery.parseJSON(dataJsonSend));
+        window.objJsonSafezone = new Object();
+        window.objJsonSafezone.safezones = new Array();
+        arrayMarkersSafezones.push(marker);
+        window.objJsonSafezone.safezones.push(jQuery.parseJSON(dataJsonSend));
 //window.objJsonSafezone.push(jQuery.parseJSON('{"safezones":['+dataJsonSend+']}'));
 
-    }else{
-      arrayMarkersSafezones.pop();
-      arrayMarkersSafezones.push(marker);
+    } else {
+        arrayMarkersSafezones.pop();
+        arrayMarkersSafezones.push(marker);
     }
     showSearchAddress();
-  }
-  
-function getCurrentTimeInMilliSeconds(){
-  var d = new Date();
-  return d.getTime(); 
+}
+
+function getCurrentTimeInMilliSeconds() {
+    var d = new Date();
+    return d.getTime();
 }
 
 function selectGeofence(pos) {
@@ -314,7 +315,7 @@ function addTableOfSearchResult(arrayaddress) {
     var myTableDiv = document.getElementById("myDynamicTable");
 
     var table = document.createElement('TABLE');
-    table.className="table table-bordered";
+    table.className = "table table-bordered";
 
     var tableHead = document.createElement('THEAD');
     table.appendChild(tableHead);
@@ -324,7 +325,7 @@ function addTableOfSearchResult(arrayaddress) {
     td.appendChild(document.createTextNode("Resultados Encontrados:"));
     tr.appendChild(td);
     tableHead.appendChild(tr);
-    
+
 
 
     var tableBody = document.createElement('TBODY');
@@ -441,6 +442,13 @@ function showStreetView(lat, lon, addressToLookup) {
             showStreetViewBasedInCoordinates(lat, lon);
         }
     });
+}
+
+function changeRadiusOfMarker(index, radius) {
+    console.log("changeRadiusOfMarker index" + index);
+    map.removeAllPolylines();
+    map.addPolyline(arrayOfSafezones[index].getPolyline(radius / 1000, '#F00'));
+    objJsonSafezone.safezones[index]['Safety Radius'] = radius;
 }
 
 function myboxopened(event_name, event_source, event_args) {

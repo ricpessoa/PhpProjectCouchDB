@@ -5,7 +5,7 @@
     </div>
 <?php }
 ?>
-<form action="<?php echo $this->make_route('/safezone/newsafezones') ?>" method="get">	
+<form action="<?php echo $this->make_route('/safezone/newsafezone') ?>" method="get">	
     <button id="create_safezone" class="btn btn-success">Add Safezone</button>
 </form>
 <?php if ($numberSafezones != 0) { ?>

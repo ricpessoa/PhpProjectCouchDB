@@ -15,6 +15,7 @@
         document.getElementById('radius').value = val;
         changeRadiusOfMarker(objJsonSafezone.safezones.length - 1, val);
     }
+
     function updateSlider(val) {
         console.log("updateSlider" + (objJsonSafezone.safezones.length - 1) + "," + val);
         document.getElementById('radiusSlider').value = val;
@@ -77,7 +78,10 @@
                 <input id="radiusSlider" type="range" class="input-medium" name="points" min="500" max="10000" value="500" onchange="updateTextInput(this.value);">
                 <input id="radius" type="text" class="input-mini" value="500" onchange="updateSlider(this.value);">
             </div>
-
+            <div id="editSafezone" style="margin-top: 10px;margin-bottom:10px;">
+                <label class="control-label">Name:</label>
+                <input id="txt_name" type="text" size="35" value="">
+            </div>
             <div id="div_SelectNotification" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
                 <label class="control-label">Notification Settings:</label>
                 <select id="notification_settings" class="input-medium">
@@ -89,7 +93,7 @@
             </div>
             <div id = "div_buttons" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
                 <button id="bt_back" type="button" class="normalbutton" onclick="javascript:showSearchAddress()">Back</button>
-                <button id="bt_save" type="button" class="normalbutton" onclick="/*javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)*/">Save Safezone</button>
+                <button id="bt_save" type="button" class="normalbutton" onclick="javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)">Save Safezone</button>
                 <button id="bt_editLocation" type="button" class="normalbutton" onclick="javascript:showSearchAddress();
                         /* passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].Address, objJsonSafezone.safezones[0].Latitude, objJsonSafezone.safezones[0].Longitude);*/">Edit Locations</button>
                 <button id="bt_next" type="button" class="normalbutton" onclick="javascript:pressNext(selectedGeofence);
@@ -110,21 +114,20 @@
     $(document).ready(function() {
         //var map = new mxn.Mapstraction('map', 'openlayers');
         window.map = new mxn.Mapstraction('map', 'googlev3');
-        //var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
+        var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
         map.addExtras();
         map.enableScrollWheelZoom();
         window.geocoder = new google.maps.Geocoder();
-        //map.setCenterAndZoom(latlon, 10);
-        getSafezones('<%=@mySafezones%>');
+        map.setCenterAndZoom(latlon, 10);
+        //getSafezones('<%=@mySafezones%>');
         map.removeAllPolylines();
         map.removeAllMarkers();
 
         if (arrayOfSafezones.length == 0) {
             findUserLocation();
         }
-        ;
 
-
+        //window.objJsonSafezone.safezones = new Object()
         findUserLocation();
         insertGeofenceHandler();
     });

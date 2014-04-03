@@ -79,7 +79,6 @@ delete('/post/delete/:id/:rev', function($app) {
 
 /* DEVICES */
 
-
 get('devices/showdevices', function($app) {
     if (User::is_authenticated()) {
         $numberOfDevices = Device::getNumberOfDevices(User::current_user());
