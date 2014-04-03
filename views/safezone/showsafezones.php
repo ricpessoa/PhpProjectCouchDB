@@ -42,7 +42,6 @@
                         foreach ($safezones as $safezone):
                             $str_safezones .= $safezone->to_jsonString();
                             ?>
-
                             <tr>
                                 <td><?php echo $i; ?></td>
                                 <td><?php echo $safezone->name; ?></td>
@@ -65,7 +64,7 @@
         </div>
     </div>
 
-<!-- MODAL DELETE SAFEZONE -->
+    <!-- MODAL DELETE SAFEZONE -->
     <div class="modal fade" id="deleteSafezoneModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">>
         <div class="modal-dialog">
             <div class="modal-content">
@@ -80,31 +79,31 @@
                     <form id="form_delete_safezone" method="post">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
-        <script type="text/javascript">
-            $(document).ready(function() {
-                //var map = new mxn.Mapstraction('map', 'openlayers');
-                window.map = new mxn.Mapstraction('map', 'googlev3');
-                //var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
-                //map.addExtras();
-                map.enableScrollWheelZoom();
-                //window.geocoder = new google.maps.Geocoder();
-                //map.setCenterAndZoom(latlon, 10);
-                //console.log('<?php echo "[" . substr($str_safezones, 0, -1) . "]"; ?>');
-                getSafezones('<?php echo '{"safezones"' . ":[" . substr($str_safezones, 0, -1) . "]}"; ?>')
-            });
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            //var map = new mxn.Mapstraction('map', 'openlayers');
+            window.map = new mxn.Mapstraction('map', 'googlev3');
+            //var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
+            //map.addExtras();
+            map.enableScrollWheelZoom();
+            //window.geocoder = new google.maps.Geocoder();
+            //map.setCenterAndZoom(latlon, 10);
+            //console.log('<?php echo "[" . substr($str_safezones, 0, -1) . "]"; ?>');
+            getSafezones('<?php echo '{"safezones"' . ":[" . substr($str_safezones, 0, -1) . "]}"; ?>')
+        });
 
-            $(document).on("click", ".open-deleteSafezoneModal", function() {
-                var myDocId = $(this).data('id');
-                var myDocRev = $(this).data('rev');
-                var finalURL = '/PhpProjectTutorial/safezone/delete/' + myDocId + '/' + myDocRev;
-                $(".modal-footer #form_delete_safezone").attr('action', finalURL);
+        $(document).on("click", ".open-deleteSafezoneModal", function() {
+            var myDocId = $(this).data('id');
+            var myDocRev = $(this).data('rev');
+            var finalURL = '/PhpProjectTutorial/safezone/delete/' + myDocId + '/' + myDocRev;
+            $(".modal-footer #form_delete_safezone").attr('action', finalURL);
 
-            });
-        </script>
+        });
+    </script>
 
-    <?php } ?>
+<?php } ?>

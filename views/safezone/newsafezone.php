@@ -92,12 +92,15 @@
                 </select>
             </div>
             <div id = "div_buttons" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
-                <button id="bt_back" type="button" class="normalbutton" onclick="javascript:showSearchAddress()">Back</button>
-                <button id="bt_save" type="button" class="normalbutton" onclick="javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)">Save Safezone</button>
-                <button id="bt_editLocation" type="button" class="normalbutton" onclick="javascript:showSearchAddress();
-                        /* passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].Address, objJsonSafezone.safezones[0].Latitude, objJsonSafezone.safezones[0].Longitude);*/">Edit Locations</button>
-                <button id="bt_next" type="button" class="normalbutton" onclick="javascript:pressNext(selectedGeofence);
-                        showEditRadius();">Next</button>
+                <form id="form_new_safezone" action="<?php echo $this->make_route('/safezone') ?>" method="post">
+                    <button id="bt_back" type="button" class="normalbutton" onclick="javascript:showSearchAddress()">Back</button>
+                    <button id="bt_save" type="button" class="normalbutton" onclick="javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)">Save Safezone</button>
+                    <button id="bt_editLocation" type="button" class="normalbutton" onclick="javascript:showSearchAddress();
+                            /* passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].Address, objJsonSafezone.safezones[0].Latitude, objJsonSafezone.safezones[0].Longitude);*/">Edit Locations</button>
+                    <button id="bt_next" type="button" class="normalbutton" onclick="javascript:pressNext(selectedGeofence);
+                            showEditRadius();">Next</button>
+                    <input id="safezone" name="safezone">
+                </form>
             </div>
             <div id="pano" style="width: 300px; height: 250px;"></div>
         </div>

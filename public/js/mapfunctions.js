@@ -42,7 +42,7 @@ mxn.register('googlev3', {
     }
 
 });
-
+window.urlWriteSafezone = "";
 window.arrayOfSafezones = new Array();
 window.arrayMarkersSafezones = new Array();
 window.objJsonSafezone;
@@ -83,6 +83,42 @@ function getSafezones(dataSafezone) {
     } else if (objJsonSafezone.safezones.length == 1) {
         addHighlightToTheMarker(objJsonSafezone.safezones[0].latitude, objJsonSafezone.safezones[0].longitude)
     }
+}
+
+/*
+ function sentPOSTRequest(urlDestination, dataToSend, callback) {
+ var data = {
+ send_safezone: dataToSend
+ };
+ $.ajax({
+ url: urlDestination,
+ type: "POST",
+ data: data,
+ contentType: "application/json; charset=utf-8",
+ dataType: "json"
+ }).done(function(text) {
+ callback(text);
+ }).fail(function() {
+ console.log("post request error");
+ });
+ }
+ */
+function saveSafezoneInDb(pos) {
+    console.log("saving safezone: " + objJsonSafezone.safezones[pos].Address);
+
+    var selc = document.getElementById("notification_settings");
+    var notification = selc.options[selc.selectedIndex].value;
+
+    var dataJsonSend = '{"_id":"' + objJsonSafezone.safezones[pos]._id + '","Address":"' + objJsonSafezone.safezones[pos].Address + '","Name":"' + document.getElementById("txt_name").value + '","Latitude":' + objJsonSafezone.safezones[pos].Latitude + ',"Longitude":' + objJsonSafezone.safezones[pos].Longitude + ',"Home Radius":200,"Safety Radius":' + objJsonSafezone.safezones[pos]['Safety Radius'] + ',"Notification Settings":"' + notification + '","timestamp":1234567890,"shared":true}';
+    //sentPOSTRequest(urlWriteSafezone, '{"safezone":' + dataJsonSend + '}', function(status) {
+    //    console.log("sucessfull " + status);
+    //window.location = "dashboardSafezones";
+    //});
+    var selc = document.getElementById("safezone").value = dataJsonSend;
+    $("#form_new_safezone").submit();
+
+    /*and add value in the input
+     * nedd force the submit programmaticaly*/
 }
 
 function constructInfoBubbleToSafezone(marker, name, addr, lat, lon, safetyRadius) {
