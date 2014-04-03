@@ -72,28 +72,8 @@ delete('/post/delete/:id/:rev', function($app) {
     }
 });
 
-get('/safezone/showsafezones', function($app) {
-    if (User::is_authenticated()) {
-        $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
-        $app->set('numberSafezones', $numSafezones);
-        if ($numSafezones != 0) {
-            $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
-        }
-        $app->render('safezone/showsafezones');
-    } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
-    }
-});
+/* DEVICES */
 
-get('/safezone/newsafezone', function($app) {
-    if (User::is_authenticated()) {
-        $app->render('/safezone/newsafezone');
-    } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
-    }
-});
 
 get('devices/showdevices', function($app) {
     if (User::is_authenticated()) {
@@ -157,8 +137,50 @@ post('/device', function($app) {
     }
 });
 
+post('/device/delete/:id/:rev', function($app) {
+    if (User::is_authenticated()) {
+        $device = new Device();
+        $device->_id = $app->request('id');
+        $device->_rev = $app->request('rev');
+        
+        $device->delete(User::current_user());
 
-post('/safezone', function($app) {
+        $app->set('success', 'Delete Device successfull');
+        $app->redirect('/devices/showdevices');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
+/* END DEVICE */
+
+/* SAFEZONE */
+
+get('/safezone/showsafezones', function($app) {
+    if (User::is_authenticated()) {
+        $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
+        $app->set('numberSafezones', $numSafezones);
+        if ($numSafezones != 0) {
+            $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
+        }
+        $app->render('safezone/showsafezones');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
+get('/safezone/newsafezone', function($app) {
+    if (User::is_authenticated()) {
+        $app->render('/safezone/newsafezone');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
+post('/safezone', function($app) { /* NEED TEST */
     if (User::is_authenticated()) {
 //$app->set('success', 'Yes we receive the action to insert');
 //$app->render('/safezone/show');
@@ -179,3 +201,4 @@ post('/safezone', function($app) {
         $app->render('user/login');
     }
 });
+/*END SAFEZONE*/

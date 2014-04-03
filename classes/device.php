@@ -76,4 +76,15 @@ class Device extends Base {
         }
     }
 
+    public function delete($username) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+        try {
+            $bones->couch->delete($this->_id, $this->_rev);
+        } catch (SagCouchException $e) {
+            $bones->error500($e);
+        }
+    }
+
 }
