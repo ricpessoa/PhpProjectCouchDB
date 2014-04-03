@@ -39,6 +39,10 @@ get('/logout', function($app) {
     $app->redirect('/');
 });
 
+get('/user/', function($app) {
+    $app->redirect('/');
+});
+
 get('/user/:username', function($app) {
     if ($app->request('username') == User::current_user()) {
         $app->set('user', User::get_by_username($app->request('username')));
@@ -47,7 +51,8 @@ get('/user/:username', function($app) {
         $app->set('post_count', Post::get_post_count_by_user($app->request('username')));
         $app->render('user/profile');
     } else {
-        $app->redirect('/user/' . User::current_user());
+        //$app->redirect('/user/' . User::current_user());
+        $app->redirect('/');
     }
 });
 
@@ -142,11 +147,17 @@ post('/device/delete/:id/:rev', function($app) {
         $device = new Device();
         $device->_id = $app->request('id');
         $device->_rev = $app->request('rev');
-        
         $device->delete(User::current_user());
 
+        $numberOfDevices = Device::getNumberOfDevices(User::current_user());
+        $app->set('numberDevices', $numberOfDevices);
+
+        if ($numberOfDevices != 0) {
+            $app->set('devices', Device::getDevices(User::current_user()));
+        }
+
         $app->set('success', 'Delete Device successfull');
-        $app->redirect('/devices/showdevices');
+        $app->render('/devices/showdevices');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
@@ -196,6 +207,28 @@ post('/safezone', function($app) { /* NEED TEST */
         $safezone->create();
         $app->set('success', 'Yes we receive the action to insert');
         $app->redirect('/safezone/show');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
+post('/safezone/delete/:id/:rev', function($app) {
+    if (User::is_authenticated()) {
+        $safezone = new Safezone();
+        $safezone->_id = $app->request('id');
+        $safezone->_rev = $app->request('rev');
+        $safezone->delete(User::current_user());
+
+        $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
+        $app->set('numberSafezones', $numSafezones);
+        if ($numSafezones != 0) {
+            $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
+        }
+        $app->render('safezone/showsafezones');
+
+        $app->set('success', 'Delete Safezone successfull');
+        $app->render('safezone/showsafezones');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');

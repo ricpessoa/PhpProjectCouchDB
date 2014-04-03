@@ -36,7 +36,7 @@
                     <td><?php echo $device->_id; ?></td>
                     <td>
                         <button id="edit_device" class="btn btn-info btn-small">Edit</button>
-                        <button data-toggle="modal" data-id="<?php echo $device->_id; ?>" data-rev="<?php echo $device->_rev; ?>" title="Add this item" class="open-AddBookDialog btn btn-danger  btn-small" href="#addBookDialog">Delete</button>
+                        <button data-toggle="modal" data-id="<?php echo $device->_id; ?>" data-rev="<?php echo $device->_rev; ?>" title="Delete this Device" class="open-deleteDeviceModal btn btn-danger  btn-small" href="#deleteDeviceModal">Delete</button>
                     </td>
                 </tr>
                 <tr>
@@ -47,8 +47,7 @@
                                 $j = 0;
                                 foreach ($device->sensors as $sensor):
                                     ?>
-                                    <tr<!--style="background-color: #CCFFFF"-->
-                                               <!-- <td>Sensor <?php echo $j; ?></td>-->
+                                    <tr>
                                         <td>Sensor <?php echo $sensor->type; ?></td>
                                         <td>Options</td>
                                     </tr>
@@ -67,8 +66,8 @@
         </tbody>
     </table>
 
-
-    <div class="modal fade" id="addBookDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- MODAL DELETE DEVICE -->
+    <div class="modal fade"  id="deleteDeviceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -81,7 +80,7 @@
                 <div class="modal-footer">
                     <form id="form_delete_device" method="post">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <input type="submit" class="btn btn-danger" >
+                        <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </div>
             </div>
@@ -89,20 +88,12 @@
     </div>
 
     <script>
-        $(document).on("click", ".open-AddBookDialog", function() {
+        $(document).on("click", ".open-deleteDeviceModal", function() {
             var myDocId = $(this).data('id');
             var myDocRev = $(this).data('rev');
-            ///device/delete/:id/:rev
             var finalURL = '/PhpProjectTutorial/device/delete/' + myDocId + '/' + myDocRev;
-            console.log("url:" + finalURL);
-            //$(".modal-body #docID").val(myDocId);
-            //$(".modal-body #docREV").val(myDocRev);
-            //$(".modal-footer #deleteSafezone").attr('href', '/PhpProjectTutorial/post/delete/bbbe194c3d63570156ebfd6f640002a4/1-1855d23396fe20c1bcdbf73dd49cce27');
             $(".modal-footer #form_delete_device").attr('action', finalURL);
 
-        });
-        $(document).on("click", ".deleteSafezone", function() {
-            console.log("Click on delete safezone");
         });
     </script>
     <?php

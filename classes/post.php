@@ -57,7 +57,7 @@ class Post extends Base {
         }
     }
 
-    public function delete($username) {
+    /*public function delete($username) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
 
@@ -66,6 +66,6 @@ class Post extends Base {
         } catch (SagCouchException $e) {
             $bones->error500($e);
         }
-    }
+    }*/
 
 }
