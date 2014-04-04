@@ -91,7 +91,7 @@
         $(document).on("click", ".open-deleteDeviceModal", function() {
             var myDocId = $(this).data('id');
             var myDocRev = $(this).data('rev');
-            var finalURL = '/PhpProjectTutorial/deletedevice/' + myDocId + '/' + myDocRev;
+            var finalURL = '/PhpProjectCouchDB/deletedevice/' + myDocId + '/' + myDocRev;
             $(".modal-footer #form_delete_device").attr('action', finalURL);
 
         });

@@ -60,7 +60,8 @@ class User extends Base {
         $doc_json = '{"_id": "_design/application","language": "javascript","views": {'
                 . '"posts_by_user":{"map": "function(doc) {\nif (doc.type == ' . "'".post."'" .') {\n\temit(doc.user, doc);\n}\n}","reduce": "_count"},'
                 . '"getSafezones": {"map": "function(doc) {\n  if(doc.type == '. "'".safezone."'" .')\n emit(doc._id, doc);\n}"},'
-                . '"getDevices": {"map": "function(doc) {\nif(doc.type == '. "'".device."'" .')\n  emit(doc._id, doc);\n}"}'
+                . '"getDevices": {"map": "function(doc) {\n if(doc.type == '. "'".device."'" .')\n  emit(doc._id, doc);\n}"},'
+                . '"getSensors": {"map": "function(doc) {\n if(doc.sensors){\n for(var i in doc.sensors)\n  emit(doc._id,doc.sensors[i]);\n}}","reduce": "_count"}'
                 . '}}';
         try {
             $bones->couch->post($doc_json);
