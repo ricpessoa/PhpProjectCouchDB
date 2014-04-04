@@ -65,7 +65,7 @@
     </div>
 
     <!-- MODAL DELETE SAFEZONE -->
-    <div class="modal fade" id="deleteSafezoneModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">>
+    <div class="modal fade" id="deleteSafezoneModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

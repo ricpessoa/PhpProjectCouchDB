@@ -41,7 +41,7 @@
                 </tr>
                 <tr>
                     <td class="hiddenRow" colspan="3">
-                        <div class="accordian-body collapse span6" id="demo<?php echo $i; ?>"> 
+                        <div class="accordian-body collapse span6" id="demo<?php echo $i; ?>">
                             <table class="table table-hover " style="margin-top: 5px;margin-bottom: 5px;">
                                 <?php
                                 $j = 0;
@@ -67,7 +67,7 @@
     </table>
 
 <!-- MODAL DELETE DEVICE -->
-    <div class="modal fade"  id="deleteDeviceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">>
+    <div class="modal fade"  id="deleteDeviceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
