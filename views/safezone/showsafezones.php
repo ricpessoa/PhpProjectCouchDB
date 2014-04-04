@@ -100,7 +100,7 @@
         $(document).on("click", ".open-deleteSafezoneModal", function() {
             var myDocId = $(this).data('id');
             var myDocRev = $(this).data('rev');
-            var finalURL = '/PhpProjectTutorial/safezone/delete/' + myDocId + '/' + myDocRev;
+            var finalURL = '/PhpProjectTutorial/deletesafezone/' + myDocId + '/' + myDocRev;
             $(".modal-footer #form_delete_safezone").attr('action', finalURL);
 
         });

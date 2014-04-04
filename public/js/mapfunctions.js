@@ -316,8 +316,7 @@ function pressNext(pos) {
         console.log(pos + " - " + newAddress[pos]);
         insertSafezoneInMap(newAddress[pos], newArrayPoint[pos][0], newArrayPoint[pos][1], false);
         document.getElementById("txt_name").value = newAddress[pos];
-    }
-    document.getElementById('myDynamicTable').style.visibility = "hidden"; //to remove the table of results
+    }    
     map.click.removeAllHandlers(); //important to remove the handler when already selected the geofence
 }
 
@@ -331,8 +330,7 @@ function removePreviousSearch() {
     newMarkers = [];
     newAddress = [];
     newArrayPoint = [];
-    //if (insertSafezones == true) 
-    //  showSearchAddress(); //need verify if necessary
+    
 }
 
 function addHighlightToTheMarker(lat, log) {

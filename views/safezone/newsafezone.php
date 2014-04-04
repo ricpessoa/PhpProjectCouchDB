@@ -32,34 +32,36 @@
         }
 
         //document.getElementById('div_buttons').style.visibility = "hidden";
-        document.getElementById('bt_save').style.visibility = "hidden";
-        document.getElementById('div_SelectNotification').style.visibility = "hidden";
+        document.getElementById('bt_save').style.display = "none";
+        document.getElementById('div_SelectNotification').style.display = "none";
 
-        document.getElementById('bt_editLocation').style.visibility = "hidden";
-        //document.getElementById('editSafezone').style.visibility = "hidden";
-        document.getElementById('bt_back').style.visibility = "hidden";
-        document.getElementById('div_radius').style.visibility = "hidden";
+        document.getElementById('bt_editLocation').style.display = "none";
+        document.getElementById('editSafezone').style.display = "none";
+        document.getElementById('bt_back').style.display = "none";
+        document.getElementById('div_radius').style.display = "none";
     }
 
     function showEditRadius() {
-        //document.getElementById('editSafezone').style.visibility = "";
-        document.getElementById('div_radius').style.visibility = "";
-        document.getElementById('div_buttons').style.visibility = "";
-        document.getElementById('bt_save').style.visibility = "";
-        document.getElementById('div_SelectNotification').style.visibility = "";
+        document.getElementById('editSafezone').style.display =  "";
+        document.getElementById('div_radius').style.display  = "";
+        document.getElementById('div_buttons').style.display = "";
+        document.getElementById('bt_save').style.display = "";
+        document.getElementById('div_SelectNotification').style.display = "";
 
         if (update) {
             document.getElementById('bt_back').style.display = "none";
-            document.getElementById('bt_editLocation').style.visibility = "";
+            document.getElementById('bt_editLocation').style.display = "";
         }
         else {
-            document.getElementById('bt_back').style.visibility = "";
-            document.getElementById('bt_editLocation').style.visibility = "none";
+            document.getElementById('bt_back').style.display = "";
+            document.getElementById('bt_editLocation').style.display = "none";
         }
 
-        document.getElementById('myDynamicTable').style.visibility = "hidden";
         document.getElementById('bt_next').style.visibility = "hidden";
         document.getElementById('div_search_address').style.display = "none";
+        document.getElementById('myDynamicTable').style.display = "none"; //to remove the table of results
+
+
     }
 </script>
 
@@ -99,7 +101,7 @@
                             /* passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].Address, objJsonSafezone.safezones[0].Latitude, objJsonSafezone.safezones[0].Longitude);*/">Edit Locations</button>
                     <button id="bt_next" type="button" class="normalbutton" onclick="javascript:pressNext(selectedGeofence);
                             showEditRadius();">Next</button>
-                    <input id="safezone" name="safezone">
+                    <input id="safezone" type="hidden" name="safezone">
                 </form>
             </div>
             <div id="pano" style="width: 300px; height: 250px;"></div>
@@ -113,7 +115,7 @@
 
 <script type="text/javascript">
     window.insertSafezones = true;
-    update = false;
+    window.update = false;
     $(document).ready(function() {
         //var map = new mxn.Mapstraction('map', 'openlayers');
         window.map = new mxn.Mapstraction('map', 'googlev3');
@@ -125,14 +127,11 @@
         //getSafezones('<%=@mySafezones%>');
         map.removeAllPolylines();
         map.removeAllMarkers();
-
-        if (arrayOfSafezones.length == 0) {
+        if (insertSafezones) {
             findUserLocation();
+            insertGeofenceHandler();
+            showSearchAddress();
         }
-
-        //window.objJsonSafezone.safezones = new Object()
-        findUserLocation();
-        insertGeofenceHandler();
     });
     google.maps.event.addDomListener(window, 'load', initializeAutoComplete);
 </script>
