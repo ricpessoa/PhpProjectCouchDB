@@ -24,6 +24,7 @@ abstract class Base {
         }
         return json_encode(get_object_vars($this));
     }
+    
 //TO DELETE THE OBJECTS LIKE DEVICE SAFEZONE CAN BE DELETED BY FATHER CLASS
     public function delete($username) {
         $bones = new Bones();

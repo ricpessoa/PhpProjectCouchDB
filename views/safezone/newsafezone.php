@@ -95,11 +95,11 @@
             </div>
             <div id = "div_buttons" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
                 <form id="form_new_safezone" action="<?php echo $this->make_route('/safezone') ?>" method="post">
-                    <button id="bt_back" type="button" class="normalbutton" onclick="javascript:showSearchAddress()">Back</button>
-                    <button id="bt_save" type="button" class="normalbutton" onclick="javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)">Save Safezone</button>
-                    <button id="bt_editLocation" type="button" class="normalbutton" onclick="javascript:showSearchAddress();
+                    <button id="bt_back" type="button" class="btn btn-small" onclick="javascript:showSearchAddress()">Back</button>
+                    <button id="bt_save" type="button" class="btn-primary btn-small" onclick="javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)">Save Safezone</button>
+                    <button id="bt_editLocation" type="button" class="btn-info btn-small" onclick="javascript:showSearchAddress();
                             /* passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].Address, objJsonSafezone.safezones[0].Latitude, objJsonSafezone.safezones[0].Longitude);*/">Edit Locations</button>
-                    <button id="bt_next" type="button" class="normalbutton" onclick="javascript:pressNext(selectedGeofence);
+                    <button id="bt_next" type="button" class="btn btn-small" onclick="javascript:pressNext(selectedGeofence);
                             showEditRadius();">Next</button>
                     <input id="safezone" type="hidden" name="safezone">
                 </form>

@@ -56,33 +56,7 @@ class User extends Base {
         }
 
         $bones->couch->setDatabase($username);
-        /*
-
-          "posts_by_user": {
-          "map": "function(doc) {\nif (doc.type == 'post') {\n\temit(doc.user, doc);\n}\n}",
-          "reduce": "_count"
-          },
-          "getSafezones": {
-          "map": "function(doc) {\n  if(doc.type == 'safezone')  \n   emit(doc.type, doc);\n}",
-          "reduce": "_count"
-          },
-          "getDevices": {
-          "map": "function(doc) {\nif(doc.type == 'device')\n  emit(doc.type, doc);\n}\n",
-          "reduce": "_count"
-          },
-          "getSensors": {
-          "map": "function(doc) {\nif(doc.sensors){\nfor(var i in doc.sensors)\n  emit(doc._id,doc.sensors[i]);\n}}",
-          "reduce": "_count"
-          }
-
-         * *  */
-
-        /* $doc_json = '{"_id": "_design/application","language": "javascript","views": {'
-          . '"posts_by_user":{"map": "function(doc) {\nif (doc.type == ' . "'".post."'" .') {\n\temit(doc.user, doc);\n}\n}","reduce": "_count"},'
-          . '"getSafezones": {"map": "function(doc) {\n  if(doc.type == '. "'".safezone."'" .')\n emit(doc._id, doc);\n}"},'
-          . '"getDevices": {"map": "function(doc) {\n if(doc.type == '. "'".device."'" .')\n  emit(doc._id, doc);\n}"},'
-          . '"getSensors": {"map": "function(doc) {\n if(doc.sensors){\n for(var i in doc.sensors)\n  emit(doc._id,doc.sensors[i]);\n}}","reduce": "_count"}'
-          . '}}'; */
+        //create the views
         $doc_json = '{
    "_id": "_design/application",
    "language": "javascript",

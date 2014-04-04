@@ -230,4 +230,8 @@ post('/deletesafezone/:id/:rev', function($app) {
         $app->render('user/login');
     }
 });
+
+
 /* END SAFEZONE */
+
+resolve(); //if the route not exist page not found
