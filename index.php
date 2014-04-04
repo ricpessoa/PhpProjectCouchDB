@@ -180,37 +180,32 @@ get('/safezone/showsafezones', function($app) {
         $app->render('user/login');
     }
 });
-/*
-  post('/safezone/newsafezone?', function($app) {  NEED TEST
-  if (User::is_authenticated()) {
-  $safezone = $app->form('send_safezone');
-  //$teste = json_decode(file_get_contents("php://input"));
-  //$app->set('success', 'Yes we receive the action to insert');
-  //$app->render('/safezone/show');
-  $safezone = new Safezone();
-  $safezone->address = "Rua Teste";
-  $safezone->name = "Rua Teste";
-  $safezone->latitude = 123;
-  $safezone->longitude = 123456;
-  $safezone->radius = 255;
-  $safezone->notification = "[in-out]";
-  //$safezone->timestamp = getTime();
-
-  $safezone->create();
-  $app->set('success', 'Yes we receive the action to insert' . $safezone . " - " . $teste);
-  $app->render('/safezone/showsafezones');
-  } else {
-  $app->set('error', 'You must be logged in to do that.');
-  $app->render('user/login');
-  }
-  }); */
 
 post('/safezone', function($app) {
     if (User::is_authenticated()) {
-        $safezone = $app->form('safezone');
+        $safezone_data = $app->form('safezone');
+        $json_safezone = json_decode($safezone_data, TRUE);
 
-        $app->set('success', 'Yes we receive the action to insert' . $safezone);
-        $app->render('/safezone/showsafezones');
+        $safezone = new Safezone();
+        $safezone->_id = $json_safezone["_id"];
+        $safezone->address = $json_safezone["address"];
+        $safezone->name = $json_safezone["name"];
+        $safezone->latitude = $json_safezone["latitude"];
+        $safezone->longitude = $json_safezone["longitude"];
+        $safezone->radius = $json_safezone["radius"];
+        $safezone->notification = $json_safezone["notification"];
+        //$safezone->timestamp= $json_safezone["timestamp"]; //timestamp generate by server
+        //$safezone->shared = $json_safezone["shared"]; //safezone sared by other devices not yet implemented
+        $safezone->create();
+
+
+        $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
+        $app->set('numberSafezones', $numSafezones);
+        if ($numSafezones != 0) {
+            $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
+        }
+        $app->set('success', 'Yes safezone saved');
+        $app->render('safezone/showsafezones');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');

@@ -104,12 +104,12 @@ function getSafezones(dataSafezone) {
  }
  */
 function saveSafezoneInDb(pos) {
-    console.log("saving safezone: " + objJsonSafezone.safezones[pos].Address);
+    console.log("saving safezone: " + objJsonSafezone.safezones[pos].address);
 
     var selc = document.getElementById("notification_settings");
     var notification = selc.options[selc.selectedIndex].value;
 
-    var dataJsonSend = '{"_id":"' + objJsonSafezone.safezones[pos]._id + '","Address":"' + objJsonSafezone.safezones[pos].Address + '","Name":"' + document.getElementById("txt_name").value + '","Latitude":' + objJsonSafezone.safezones[pos].Latitude + ',"Longitude":' + objJsonSafezone.safezones[pos].Longitude + ',"Home Radius":200,"Safety Radius":' + objJsonSafezone.safezones[pos]['Safety Radius'] + ',"Notification Settings":"' + notification + '","timestamp":1234567890,"shared":true}';
+    var dataJsonSend = '{"_id":"' + objJsonSafezone.safezones[pos]._id + '","address":"' + objJsonSafezone.safezones[pos].address + '","name":"' + document.getElementById("txt_name").value + '","latitude":' + objJsonSafezone.safezones[pos].latitude + ',"longitude":' + objJsonSafezone.safezones[pos].longitude + ',"radius":' + objJsonSafezone.safezones[pos].radius + ',"notification":"' + notification + '","shared":true}';
     //sentPOSTRequest(urlWriteSafezone, '{"safezone":' + dataJsonSend + '}', function(status) {
     //    console.log("sucessfull " + status);
     //window.location = "dashboardSafezones";
@@ -267,7 +267,7 @@ function insertSafezoneInMap(nameAddress, lat, lng, draggable) {
         arrayOfSafezones.push(safezone);
         //var safezone_id ="Safezone-Bend-"+generateUUID();
         var safezone_id = "safezone_" + getCurrentTimeInMilliSeconds();
-        var dataJsonSend = '{"_id":"' + safezone_id + '","name":"' + nameAddress + '","address":"' + nameAddress + '","latitude":' + lat + ',"longitude":' + lng + ',"radius":' + radiusOfSafezone + ',"notifications":"all","timestamp":1234567890}';
+        var dataJsonSend = '{"_id":"' + safezone_id + '","name":"' + nameAddress + '","address":"' + nameAddress + '","latitude":' + lat + ',"longitude":' + lng + ',"radius":' + radiusOfSafezone + ',"notifications":"all"}';
     } else {
         arrayOfSafezones.pop();
         arrayOfSafezones.push(safezone);
@@ -484,7 +484,7 @@ function changeRadiusOfMarker(index, radius) {
     console.log("changeRadiusOfMarker index" + index);
     map.removeAllPolylines();
     map.addPolyline(arrayOfSafezones[index].getPolyline(radius / 1000, '#F00'));
-    objJsonSafezone.safezones[index]['Safety Radius'] = radius;
+    objJsonSafezone.safezones[index].radius = radius;
 }
 
 function myboxopened(event_name, event_source, event_args) {

@@ -18,7 +18,7 @@ class Safezone extends Base {
         $bones = new Bones();
         $bones->couch->setDatabase($_SESSION['username']);
 
-        $this->_id = $bones->couch->generateIDs(1)->body->uuids[0];
+        //$this->_id = $bones->couch->generateIDs(1)->body->uuids[0];
 
         $this->timestamp = time();
 
@@ -26,6 +26,9 @@ class Safezone extends Base {
             $bones->couch->put($this->_id, $this->to_json());
         } catch (SagCouchException $e) {
             $bones->error500($e);
+            $bones->set('error', 'Error try save the safezone');
+            $bones->render('/safezone/showsafezones');
+            exit;
         }
     }
 
