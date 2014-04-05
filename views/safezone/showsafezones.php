@@ -17,11 +17,6 @@
     <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3)" type="text/javascript"></script>
     <script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
 
-    <style type="text/css">
-        #map {
-            height: 400px;
-        }
-    </style>
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span4">

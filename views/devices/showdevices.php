@@ -3,8 +3,7 @@
     <div class = "alert alert-info">
         Do not have devices to add press "Add Device"
     </div>
-<?php }
-?>
+<?php } ?>
 <form action="<?php echo $this->make_route('/devices/newdevice') ?>" method="get">	
     <button id="create_safezone" class="btn btn-success">Add Device</button>
 </form>
@@ -66,7 +65,34 @@
         </tbody>
     </table>
 
-<!-- MODAL DELETE DEVICE -->
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                    Collapsible Group Item #1
+                </div>
+            </div>
+            <div id="collapseOne" class="accordion-body collapse in">
+                <div class="accordion-inner">
+                    Anim pariatur cliche...
+                </div>
+            </div>
+        </div>
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                    Collapsible Group Item #2
+                </a>
+            </div>
+            <div id="collapseTwo" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    Anim pariatur cliche...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DELETE DEVICE -->
     <div class="modal fade"  id="deleteDeviceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
         <div class="modal-dialog">
             <div class="modal-content">

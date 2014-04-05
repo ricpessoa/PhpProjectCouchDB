@@ -3,12 +3,6 @@
 <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3,[geocoder])" type="text/javascript"></script>
 <script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
 
-<style type="text/css">
-    #map {
-        height: 400px;
-    }
-</style>
-
 <script>
     function updateTextInput(val) {
         console.log("updateTextInput" + (objJsonSafezone.safezones.length - 1) + "," + val);
@@ -104,7 +98,7 @@
                     <input id="safezone" type="hidden" name="safezone">
                 </form>
             </div>
-            <div id="pano" style="width: 300px; height: 250px;"></div>
+            <div id="pano"></div>
         </div>
         <div class="span8">
             <!--Body content to MAP-->
