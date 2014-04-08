@@ -15,4 +15,5 @@ Highcharts (to show charts)<br>
 <p>Sometimes the project was available online in: http://linuxrp.kd.io/PhpProjectCouchDB</p>
 
 <h1>Mockup of backend</h1>
-<p>![mockup](https://github.com/linuxrp/PhpProjectCouchDB/blob/master/_img_mockup/mockup.png?raw=true)</p>
+<br>
+![mockup](https://github.com/linuxrp/PhpProjectCouchDB/blob/master/_img_mockup/mockup.png?raw=true)
