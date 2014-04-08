@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid<?php echo $i; ?>">
     <div class="row-fluid">
         <div class="span7">
             <!--Sidebar content-->
@@ -55,29 +55,4 @@
             </div>
         </div>
     </div>
-    <!--<div class="container">
-
-        <div class="span5 thumbnail">
-            <h3 class="well well-small">My Devices:</h3>
-            <div class="media">
-                <div class="media-body">
-                    <h4 class="media-heading">Device 1</h4>
-                    Sensors: <span class="badge">1</span>
-                </div>
-            </div>
-            <div class="media">
-                <div class="media-body">
-                    <h4 class="media-heading">Device 2</h4>
-                    Sensors:<span class="badge">2</span>
-                </div>
-            </div><div class="media">
-                <div class="media-body">
-                    <h4 class="media-heading">Device 3</h4>
-                    Sensors:<span class="badge">3</span>
-                </div>
-            </div>
-            <p><a href="<?php echo $this->make_route('/devices/showdevices') ?>" class="btn btn-link">go to settings of device</a></p>
-        </div>
-
-    </div>-->
 </div>

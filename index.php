@@ -3,6 +3,10 @@
 include 'lib/bones.php';
 
 get('/', function($app) {
+    if (User::is_authenticated()) {
+        $devices = Device::getDevices(User::current_user());
+        $app->set('devices', $devices);
+    }
     $app->set('message', 'Welcome Back!');
     $app->render('home');
 });
@@ -31,6 +35,10 @@ post('/login', function($app) {
     $user->login($app->form('password'));
 
     $app->set('success', 'You are now logged in!');
+    if (User::is_authenticated()) {
+        $devices = Device::getDevices(User::current_user());
+        $app->set('devices', $devices);
+    }
     $app->render('home');
 });
 

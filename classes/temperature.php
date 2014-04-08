@@ -10,8 +10,7 @@ class Temperature extends Sensor {
         $this->name_sensor = "Sensor Temperature";
     }
 
-//"min_temperature":"23","max_temperatrue":"26","_id":null,"type":"temperature"
-    public function create() { /*     * Need test the creation of Device */
+    public function create() {
         $bones = new Bones();
         $bones->couch->setDatabase($_SESSION['username']);
         $this->_id = "$bones->couch->generateIDs(1)->body->uuids[0]";
