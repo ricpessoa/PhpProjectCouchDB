@@ -10,8 +10,10 @@ JavaScript / jQuery<br>
 HTML<br>
 Bootstrap <br>
 MapStraction (to show geofences in map) <br>
+Highcharts (to show charts)<br>
 
 <p>Sometimes the project was available online in: http://linuxrp.kd.io/PhpProjectCouchDB</p>
 
 <h1>Mockup of backend</h1>
+<br>
 ![mockup](https://github.com/linuxrp/PhpProjectCouchDB/blob/master/_img_mockup/mockup.png?raw=true)
