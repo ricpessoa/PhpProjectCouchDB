@@ -4,13 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/var/www/PhpProjectCouchDB/views/sensors/_temperature.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/index.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/public/js/highcharts.js</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/devices/showdevices.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/classes/ms_panic_button.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/classes/monitoringsensor.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/classes/ms_interface.php</file>
             <file>file:/var/www/PhpProjectCouchDB/views/home.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/layout.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/sensors/_panicbutton.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/sensors/_gps.php</file>
         </group>
     </open-files>
 </project-private>

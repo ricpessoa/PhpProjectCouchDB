@@ -1,6 +1,6 @@
 <?php
 
-class MonitoringSensor extends Base {
+class MonitoringSensor extends Base{
 
     protected $subtype;
     protected $value;
