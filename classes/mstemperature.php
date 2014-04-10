@@ -1,6 +1,6 @@
 <?php
 
-class MonitoringSensor extends Base{
+class MSTemperature extends Base {
 
     protected $subtype;
     protected $value;
@@ -20,7 +20,7 @@ class MonitoringSensor extends Base{
         $sensorsValues = array();
         try {//\[
             //foreach ($bones->couch->get('_design/application/_view/getMonitoringSensor?key=\["' . $macAddress . '","' . $subtype . '"\]')->body->rows as $_monitoring) {
-            $monitoringSensor = new MonitoringSensor();
+            $monitoringSensor = new MSTemperature();
 
             foreach ($bones->couch->get('_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=24&descending=false')->body->rows as $_monitoring) {
                 //$monitoringSensor = new MonitoringSensor();
@@ -32,14 +32,14 @@ class MonitoringSensor extends Base{
                 //$monitoringSensor->timestamp = $_monitoring->value->timestamp;
                 //$monitoringSensor->mac_address = $_monitoring->value->mac_address;
                 //$monitoringSensor
-                array_push($sensorsTime, date('d/m H:i:s' , $_monitoring->value->timestamp));
+                array_push($sensorsTime, date('d/m H:i:s', $_monitoring->value->timestamp));
                 array_push($sensorsValues, $_monitoring->value->value);
 
                 //array_push($sensorsMonitoring, $monitoringSensor->value);
             }
             $monitoringSensor->arrayTimes = $sensorsTime;
             $monitoringSensor->arrayValues = $sensorsValues;
-            if(sizeof(arrayValues)>0)
+            if (sizeof(arrayValues) > 0)
                 return $monitoringSensor;
         } catch (Exception $exc) {
             return NULL;

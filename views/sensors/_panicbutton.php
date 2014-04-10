@@ -1,5 +1,5 @@
+<h3>Sensor Panic Button</h3>
 <div class="panic<?php echo $i; ?>">
-    <p>Panic sensors notification</p>
     <?php
     $msPanicButton = MSPanicButton::getMonitoringSensorByKeys(User::current_user(), $device->_id, "panic_button");
     if ($msPanicButton != NULL && $msPanicButton->pressed === TRUE) {

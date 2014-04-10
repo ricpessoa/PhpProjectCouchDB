@@ -1,3 +1,7 @@
+<script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqUwWysKF_x_SkHDgB-q_NeaqBHpPTlME&sensor=false"></script>
+<script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3)" type="text/javascript"></script>
+
 <?php if (User::is_authenticated()) { ?>
     <script src="js/highcharts.js"></script>
     <legend>My Dashboard</legend>

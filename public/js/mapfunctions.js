@@ -256,6 +256,35 @@ function searchAddress() {
     });
 }
 
+function codeLatLng(lat, lon, index, fn) {
+    geocoder = new google.maps.Geocoder();
+    var streetName = "";
+    //var input = document.getElementById('latlng').value;
+    //var latlngStr = input.split(',', 2);
+    var lat = parseFloat(lat);
+    var lng = parseFloat(lon);
+    var latlng = new google.maps.LatLng(lat, lng);
+    geocoder.geocode({'latLng': latlng}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            if (results[1]) {
+                //map.setZoom(11);
+                //marker = new google.maps.Marker({
+                //    position: latlng,
+                //    map: map
+                //});
+                // infowindow.setContent(results[1].formatted_address);
+                // infowindow.open(map, marker);
+                console.log("inside->" + lat + "," + lon + " - " + results[1].formatted_address);
+                fn(results[0].formatted_address, index);
+            } else {
+                alert('No results found');
+            }
+        } else {
+            alert('Geocoder failed due to: ' + status);
+        }
+    });
+}
+
 function insertSafezoneInMap(nameAddress, lat, lng, draggable) {
     var latlonOfSafezone = new mxn.LatLonPoint(lat, lng);
     var marker = new mxn.Marker(latlonOfSafezone);
@@ -316,7 +345,7 @@ function pressNext(pos) {
         console.log(pos + " - " + newAddress[pos]);
         insertSafezoneInMap(newAddress[pos], newArrayPoint[pos][0], newArrayPoint[pos][1], false);
         document.getElementById("txt_name").value = newAddress[pos];
-    }    
+    }
     map.click.removeAllHandlers(); //important to remove the handler when already selected the geofence
 }
 
@@ -330,7 +359,7 @@ function removePreviousSearch() {
     newMarkers = [];
     newAddress = [];
     newArrayPoint = [];
-    
+
 }
 
 function addHighlightToTheMarker(lat, log) {

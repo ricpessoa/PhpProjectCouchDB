@@ -120,22 +120,24 @@ post('/device', function($app) {
             $device->name_device = $name_device;
         }
         $myArray = array();
-        if ($app->form('check_temperature_send') == "1") {
-            $temperature = new Temperature();
-            $temperature->min_temperature = $app->form('min_temp_notification');
-            $temperature->max_temperatrue = $app->form('max_temp_notification');
-            $myArray[] = $temperature;
+        if ($app->form('check_panic_bt_send') == "1") {
+            $sensorPanic = new Sensor("panic_button");
+            $sensorPanic->name_sensor = "Panic Button";
+            $myArray[] = $sensorPanic;
         }
         if ($app->form('check_gps_send') == "1") {
             $sensorGPS = new Sensor("GPS");
             $sensorGPS->name_sensor = "Sensor GPS";
             $myArray[] = $sensorGPS;
         }
-        if ($app->form('check_panic_bt_send') == "1") {
-            $sensorPanic = new Sensor("panic_button");
-            $sensorPanic->name_sensor = "Panic Button";
-            $myArray[] = $sensorPanic;
+        if ($app->form('check_temperature_send') == "1") {
+            $temperature = new Temperature();
+            $temperature->min_temperature = $app->form('min_temp_notification');
+            $temperature->max_temperatrue = $app->form('max_temp_notification');
+            $myArray[] = $temperature;
         }
+
+
 
         $device->sensors = $myArray;
 

@@ -61,10 +61,6 @@ class User extends Base {
    "_id": "_design/application",
    "language": "javascript",
    "views": {
-       "posts_by_user": {
-           "map": "function(doc) {\nif (doc.type == ' . "'" . post . "'" . ') {\n\temit(doc.user, doc);\n}\n}",
-           "reduce": "_count"
-       },
        "getSafezones": {
            "map": "function(doc) {\n  if(doc.type == ' . "'" . safezone . "'" . ')  \n   emit(doc.type, doc);\n}",
            "reduce": "_count"
@@ -76,6 +72,9 @@ class User extends Base {
        "getSensors": {
            "map": "function(doc) {\nif(doc.sensors){\nfor(var i in doc.sensors)\n  emit(doc._id,doc.sensors[i]);\n}}",
            "reduce": "_count"
+       },
+       "getMonitoringSensor": {
+           "map": "function(doc) {\nif(doc.type == ' . "'" . monitoring_sensor . "'" . '){ \n  emit([doc.mac_address,doc.subtype], doc);\n}\n}"
        }
    }
 }';
@@ -85,6 +84,8 @@ class User extends Base {
             echo $exc->getTraceAsString();
             $bones->set('error', 'Problem creating user');
         }
+        /* ONLY FOR TEST PROPOSE */
+        $this->createFakeData($username);
     }
 
     public function login($password) {
@@ -172,6 +173,58 @@ class User extends Base {
 
     public function gravatar($size = '50') {
         return 'http://www.gravatar.com/avatar/?gravatar_id=' . md5(strtolower($this->email)) . '&size=' . $size;
+    }
+
+    public function createFakeData($username) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+        $devicejson = '{
+   "_id": "az",
+   "name_device": "Fake Device",
+   "sensors": {
+       "3": {
+           "name_sensor": "Panic Button",
+           "type": "panic_button"
+       },
+       "4": {
+           "name_sensor": "Sensor GPS",
+           "type": "GPS"
+       },
+       "5": {
+           "min_temperature": "23",
+           "max_temperatrue": "27",
+           "name_sensor": "Sensor Temperature",
+           "type": "temperature"
+       }
+   },
+   "timestamp": 1397147978,
+   "type": "device"
+}';
+        $msjson = '{"_id": "az_1396963000", "type": "monitoring_sensor", "subtype": "temperature", "value": 29, "timestamp": "1396963000", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        $msjson = '{"_id": "az_1396960000",  "type": "monitoring_sensor", "subtype": "temperature", "value": 27, "timestamp": "1396960000", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        $msjson = '{"_id": "az_1396959100",  "type": "monitoring_sensor", "subtype": "temperature", "value": 26, "timestamp": "1396959100", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        $msjson = '{"_id": "az_1396959000",  "type": "monitoring_sensor", "subtype": "temperature", "value": 25, "timestamp": "1396959000", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        $msjson = '{"_id": "az_1396963001",  "type": "monitoring_sensor", "subtype": "panic_button", "pressed": true, "timestamp": "1396963000", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        $msjson = '{"_id": "az_1396963005", "type": "monitoring_sensor", "subtype": "GPS", "latitude": 41.411981, "longitude": -8.509985, "timestamp": "1396963000", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        $msjson = '{"_id": "az_1396963004", "type": "monitoring_sensor", "subtype": "GPS", "latitude": 41.106466, "longitude": -8.626827, "timestamp": "1396963000", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        $msjson = '{"_id": "az_1396963003", "type": "monitoring_sensor", "subtype": "GPS", "latitude": 41.11082, "longitude": -8.629301, "timestamp": "1396963000", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        $msjson = '{"_id": "az_1396963002", "type": "monitoring_sensor", "subtype": "GPS", "latitude": 41.112544, "longitude": -8.629665, "timestamp": "1396963000", "mac_address": "az"}';
+        $bones->couch->post($msjson);
+        try {
+            $bones->couch->post($devicejson);
+        } catch (SagCouchException $exc) {
+            echo $exc->getTraceAsString();
+            $bones->set('error', 'Problem creating user');
+        }
     }
 
 }

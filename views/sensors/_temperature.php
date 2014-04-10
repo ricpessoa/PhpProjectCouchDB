@@ -1,5 +1,7 @@
+<h3>Sensor Temperature</h3>
+
 <?php
-$monitoringsensors = MonitoringSensor::getMonitoringSensorByKeys(User::current_user(), $device->_id, "temperature");
+$monitoringsensors = MSTemperature::getMonitoringSensorByKeys(User::current_user(), $device->_id, "temperature");
 if ($monitoringsensors != NULL || sizeof($monitoringsensors) > 0) {
     //echo '<br>' . $monitoringsensors->getArrayTimes() . '<br>' . $monitoringsensors->getArrayValues();
     if (sizeof($monitoringsensors->arrayValues) > 0) {
