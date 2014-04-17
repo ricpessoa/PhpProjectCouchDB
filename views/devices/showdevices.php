@@ -34,7 +34,9 @@
                         ?></td>
                     <td><?php echo $device->_id; ?></td>
                     <td>
-                        <button id="edit_device" class="btn btn-info btn-small">Edit</button>
+                        <form action="<?php echo $this->make_route('/devices/editdevice') ?>" method="post" >
+                            <button name="edit_deviceID" id="edit_deviceID" type="submit" value="<?php echo $device->_id; ?>" class="btn btn-info btn-small" title="Edit this Device">Edit</button>
+                        </form>
                         <button data-toggle="modal" data-id="<?php echo $device->_id; ?>" data-rev="<?php echo $device->_rev; ?>" title="Delete this Device" class="open-deleteDeviceModal btn btn-danger  btn-small" href="#deleteDeviceModal">Delete</button>
                     </td>
                 </tr>
@@ -64,34 +66,34 @@
             ?>
         </tbody>
     </table>
-
-    <div class="accordion" id="accordion2">
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-                    Collapsible Group Item #1
+    <!--
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                        Collapsible Group Item #1
+                    </div>
+                </div>
+                <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                        Anim pariatur cliche...
+                    </div>
                 </div>
             </div>
-            <div id="collapseOne" class="accordion-body collapse in">
-                <div class="accordion-inner">
-                    Anim pariatur cliche...
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+                        Collapsible Group Item #2
+                    </a>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        Anim pariatur cliche...
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="accordion-group">
-            <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                    Collapsible Group Item #2
-                </a>
-            </div>
-            <div id="collapseTwo" class="accordion-body collapse">
-                <div class="accordion-inner">
-                    Anim pariatur cliche...
-                </div>
-            </div>
-        </div>
-    </div>
-
+    -->
     <!-- MODAL DELETE DEVICE -->
     <div class="modal fade"  id="deleteDeviceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
         <div class="modal-dialog">

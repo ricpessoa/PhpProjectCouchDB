@@ -1,9 +1,11 @@
-mxn.addProxyMethods(mxn.Mapstraction, [
-    /**
-     * Add a method that can be called to add our extra stuff to an implementation.
-     */
-    'addExtras'
-]);
+function addMagic() {
+    mxn.addProxyMethods(mxn.Mapstraction, [
+        /**
+         * Add a method that can be called to add our extra stuff to an implementation.
+         */
+        'addExtras'
+    ]);
+}
 
 /*mxn.register( 'google', {
  Mapstraction: {
@@ -18,33 +20,37 @@ mxn.addProxyMethods(mxn.Mapstraction, [
  });
  }
  }*/
-mxn.register('googlev3', {
-    Mapstraction: {
-        addExtras: function() {
-            var me = this;
-            me.markerAdded.addHandler(function(name, source, args) {
-                // enable dragend event for google
-                args.marker.dragend = new mxn.Event('dragend', args.marker);
-                google.maps.event.addListener(args.marker.proprietary_marker, 'dragend', function(latlng) {
-                    //infowindow.open(map,marker);
-                    var point = args.marker.proprietary_marker.getPosition();
-                    console.log("dragend" + point);
-                    args.marker.dragend.fire({location: new mxn.LatLonPoint(point.lat(), point.lng())});
-                });
+if (!typeof mxn === 'undefined') {
 
-                google.maps.event.addListener(args.marker.proprietary_marker, 'click', function() {
-                    var point = args.marker.proprietary_marker.getPosition();
-                    console.log("click: " + point);
-                    showStreetViewBasedInCoordinates(point.lat(), point.lng());
+    mxn.register('googlev3', {
+        Mapstraction: {
+            addExtras: function() {
+                var me = this;
+                me.markerAdded.addHandler(function(name, source, args) {
+                    // enable dragend event for google
+                    args.marker.dragend = new mxn.Event('dragend', args.marker);
+                    google.maps.event.addListener(args.marker.proprietary_marker, 'dragend', function(latlng) {
+                        //infowindow.open(map,marker);
+                        var point = args.marker.proprietary_marker.getPosition();
+                        console.log("dragend" + point);
+                        args.marker.dragend.fire({location: new mxn.LatLonPoint(point.lat(), point.lng())});
+                    });
+
+                    google.maps.event.addListener(args.marker.proprietary_marker, 'click', function() {
+                        var point = args.marker.proprietary_marker.getPosition();
+                        console.log("click: " + point);
+                        showStreetViewBasedInCoordinates(point.lat(), point.lng());
+                    });
                 });
-            });
+            }
         }
-    }
 
-});
+    });
+}
 window.urlWriteSafezone = "";
 window.arrayOfSafezones = new Array();
 window.arrayMarkersSafezones = new Array();
+window.arrayOfPOI = new Array();
 window.objJsonSafezone;
 var newArrayPoint = new Array();
 var newMarkers = new Array();
@@ -85,31 +91,14 @@ function getSafezones(dataSafezone) {
     }
 }
 
-/*
- function sentPOSTRequest(urlDestination, dataToSend, callback) {
- var data = {
- send_safezone: dataToSend
- };
- $.ajax({
- url: urlDestination,
- type: "POST",
- data: data,
- contentType: "application/json; charset=utf-8",
- dataType: "json"
- }).done(function(text) {
- callback(text);
- }).fail(function() {
- console.log("post request error");
- });
- }
- */
+
 function saveSafezoneInDb(pos) {
     console.log("saving safezone: " + objJsonSafezone.safezones[pos].address);
 
     var selc = document.getElementById("notification_settings");
     var notification = selc.options[selc.selectedIndex].value;
 
-    var dataJsonSend = '{"_id":"' + objJsonSafezone.safezones[pos]._id + '","address":"' + objJsonSafezone.safezones[pos].address + '","name":"' + document.getElementById("txt_name").value + '","latitude":' + objJsonSafezone.safezones[pos].latitude + ',"longitude":' + objJsonSafezone.safezones[pos].longitude + ',"radius":' + objJsonSafezone.safezones[pos].radius + ',"notification":"' + notification + '","shared":true}';
+    var dataJsonSend = '{"_id":"' + objJsonSafezone.safezones[pos]._id + '","address":"' + objJsonSafezone.safezones[pos].address + '","name":"' + document.getElementById("txt_name").value + '","latitude":' + objJsonSafezone.safezones[pos].latitude + ',"longitude":' + objJsonSafezone.safezones[pos].longitude + ',"radius":' + objJsonSafezone.safezones[pos].radius + ',"notification":"' + notification + '","device":"' + deviceAddress + '"}';
     //sentPOSTRequest(urlWriteSafezone, '{"safezone":' + dataJsonSend + '}', function(status) {
     //    console.log("sucessfull " + status);
     //window.location = "dashboardSafezones";
@@ -128,7 +117,43 @@ function constructInfoBubbleToSafezone(marker, name, addr, lat, lon, safetyRadiu
         marker.setInfoBubble("<h3><strong>" + name + "</strong></h3><br>address:" + addr + " <br>lat: " + lat + " lon: " + lon + " safetyRadius: " + safetyRadius + "<br>");
 }
 
+/******** GET POIS FROM RAILS*/
+/*
+ function getPOIS(lat, long, i) {
+ point = new mxn.LatLonPoint(lat, long);
+ var marker = new mxn.Marker(point);
+ window["map" + i].addMarker(marker);
+ window["map" + i].autoCenterAndZoom();
+ }*/
 
+function getPOIS(datapois, i) {
+
+    objJsonPOI = jQuery.parseJSON(datapois);
+    console.log("nº POIS: " + objJsonPOI.pois.length);
+
+    for (x in objJsonPOI.pois) {
+        point = new mxn.LatLonPoint(objJsonPOI.pois[x].latitude, objJsonPOI.pois[x].longitude);
+        var marker = new mxn.Marker(point);
+
+        nameAddress = objJsonPOI.pois[x].address;
+
+        //constructInfoBubbleToPOI(marker, objJsonPOI.pois[x].Name, objJsonPOI.pois[x].Address, objJsonPOI.pois[x].Latitude, objJsonPOI.pois[x].Longitude);
+        //if (update)
+        //  marker.setDraggable(true);
+
+        arrayOfPOI[x] = marker;
+        window["map" + i].addMarker(arrayOfPOI[x]);
+        //if (update==true)
+        // addHandlerToDragAndDropPoi(arrayOfPOI[x]);
+
+    }
+    ;
+    if (objJsonPOI.pois.length >= 2) {
+        window["map" + i].autoCenterAndZoom();
+    } else if (objJsonPOI.pois.length == 1) {
+        //addHighlightToTheMarker(objJsonPOI.pois[0].Latitude, objJsonPOI.pois[0].Longitude)
+    }
+}
 function findUserLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {

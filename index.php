@@ -111,6 +111,23 @@ get('/devices/newdevice', function($app) {
     }
 });
 
+post('/devices/editdevice', function($app) {
+    if (User::is_authenticated()) {
+        $device = new Device();
+        $device->_id = $app->form('edit_deviceID');
+
+        $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
+
+        $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device 
+        $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
+
+        $app->render('/devices/editdevice');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
 post('/device', function($app) {
     if (User::is_authenticated()) {
         $device = new Device();
@@ -136,8 +153,6 @@ post('/device', function($app) {
             $temperature->max_temperatrue = $app->form('max_temp_notification');
             $myArray[] = $temperature;
         }
-
-
 
         $device->sensors = $myArray;
 
@@ -216,8 +231,12 @@ post('/safezone', function($app) {
 });
 
 
-get('/safezone/newsafezone', function($app) {
+post('/safezone/newsafezone', function($app) {
     if (User::is_authenticated()) {
+        $macAddress = $app->form('create_safezone');
+        $app->set("macAddressOfDevice",$macAddress);
+        
+        $app->set('success', 'Yes receive the mac_address '.$macAddress);
         $app->render('/safezone/newsafezone');
     } else {
         $app->set('error', 'You must be logged in to do that.');

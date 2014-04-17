@@ -1,13 +1,3 @@
-<legend>My Safezones</legend>
-<?php if ($numberSafezones == 0) { ?>
-    <div class = "alert alert-info">
-        Do not have safezones in this sensor GPS to add press "Add Safezone"
-    </div>
-<?php }
-?>
-<form action="<?php echo $this->make_route('/safezone/newsafezone') ?>" method="post">	
-    <button id="create_safezone" class="btn btn-success">Add Safezone</button>
-</form>
 <?php if ($numberSafezones != 0) { ?>
     <!-- Open Layer 
     <script src="http://openlayers.org/api/OpenLayers.js"></script>

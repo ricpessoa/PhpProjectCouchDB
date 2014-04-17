@@ -1,15 +1,16 @@
-<script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqUwWysKF_x_SkHDgB-q_NeaqBHpPTlME&sensor=false"></script>
-<script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3)" type="text/javascript"></script>
-
 <?php if (User::is_authenticated()) { ?>
+
+    <script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqUwWysKF_x_SkHDgB-q_NeaqBHpPTlME&sensor=false"></script>
+    <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3)" type="text/javascript"></script>
     <script src="js/highcharts.js"></script>
+
     <legend>My Dashboard</legend>
     <?php
     if ($devices != null && sizeof($devices) > 0) {
         ?>
         <div class="tabbable">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs" id="myTab">
                 <?php
                 $i = 1;
                 foreach ($devices as $device) {
@@ -18,7 +19,7 @@
                         $varNameDevice = $device->name_device;
                     }
                     ?>
-                    <li <?php if ($i == 1) echo 'class ="active"'; ?>><a href="#pane<?php echo $i; ?>" data-toggle="tab"><?php echo $varNameDevice; ?></a></li>
+                    <li <?php if ($i == 1) echo 'class ="active"'; ?>><a href="#pane<?php echo $i; ?>" data-toggle="tab" ><?php echo $varNameDevice; ?></a></li>
                     <?php
                     $i = $i + 1;
                 }

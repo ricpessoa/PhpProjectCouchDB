@@ -110,6 +110,7 @@
 <script type="text/javascript">
     window.insertSafezones = true;
     window.update = false;
+    window.deviceAddress = "<?php echo $macAddressOfDevice; ?>";
     $(document).ready(function() {
         //var map = new mxn.Mapstraction('map', 'openlayers');
         window.map = new mxn.Mapstraction('map', 'googlev3');

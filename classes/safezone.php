@@ -9,6 +9,7 @@ class Safezone extends Base {
     protected $radius;
     protected $notification;
     protected $timestamp;
+    protected $device;
 
     public function __construct() {
         parent::__construct('safezone');
@@ -56,6 +57,30 @@ class Safezone extends Base {
         return $safezones;
     }
 
+    public function getSafezonesByUserAndDevice($username, $mac_address) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+        $safezones = array();
+        foreach ($bones->couch->get('_design/application/_view/getSafezones?key="' . $mac_address . '"&reduce=false')->body->rows as $_safezone) {
+            $safezone = new Safezone();
+            $safezone->_id = $_safezone->value->_id;
+            $safezone->_rev = $_safezone->value->_rev;
+            $safezone->address = $_safezone->value->address;
+            $safezone->name = $_safezone->value->name;
+            $safezone->latitude = $_safezone->value->latitude;
+            $safezone->longitude = $_safezone->value->longitude;
+            $safezone->radius = $_safezone->value->radius;
+            $safezone->notification = $_safezone->value->notification;
+            $safezone->timestamp = $_safezone->value->timestamp;
+            $safezone->device = $_safezone->value->device;
+
+            array_push($safezones, $safezone);
+        }
+
+        return $safezones;
+    }
+
     public function get_safezones_count_by_user($username) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
@@ -69,7 +94,6 @@ class Safezone extends Base {
     }
 
     public function to_jsonString() {
-        /* {_id: "safezone_02ecaf49b81af1a242b668984a001e64", _rev: "3-e299c8e0c31ae0d21c47ca60f5a8002f", address: "Rua Santa Maria Madalena", latitude: 41.112841, longitude: -8.629528, radius: 500, type: "safezone", notification: "[in-out]", name: "Rua Santa Maria Madalena"} */
         return '{'
                 . '"_id":' . '"' . $this->_id . '",'
                 . '"_rev":' . '"' . $this->_rev . '",'
@@ -81,6 +105,26 @@ class Safezone extends Base {
                 . '"notification":' . '"' . $this->notification . '",'
                 . '"timestamp":' . '"' . $this->timestamp . '"'
                 . '},';
+    }
+
+    public function getArrayOfSafezonesToJson($array) {
+        //return json_encode($array);
+        $jsonReturn = "";
+        foreach ($array as $_row) {
+            $jsonReturn.='{'
+                    . '"_id":' . '"' . $_row->_id . '",'
+                    . '"_rev":' . '"' . $_row->_rev . '",'
+                    . '"address":' . '"' . $_row->address . '",'
+                    . '"name":' . '"' . $_row->name . '",'
+                    . '"latitude":' . '"' . $_row->latitude . '",'
+                    . '"longitude":' . '"' . $_row->longitude . '",'
+                    . '"radius":' . '"' . $_row->radius . '",'
+                    . '"notification":' . '"' . $_row->notification . '",'
+                    . '"timestamp":' . '"' . $_row->timestamp . '",'
+                    . '"device":' . '"' . $_row->device . '"'
+                    . '},';
+        }
+        return "[" . substr($jsonReturn, 0, -1) . "]";
     }
 
 }
