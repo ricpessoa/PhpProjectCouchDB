@@ -36,8 +36,8 @@
     }
 
     function showEditRadius() {
-        document.getElementById('editSafezone').style.display =  "";
-        document.getElementById('div_radius').style.display  = "";
+        document.getElementById('editSafezone').style.display = "";
+        document.getElementById('div_radius').style.display = "";
         document.getElementById('div_buttons').style.display = "";
         document.getElementById('bt_save').style.display = "";
         document.getElementById('div_SelectNotification').style.display = "";
@@ -112,7 +112,7 @@
     window.update = false;
     window.deviceAddress = "<?php echo $macAddressOfDevice; ?>";
     $(document).ready(function() {
-        //var map = new mxn.Mapstraction('map', 'openlayers');
+
         window.map = new mxn.Mapstraction('map', 'googlev3');
         var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
         map.addExtras();
@@ -129,4 +129,37 @@
         }
     });
     google.maps.event.addDomListener(window, 'load', initializeAutoComplete);
+
+    mxn.addProxyMethods(mxn.Mapstraction, [
+        /**
+         * Add a method that can be called to add our extra stuff to an implementation.
+         */
+        'addExtras'
+    ]);
+
+    mxn.register('googlev3', {
+        Mapstraction: {
+            addExtras: function() {
+                var me = this;
+                me.markerAdded.addHandler(function(name, source, args) {
+                    // enable dragend event for google
+                    args.marker.dragend = new mxn.Event('dragend', args.marker);
+                    google.maps.event.addListener(args.marker.proprietary_marker, 'dragend', function(latlng) {
+                        //infowindow.open(map,marker);
+                        var point = args.marker.proprietary_marker.getPosition();
+                        console.log("dragend" + point);
+                        args.marker.dragend.fire({location: new mxn.LatLonPoint(point.lat(), point.lng())});
+                    });
+
+                    google.maps.event.addListener(args.marker.proprietary_marker, 'click', function() {
+                        var point = args.marker.proprietary_marker.getPosition();
+                        console.log("click: " + point);
+                        showStreetViewBasedInCoordinates(point.lat(), point.lng());
+                    });
+                });
+            }
+        }
+
+    });
+
 </script>

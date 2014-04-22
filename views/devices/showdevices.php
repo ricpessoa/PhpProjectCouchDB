@@ -34,9 +34,7 @@
                         ?></td>
                     <td><?php echo $device->_id; ?></td>
                     <td>
-                        <form action="<?php echo $this->make_route('/devices/editdevice') ?>" method="post" >
-                            <button name="edit_deviceID" id="edit_deviceID" type="submit" value="<?php echo $device->_id; ?>" class="btn btn-info btn-small" title="Edit this Device">Edit</button>
-                        </form>
+                        <a class="btn btn-info btn-small" href="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>">Edit</a>
                         <button data-toggle="modal" data-id="<?php echo $device->_id; ?>" data-rev="<?php echo $device->_rev; ?>" title="Delete this Device" class="open-deleteDeviceModal btn btn-danger  btn-small" href="#deleteDeviceModal">Delete</button>
                     </td>
                 </tr>

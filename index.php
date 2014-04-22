@@ -111,23 +111,45 @@ get('/devices/newdevice', function($app) {
     }
 });
 
-post('/devices/editdevice', function($app) {
+
+get('/devices/editdevice/:device', function($app) {
     if (User::is_authenticated()) {
-        $device = new Device();
-        $device->_id = $app->form('edit_deviceID');
+        if (Device::deviceExist(User::current_user(), $app->request('device'))) {
+            $device = new Device();
+            $device->_id = $app->request('device');
 
-        $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
+            $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
 
-        $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device 
-        $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
+            $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device
+            $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
 
-        $app->render('/devices/editdevice');
+            $app->render('/devices/editdevice');
+        } else {
+            $app->render('error/404');
+        }
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
     }
 });
+/*
+  post('/devices/editdevice', function($app) {
+  if (User::is_authenticated()) {
+  $device = new Device();
+  $device->_id = $app->form('edit_deviceID');
 
+  $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
+
+  $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device
+  $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
+
+  $app->render('/devices/editdevice');
+  } else {
+  $app->set('error', 'You must be logged in to do that.');
+  $app->render('user/login');
+  }
+  });
+ */
 post('/device', function($app) {
     if (User::is_authenticated()) {
         $device = new Device();
@@ -212,6 +234,7 @@ post('/safezone', function($app) {
         $safezone->longitude = $json_safezone["longitude"];
         $safezone->radius = $json_safezone["radius"];
         $safezone->notification = $json_safezone["notification"];
+        $safezone->device = $json_safezone["device"];
         //$safezone->timestamp= $json_safezone["timestamp"]; //timestamp generate by server
         //$safezone->shared = $json_safezone["shared"]; //safezone sared by other devices not yet implemented
         $safezone->create();
@@ -234,9 +257,9 @@ post('/safezone', function($app) {
 post('/safezone/newsafezone', function($app) {
     if (User::is_authenticated()) {
         $macAddress = $app->form('create_safezone');
-        $app->set("macAddressOfDevice",$macAddress);
-        
-        $app->set('success', 'Yes receive the mac_address '.$macAddress);
+        $app->set("macAddressOfDevice", $macAddress);
+
+        $app->set('success', 'Yes receive the mac_address ' . $macAddress);
         $app->render('/safezone/newsafezone');
     } else {
         $app->set('error', 'You must be logged in to do that.');

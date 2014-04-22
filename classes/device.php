@@ -75,4 +75,24 @@ class Device extends Base {
             return 0;
         }
     }
+
+    public function deviceExist($username, $device) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+        try {
+            $rows = $bones->couch->get('_design/application/_view/getDevices?key="' . $device . '"')->body->rows;
+        } catch (SagCouchException $e) {
+            if ($e->getCode() == "401") {
+                return FALSE;
+            }
+        }
+
+        if ($rows) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
 }

@@ -1,6 +1,5 @@
 <legend>Edit Device <?php echo $deviceID; ?></legend>
 <!-- Add Settings On sensor Temperature -->
-
 <div class="well">
     <h4>Safezone Settings</h4>
     <?php if ($numberSafezones == 0) { ?>
@@ -42,7 +41,7 @@
                             <?php
                             $i = 1;
                             $str_safezones = "";
-                            
+
                             foreach (json_decode($jsonSafezones) as $safezone):
                                 ?>
                                 <tr>
