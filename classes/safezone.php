@@ -81,6 +81,27 @@ class Safezone extends Base {
         return $safezones;
     }
 
+    public function getSafezoneByID($username, $_idsafezone) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+        foreach ($bones->couch->get('_design/application/_view/getSafezones?key="' . $_idsafezone . '"&reduce=false')->body->rows as $_safezone) {
+            $safezone = new Safezone();
+            $safezone->_id = $_safezone->value->_id;
+            $safezone->_rev = $_safezone->value->_rev;
+            $safezone->address = $_safezone->value->address;
+            $safezone->name = $_safezone->value->name;
+            $safezone->latitude = $_safezone->value->latitude;
+            $safezone->longitude = $_safezone->value->longitude;
+            $safezone->radius = $_safezone->value->radius;
+            $safezone->notification = $_safezone->value->notification;
+            $safezone->timestamp = $_safezone->value->timestamp;
+            $safezone->device = $_safezone->value->device;
+
+            return $safezone;
+        }
+        return NULL;
+    }
+
     public function get_safezones_count_by_user($username) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);

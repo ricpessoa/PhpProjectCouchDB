@@ -8,7 +8,7 @@
     }
     ?>
     <form action="<?php echo $this->make_route('/safezone/newsafezone') ?>" method="post">	
-        <button id="create_safezone" name="create_safezone" type="input" class="btn btn-success" value="<?php echo $_POST['edit_deviceID']; ?>">Add Safezone</button> 
+        <button id="create_safezone" name="create_safezone" type="input" class="btn btn-success" value="<?php echo $deviceID; ?>">Add Safezone</button> 
     </form>
 
     <?php if ($numberSafezones != 0) { ?>
@@ -44,8 +44,11 @@
                                     <td><?php echo $i; ?></td>
                                     <td><?php echo $safezone->name; ?></td>
                                     <td>
-                                        <button id="edit_safezone" class="btn btn-info btn-small">Edit</button>
-                                        <button data-toggle="modal" data-id="<?php echo $safezone->_id; ?>" data-rev="<?php echo $safezone->_rev; ?>" title="Delete this Safezone" class="open-deleteSafezoneModal btn btn-danger  btn-small" href="#deleteSafezoneModal">Delete</button>
+                                        <form action="<?php echo $this->make_route('/safezone/newsafezone') ?>" method="post">
+                                            <button id="edit_safezone" name="edit_safezone" class="btn btn-info btn-small" value="true">Edit</button>
+                                            <input id="id_safezone_to_edit" name="id_safezone_to_edit" type="hidden" value="<?php echo $safezone->_id; ?>" >
+                                            <button data-toggle="modal" data-id="<?php echo $safezone->_id; ?>" data-rev="<?php echo $safezone->_rev; ?>" data-dev="<?php echo $safezone->device; ?>" title="Delete this Safezone" class="open-deleteSafezoneModal btn btn-danger  btn-small" href="#deleteSafezoneModal">Delete</button>
+                                        </form>
                                     </td>
                                 </tr>
                                 <?php
@@ -98,7 +101,9 @@
             $(document).on("click", ".open-deleteSafezoneModal", function() {
                 var myDocId = $(this).data('id');
                 var myDocRev = $(this).data('rev');
-                var finalURL = '/PhpProjectCouchDB/deletesafezone/' + myDocId + '/' + myDocRev;
+                var myDocDev = $(this).data('dev');
+
+                var finalURL = '/PhpProjectCouchDB/deletesafezone/' + myDocId + '/' + myDocRev + '/' + myDocDev;
                 $(".modal-footer #form_delete_safezone").attr('action', finalURL);
 
             });

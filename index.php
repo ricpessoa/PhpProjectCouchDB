@@ -59,7 +59,7 @@ get('/user/:username', function($app) {
         $app->set('post_count', Post::get_post_count_by_user($app->request('username')));
         $app->render('user/profile');
     } else {
-//$app->redirect('/user/' . User::current_user());
+        //$app->redirect('/user/' . User::current_user());
         $app->redirect('/');
     }
 });
@@ -139,6 +139,9 @@ get('/devices/editdevice/:device', function($app) {
     }
 });
 
+/* Create new device 
+ * need refacturing because when create the new device isn't receive the max and min temperature
+ *  */
 post('/device', function($app) {
     if (User::is_authenticated()) {
         $device = new Device();
@@ -176,7 +179,10 @@ post('/device', function($app) {
         $app->render('user/login');
     }
 });
-
+/*
+ * delete device Method POST and receive:
+ * _id (mac address) of device
+ * _rev of document of device  */
 post('/deletedevice/:id/:rev', function($app) {
     if (User::is_authenticated()) {
         $device = new Device();
@@ -195,11 +201,18 @@ post('/deletedevice/:id/:rev', function($app) {
 /* END DEVICE */
 
 /* ---------------START SENSOR --------------- */
+/*
+ * This method is to update the sensor temperature and receive the next information
+ *  User::current_user()
+ *  $app->request('id')
+ *  $app->request('rev')
+ *  $app->form('max_temp_notification')
+ *  $app->form('min_temp_notification') */
 post('/sensor/:id/:rev', function($app) {
     if (User::is_authenticated()) {
         Temperature::updateTemperature(User::current_user(), $app->request('id'), $app->request('rev'), $app->form('max_temp_notification'), $app->form('min_temp_notification'));
-        $app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
-        $app->render('/device/editdevice/' . $app->request('id'));
+        //$app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
+        $app->redirect('/device/editdevice/' . $app->request('id'));
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
@@ -247,8 +260,8 @@ post('/safezone', function($app) {
         if ($numSafezones != 0) {
             $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
         }
-        $app->set('success', 'Yes safezone saved');
-        $app->render('safezone/showsafezones');
+        //$app->set('success', 'Yes safezone saved');
+        $app->redirect('/devices/editdevice/' . $safezone->device);
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
@@ -259,10 +272,41 @@ post('/safezone', function($app) {
 post('/safezone/newsafezone', function($app) {
     if (User::is_authenticated()) {
         $macAddress = $app->form('create_safezone');
-        $app->set("macAddressOfDevice", $macAddress);
+        $editDevice = $app->form('edit_safezone');
+        $safezone = NULL;
+        if ($editDevice != "true") {
+            $editDevice = "false";
+        } else {
+            $_idsafezone = $app->form('id_safezone_to_edit');
+            $safezone = Safezone::getSafezoneByID(User::current_user(), $_idsafezone);
+            $app->set("eSafezone", $_idsafezone);
+        }
 
-        $app->set('success', 'Yes receive the mac_address ' . $macAddress);
+        $app->set("macAddressOfDevice", $macAddress);
+        $app->set("editDevice", $editDevice);
+
+        $app->set('success', 'Yes receive the mac_address ' . $macAddress . " edit device?" . $editDevice . " - " . $safezone->to_jsonString());
         $app->render('/safezone/newsafezone');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
+post('/deletesafezone/:id/:rev/:dev', function($app) {
+    if (User::is_authenticated()) {
+        $safezone = new Safezone();
+        $safezone->_id = $app->request('id');
+        $safezone->_rev = $app->request('rev');
+        $safezone->delete(User::current_user());
+
+        $deviceadd = $app->request('dev');
+        if ($deviceadd == NULL || $deviceadd === "") {
+            $app->set('success', 'The safezone was deleted');
+            $app->redirect('/safezone/showsafezones');
+        } else {
+            $app->redirect('/devices/editdevice/' . $app->request('dev'));
+        }
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
@@ -276,7 +320,6 @@ post('/deletesafezone/:id/:rev', function($app) {
         $safezone->_rev = $app->request('rev');
         $safezone->delete(User::current_user());
 
-
         $app->set('success', 'The safezone was deleted');
         $app->redirect('/safezone/showsafezones');
     } else {
@@ -284,8 +327,6 @@ post('/deletesafezone/:id/:rev', function($app) {
         $app->render('user/login');
     }
 });
-
-
 /* END SAFEZONE */
 
 resolve(); //if the route not exist page not found

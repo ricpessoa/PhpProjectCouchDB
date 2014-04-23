@@ -109,8 +109,9 @@
 
 <script type="text/javascript">
     window.insertSafezones = true;
-    window.update = false;
+    window.update = <?php echo $editDevice; ?>;
     window.deviceAddress = "<?php echo $macAddressOfDevice; ?>";
+    
     $(document).ready(function() {
 
         window.map = new mxn.Mapstraction('map', 'googlev3');
@@ -126,6 +127,9 @@
             findUserLocation();
             insertGeofenceHandler();
             showSearchAddress();
+        }
+        if(update){
+            alert("<?php echo $eSafezone; ?>")
         }
     });
     google.maps.event.addDomListener(window, 'load', initializeAutoComplete);
