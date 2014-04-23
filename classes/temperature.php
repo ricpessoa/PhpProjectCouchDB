@@ -3,7 +3,7 @@
 class Temperature extends Sensor {
 
     protected $min_temperature;
-    protected $max_temperatrue;
+    protected $max_temperature;
 
     public function __construct() {
         parent::__construct('temperature');
@@ -22,12 +22,26 @@ class Temperature extends Sensor {
         }
     }
 
+    public function updateTemperature($username, $_id, $_rev, $max, $min) {
+        $sTemp = Device::getDevice($username, $_id);
+        $sTemp->_rev = $_rev;
+
+        foreach ($sTemp->sensors as $_sensor) {
+            if ($_sensor->type === "temperature") {
+                $_sensor->min_temperature = $min;
+                $_sensor->max_temperature = $max;
+            }
+        }
+        Device::updateSensor($username, $sTemp);
+    }
+
     public function to_json() {
         return array(
             "min_temperature" => $this->min_temperature,
-            "max_temperatrue" => $this->max_temperatrue,
+            "max_temperature" => $this->max_temperature,
             "name_sensor" => $this->name_sensor,
             "type" => $this->type
         );
     }
+
 }

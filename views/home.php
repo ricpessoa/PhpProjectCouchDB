@@ -36,10 +36,10 @@
                             if ($sensor->type === "GPS") {
                                 include 'sensors/_gps.php';
                             }
-                            if ($sensor->type == "temperature") {
+                            if ($sensor->type === "temperature") {
                                 include 'sensors/_temperature.php';
                             }
-                            if ($sensor->type == "panic_button") {
+                            if ($sensor->type === "panic_button") {
                                 include 'sensors/_panicbutton.php';
                             }
                         endforeach;

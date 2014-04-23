@@ -85,7 +85,7 @@ delete('/post/delete/:id/:rev', function($app) {
     }
 });
 
-/* DEVICES */
+/* --------------- DEVICES --------------- */
 
 get('devices/showdevices', function($app) {
     if (User::is_authenticated()) {
@@ -115,11 +115,17 @@ get('/devices/newdevice', function($app) {
 get('/devices/editdevice/:device', function($app) {
     if (User::is_authenticated()) {
         if (Device::deviceExist(User::current_user(), $app->request('device'))) {
+            $arraySensors = Sensor::getSensors(User::current_user(), $app->request('device'));
+            $app->set('arraySensors', $arraySensors); //need get the safezones of device
+
             $device = new Device();
             $device->_id = $app->request('device');
+            $device->_rev = Device::getDeviceRevisionByID(User::current_user(), $app->request('device'));
 
             $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
 
+            $app->set('deviceID', $device->_id);
+            $app->set('deviceREV', $device->_rev);
             $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device
             $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
 
@@ -132,24 +138,7 @@ get('/devices/editdevice/:device', function($app) {
         $app->render('user/login');
     }
 });
-/*
-  post('/devices/editdevice', function($app) {
-  if (User::is_authenticated()) {
-  $device = new Device();
-  $device->_id = $app->form('edit_deviceID');
 
-  $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
-
-  $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device
-  $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
-
-  $app->render('/devices/editdevice');
-  } else {
-  $app->set('error', 'You must be logged in to do that.');
-  $app->render('user/login');
-  }
-  });
- */
 post('/device', function($app) {
     if (User::is_authenticated()) {
         $device = new Device();
@@ -172,7 +161,7 @@ post('/device', function($app) {
         if ($app->form('check_temperature_send') == "1") {
             $temperature = new Temperature();
             $temperature->min_temperature = $app->form('min_temp_notification');
-            $temperature->max_temperatrue = $app->form('max_temp_notification');
+            $temperature->max_temperature = $app->form('max_temp_notification');
             $myArray[] = $temperature;
         }
 
@@ -205,7 +194,20 @@ post('/deletedevice/:id/:rev', function($app) {
 
 /* END DEVICE */
 
-/* SAFEZONE */
+/* ---------------START SENSOR --------------- */
+post('/sensor/:id/:rev', function($app) {
+    if (User::is_authenticated()) {
+        Temperature::updateTemperature(User::current_user(), $app->request('id'), $app->request('rev'), $app->form('max_temp_notification'), $app->form('min_temp_notification'));
+        $app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
+        $app->render('/device/editdevice/' . $app->request('id'));
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+/* END SENSOR */
+
+/* --------------- SAFEZONE --------------- */
 
 get('/safezone/showsafezones', function($app) {
     if (User::is_authenticated()) {

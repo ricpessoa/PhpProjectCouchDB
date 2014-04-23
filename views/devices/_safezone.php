@@ -1,4 +1,17 @@
- <?php if ($numberSafezones != 0) { ?>
+<div class="well">
+    <h4>Safezone Settings</h4>
+    <?php if ($numberSafezones == 0) { ?>
+        <div class = "alert alert-info">
+            Do not have safezones in this sensor GPS to add press "Add Safezone"
+        </div>
+        <?php
+    }
+    ?>
+    <form action="<?php echo $this->make_route('/safezone/newsafezone') ?>" method="post">	
+        <button id="create_safezone" name="create_safezone" type="input" class="btn btn-success" value="<?php echo $_POST['edit_deviceID']; ?>">Add Safezone</button> 
+    </form>
+
+    <?php if ($numberSafezones != 0) { ?>
         <!-- Open Layer 
         <script src="http://openlayers.org/api/OpenLayers.js"></script>
         <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(openlayers)" type="text/javascript"></script>
@@ -92,3 +105,5 @@
         </script>
 
     <?php } ?>
+
+</div>

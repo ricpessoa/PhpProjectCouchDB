@@ -39,16 +39,12 @@ class Device extends Base {
         }
     }
 
-    public function getDevices($username) {
+    public function getDevices($username) { /* all devices to show in lists */
         $bones = new Bones();
         $bones->couch->setDatabase($username);
 
         $devices = array();
-        /*
-          protected $name_device;
-          protected $sensors;
-          protected $timestamp;
-         *  */
+
         foreach ($bones->couch->get('_design/application/_view/getDevices?descending=true&reduce=false')->body->rows as $_device) {
             $device = new Device();
             $device->_id = $_device->id;
@@ -63,6 +59,34 @@ class Device extends Base {
         return $devices;
     }
 
+    public function getDevice($username, $_id) { /* one device to update */
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+        foreach ($bones->couch->get('_design/application/_view/getDevices?key="' . $_id . '"&reduce=false')->body->rows as $_device) {
+            $device = new Device();
+            $device->_id = $_device->id;
+            //$device->_rev = $_device->value->_rev; to force the couchdb validate
+            $device->name_device = $_device->value->name_device;
+            $device->timestamp = $_device->value->timestamp;
+            $device->sensors = $_device->value->sensors;
+
+            return $device;
+        }
+        return NULL;
+    }
+
+    public function updateSensor($username, $device) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+        try {
+            $bones->couch->put($device->_id, $device->to_json());
+        } catch (SagCouchException $e) {
+            $bones->error500($e);
+        }
+    }
+
+   
     public function getNumberOfDevices($username) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
@@ -74,6 +98,15 @@ class Device extends Base {
         } else {
             return 0;
         }
+    }
+
+    public function getDeviceRevisionByID($username, $device) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+        foreach ($bones->couch->get('_design/application/_view/getDevices?key="' . $device . '"&reduce=false')->body->rows as $_device) {
+            return $_device->value->_rev;
+        }
+        return NULL;
     }
 
     public function deviceExist($username, $device) {
