@@ -84,22 +84,22 @@ class Safezone extends Base {
     public function getSafezoneByID($username, $_idsafezone) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
-        foreach ($bones->couch->get('_design/application/_view/getSafezones?key="' . $_idsafezone . '"&reduce=false')->body->rows as $_safezone) {
-            $safezone = new Safezone();
-            $safezone->_id = $_safezone->value->_id;
-            $safezone->_rev = $_safezone->value->_rev;
-            $safezone->address = $_safezone->value->address;
-            $safezone->name = $_safezone->value->name;
-            $safezone->latitude = $_safezone->value->latitude;
-            $safezone->longitude = $_safezone->value->longitude;
-            $safezone->radius = $_safezone->value->radius;
-            $safezone->notification = $_safezone->value->notification;
-            $safezone->timestamp = $_safezone->value->timestamp;
-            $safezone->device = $_safezone->value->device;
-
+        $_safezone = $bones->couch->get($_idsafezone)->body;
+        $safezone = new Safezone();
+        if ($_safezone) {
+            $safezone->_id = $_safezone->_id;
+            $safezone->_rev = $_safezone->_rev;
+            $safezone->address = $_safezone->address;
+            $safezone->name = $_safezone->name;
+            $safezone->latitude = $_safezone->latitude;
+            $safezone->longitude = $_safezone->longitude;
+            $safezone->radius = $_safezone->radius;
+            $safezone->notification = $_safezone->notification;
+            $safezone->timestamp = $_safezone->timestamp;
+            $safezone->device = $_safezone->device;
             return $safezone;
         }
-        return NULL;
+        return $_idsafezone . " doc? " . $doc->_id;
     }
 
     public function get_safezones_count_by_user($username) {
@@ -114,18 +114,20 @@ class Safezone extends Base {
         }
     }
 
-    public function to_jsonString() {
-        return '{'
-                . '"_id":' . '"' . $this->_id . '",'
-                . '"_rev":' . '"' . $this->_rev . '",'
-                . '"address":' . '"' . $this->address . '",'
-                . '"name":' . '"' . $this->name . '",'
-                . '"latitude":' . '"' . $this->latitude . '",'
-                . '"longitude":' . '"' . $this->longitude . '",'
-                . '"radius":' . '"' . $this->radius . '",'
-                . '"notification":' . '"' . $this->notification . '",'
-                . '"timestamp":' . '"' . $this->timestamp . '"'
-                . '},';
+    public function to_jsonString($safezone) {
+        $jsonReturnOne = '{'
+                . '"_id":' . '"' . $safezone->_id . '",'
+                . '"_rev":' . '"' . $safezone->_rev . '",'
+                . '"address":' . '"' . $safezone->address . '",'
+                . '"name":' . '"' . $safezone->name . '",'
+                . '"latitude":' . '"' . $safezone->latitude . '",'
+                . '"longitude":' . '"' . $safezone->longitude . '",'
+                . '"radius":' . '"' . $safezone->radius . '",'
+                . '"notification":' . '"' . $safezone->notification . '",'
+                . '"timestamp":' . '"' . $safezone->timestamp . '",'
+                . '"device":' . '"' . $safezone->device . '"'
+                . '}';
+        return "[" . $jsonReturnOne . "]";
     }
 
     public function getArrayOfSafezonesToJson($array) {

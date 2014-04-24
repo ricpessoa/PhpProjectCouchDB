@@ -221,7 +221,7 @@ post('/sensor/:id/:rev', function($app) {
 /* END SENSOR */
 
 /* --------------- SAFEZONE --------------- */
-
+/*
 get('/safezone/showsafezones', function($app) {
     if (User::is_authenticated()) {
         $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
@@ -235,7 +235,7 @@ get('/safezone/showsafezones', function($app) {
         $app->render('user/login');
     }
 });
-
+*/
 post('/safezone', function($app) {
     if (User::is_authenticated()) {
         $safezone_data = $app->form('safezone');
@@ -243,6 +243,7 @@ post('/safezone', function($app) {
 
         $safezone = new Safezone();
         $safezone->_id = $json_safezone["_id"];
+        $safezone->_rev = $json_safezone["_rev"];
         $safezone->address = $json_safezone["address"];
         $safezone->name = $json_safezone["name"];
         $safezone->latitude = $json_safezone["latitude"];
@@ -280,12 +281,13 @@ post('/safezone/newsafezone', function($app) {
             $_idsafezone = $app->form('id_safezone_to_edit');
             $safezone = Safezone::getSafezoneByID(User::current_user(), $_idsafezone);
             $app->set("eSafezone", $_idsafezone);
+            $app->set("editSafezone", Safezone::to_jsonString($safezone));
         }
 
         $app->set("macAddressOfDevice", $macAddress);
         $app->set("editDevice", $editDevice);
 
-        $app->set('success', 'Yes receive the mac_address ' . $macAddress . " edit device?" . $editDevice . " - " . $safezone->to_jsonString());
+        $app->set('success', 'Yes receive the mac_address ' . $macAddress . " edit device?" . $editDevice . " - ");
         $app->render('/safezone/newsafezone');
     } else {
         $app->set('error', 'You must be logged in to do that.');

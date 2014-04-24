@@ -54,8 +54,13 @@
         document.getElementById('bt_next').style.visibility = "hidden";
         document.getElementById('div_search_address').style.display = "none";
         document.getElementById('myDynamicTable').style.display = "none"; //to remove the table of results
+    }
 
-
+    function fillToEditSafezone() {
+        document.getElementById('notification_settings').value = objJsonSafezone.safezones[0].notification;
+        document.getElementById('radius').value = objJsonSafezone.safezones[0].radius;
+        document.getElementById('radiusSlider').value = objJsonSafezone.safezones[0].radius;
+        document.getElementById('txt_name').value = objJsonSafezone.safezones[0].name;
     }
 </script>
 
@@ -92,7 +97,7 @@
                     <button id="bt_back" type="button" class="btn btn-small" onclick="javascript:showSearchAddress()">Back</button>
                     <button id="bt_save" type="button" class="btn-primary btn-small" onclick="javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)">Save Safezone</button>
                     <button id="bt_editLocation" type="button" class="btn-info btn-small" onclick="javascript:showSearchAddress();
-                            /* passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].Address, objJsonSafezone.safezones[0].Latitude, objJsonSafezone.safezones[0].Longitude);*/">Edit Locations</button>
+                            passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].address, objJsonSafezone.safezones[0].latitude, objJsonSafezone.safezones[0].longitude);">Edit Locations</button>
                     <button id="bt_next" type="button" class="btn btn-small" onclick="javascript:pressNext(selectedGeofence);
                             showEditRadius();">Next</button>
                     <input id="safezone" type="hidden" name="safezone">
@@ -111,7 +116,7 @@
     window.insertSafezones = true;
     window.update = <?php echo $editDevice; ?>;
     window.deviceAddress = "<?php echo $macAddressOfDevice; ?>";
-    
+
     $(document).ready(function() {
 
         window.map = new mxn.Mapstraction('map', 'googlev3');
@@ -123,13 +128,14 @@
         //getSafezones('<%=@mySafezones%>');
         map.removeAllPolylines();
         map.removeAllMarkers();
-        if (insertSafezones) {
+        if (insertSafezones && update == false) {
             findUserLocation();
             insertGeofenceHandler();
             showSearchAddress();
-        }
-        if(update){
-            alert("<?php echo $eSafezone; ?>")
+        }else {
+            console.log('<?php echo '{"safezones"' . ":" . $editSafezone . "}"; ?>');
+            showEditRadius();
+            getSafezones('<?php echo '{"safezones"' . ":" . $editSafezone . "}"; ?>');
         }
     });
     google.maps.event.addDomListener(window, 'load', initializeAutoComplete);

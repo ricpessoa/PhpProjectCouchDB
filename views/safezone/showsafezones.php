@@ -34,8 +34,8 @@
                         <?php
                         $i = 1;
                         $str_safezones = "";
-                        foreach ($safezones as $safezone):
-                            $str_safezones .= $safezone->to_jsonString();
+                        foreach (json_decode($jsonSafezones) as $safezone):
+                            //$str_safezones .= $safezone->to_jsonString();
                             ?>
                             <tr>
                                 <td><?php echo $i; ?></td>

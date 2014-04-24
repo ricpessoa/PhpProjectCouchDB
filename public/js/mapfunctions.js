@@ -29,6 +29,9 @@ function getSafezones(dataSafezone) {
         //if (update)
         //   marker.setDraggable(true);
 
+        if (window.update)
+            deviceAddress = objJsonSafezone.safezones[x].device;
+        
         arrayMarkersSafezones[x] = marker;
         arrayOfSafezones[x] = safezone;
         map.addMarker(arrayMarkersSafezones[x]);
@@ -39,6 +42,7 @@ function getSafezones(dataSafezone) {
         map.autoCenterAndZoom();
     } else if (objJsonSafezone.safezones.length == 1) {
         addHighlightToTheMarker(objJsonSafezone.safezones[0].latitude, objJsonSafezone.safezones[0].longitude)
+        fillToEditSafezone();
     }
 }
 
@@ -48,8 +52,11 @@ function saveSafezoneInDb(pos) {
 
     var selc = document.getElementById("notification_settings");
     var notification = selc.options[selc.selectedIndex].value;
+    var revision = "";
+    if (update == true)
+        revision = ' "_rev":"' + objJsonSafezone.safezones[pos]._rev + '",';
 
-    var dataJsonSend = '{"_id":"' + objJsonSafezone.safezones[pos]._id + '","address":"' + objJsonSafezone.safezones[pos].address + '","name":"' + document.getElementById("txt_name").value + '","latitude":' + objJsonSafezone.safezones[pos].latitude + ',"longitude":' + objJsonSafezone.safezones[pos].longitude + ',"radius":' + objJsonSafezone.safezones[pos].radius + ',"notification":"' + notification + '","device":"' + window.deviceAddress + '"}';
+    var dataJsonSend = '{"_id":"' + objJsonSafezone.safezones[pos]._id + '",' + revision + '"address":"' + objJsonSafezone.safezones[pos].address + '","name":"' + document.getElementById("txt_name").value + '","latitude":' + objJsonSafezone.safezones[pos].latitude + ',"longitude":' + objJsonSafezone.safezones[pos].longitude + ',"radius":' + objJsonSafezone.safezones[pos].radius + ',"notification":"' + notification + '","device":"' + window.deviceAddress + '"}';
     //sentPOSTRequest(urlWriteSafezone, '{"safezone":' + dataJsonSend + '}', function(status) {
     //    console.log("sucessfull " + status);
     //window.location = "dashboardSafezones";
@@ -129,6 +136,20 @@ function insertTempMarkers(addr, lat, lng) {
     addHandlerTempGeofences(newMarkers[newMarkers.length - 1]);
     newAddress.push(addr);
     marker.openInfoBubble.addHandler(myboxopened);
+}
+
+function passSafezoneOfPoiToTempMarker(addr, lat, lng) {
+    //console.log("Address: "+addr+" , "+lat+" , "+lng);
+    document.getElementById('bt_next').style.visibility = "";
+    map.removeAllPolylines();
+    map.removeAllMarkers();
+
+    newMarkers = [];
+    newAddress = [];
+    newArrayPoint = [];
+    selectedGeofence = 0;
+    //newArrayPoint.push([lat,lng]);
+    insertTempMarkers(addr, lat, lng);
 }
 
 function insertGeofenceHandler() {
@@ -339,6 +360,7 @@ function removePreviousSearch() {
 }
 
 function addHighlightToTheMarker(lat, log) {
+    console.log("high " + lat + " " + log);
     var latlonCenterOfTheMap = new mxn.LatLonPoint(lat, log);
     map.setCenterAndZoom(latlonCenterOfTheMap, 13);
 }
