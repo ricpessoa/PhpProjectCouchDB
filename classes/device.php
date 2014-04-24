@@ -45,7 +45,7 @@ class Device extends Base {
 
         $devices = array();
 
-        foreach ($bones->couch->get('_design/application/_view/getDevices?descending=true&reduce=false')->body->rows as $_device) {
+        foreach ($bones->couch->get('_design/application/_view/getDevices?descending=false&reduce=false')->body->rows as $_device) {
             $device = new Device();
             $device->_id = $_device->id;
             $device->_rev = $_device->value->_rev;

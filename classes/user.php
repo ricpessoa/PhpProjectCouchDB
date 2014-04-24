@@ -20,6 +20,10 @@ class User extends Base {
 
         if (!$this->isValidEmail($email)) {
             $bones->set('error', 'A user with this email already exists.');
+            $bones->set('ename', $this->full_name);
+            $bones->set('email', $email);
+            $bones->set('eusername', $username);
+
             $bones->render('user/signup');
             exit;
         }

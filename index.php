@@ -208,6 +208,7 @@ post('/deletedevice/:id/:rev', function($app) {
  *  $app->request('rev')
  *  $app->form('max_temp_notification')
  *  $app->form('min_temp_notification') */
+
 post('/sensor/:id/:rev', function($app) {
     if (User::is_authenticated()) {
         Temperature::updateTemperature(User::current_user(), $app->request('id'), $app->request('rev'), $app->form('max_temp_notification'), $app->form('min_temp_notification'));
