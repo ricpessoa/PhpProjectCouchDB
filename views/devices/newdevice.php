@@ -94,7 +94,7 @@
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label">Select your two favourite colours</label>
+        <label class="control-label">Select the following sensors in the device:</label>
         <div class="controls">
             <label class="checkbox">
                 <input 
@@ -126,7 +126,7 @@
     </div>
   
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Add Device <i class="icon-ok icon-white"></i></button><br />
+        <button type="submit" class="btn btn-primary">Save Device <i class="icon-ok icon-white"></i></button><br />
     </div>
 </form>
 
