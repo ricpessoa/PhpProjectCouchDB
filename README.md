@@ -17,3 +17,7 @@ Highcharts (to show charts)<br>
 <h1>Mockup of backend</h1>
 <br>
 ![mockup](https://github.com/linuxrp/PhpProjectCouchDB/blob/master/_img_mockup/mockup.png?raw=true)
+
+<h1>Use Case</h1>
+<br>
+![mockup](https://github.com/linuxrp/PhpProjectCouchDB/blob/master/_img_mockup/Use%20Case.png?raw=true)
