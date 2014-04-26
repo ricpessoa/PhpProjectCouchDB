@@ -24,8 +24,10 @@
             $i = 1;
             foreach ($devices as $device):
                 ?>
-                <tr data-toggle="collapse" data-target="#demo<?php echo $i; ?>" class="accordion-toggle">
-                    <td><?php
+                <tr>
+                   <td>
+                       <a data-toggle="collapse" data-target="#demo<?php echo $i; ?>" class="accordion-toggle"><i class="icon-search"></i>teste</a>
+                       <?php
                         if ($device->name_device != null) {
                             echo 'Device ' . $device->name_device;
                         } else {

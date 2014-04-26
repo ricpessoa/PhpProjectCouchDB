@@ -3,12 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/PhpProjectCouchDB/views/sensors/_temperature.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/devices/editdevice.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/devices/_temperature.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/home.php</file>
             <file>file:/var/www/PhpProjectCouchDB/views/devices/showdevices.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/devices/_safezone.php</file>
         </group>
     </open-files>
 </project-private>
