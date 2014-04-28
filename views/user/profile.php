@@ -1,7 +1,6 @@
 <div class="page-header">
     <h1><?php echo $user->full_name; ?>	
         <?php if ($is_current_user) { ?>
-            <code>This is you!</code>
         <?php } ?>
     </h1>
 </div>

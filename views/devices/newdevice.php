@@ -126,7 +126,7 @@
     </div>
   
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Save Device <i class="icon-ok icon-white"></i></button><br />
+        <button type="submit" class="btn btn-primary"><i class="icon-ok icon-white"></i> Save Device </button><br />
     </div>
 </form>
 

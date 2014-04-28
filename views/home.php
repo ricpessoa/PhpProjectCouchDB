@@ -19,7 +19,7 @@
                         $varNameDevice = $device->name_device;
                     }
                     ?>
-                    <li <?php if ($i == 1) echo 'class ="active"'; ?>><a href="#pane<?php echo $i; ?>" data-toggle="tab" ><?php echo $varNameDevice; ?></a></li>
+                    <li <?php if ($i == 1) echo 'class ="active"'; ?>><a href="#pane<?php echo $i; ?>" data-toggle="tab" ><?php echo '<i class="icon-th-large"></i> Device '.$varNameDevice; ?></a></li>
                     <?php
                     $i = $i + 1;
                 }

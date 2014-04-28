@@ -5,7 +5,7 @@
     </div>
 <?php } ?>
 <form action="<?php echo $this->make_route('/devices/newdevice') ?>" method="get">	
-    <button id="create_safezone" class="btn btn-success">Add Device</button>
+    <button id="create_safezone" class="btn btn-success "><i class="icon-plus icon-white"></i> Add Device</button>
 </form>
 <!--http://jsfiddle.net/whytheday/2Dj7Y/11/ see =) -->
 <?php if ($numberDevices > 0) { ?>
@@ -25,19 +25,19 @@
             foreach ($devices as $device):
                 ?>
                 <tr>
-                   <td>
-                       <a data-toggle="collapse" data-target="#demo<?php echo $i; ?>" class="accordion-toggle"><i class="icon-search"></i>teste</a>
-                       <?php
-                        if ($device->name_device != null) {
-                            echo 'Device ' . $device->name_device;
-                        } else {
-                            echo 'Device ' . $i;
-                        }
-                        ?></td>
+                    <td>
+                        <a data-toggle="collapse" data-target="#demo<?php echo $i; ?>" class="accordion-toggle"><i class="icon-th-list large"></i>
+                            <?php
+                            if ($device->name_device != null) {
+                                echo 'Device ' . $device->name_device;
+                            } else {
+                                echo 'Device ' . $i;
+                            }
+                            ?></a></td>
                     <td><?php echo $device->_id; ?></td>
                     <td>
-                        <a class="btn btn-info btn-small" href="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>">Edit</a>
-                        <button data-toggle="modal" data-id="<?php echo $device->_id; ?>" data-rev="<?php echo $device->_rev; ?>" title="Delete this Device" class="open-deleteDeviceModal btn btn-danger  btn-small" href="#deleteDeviceModal">Delete</button>
+                        <a class="btn btn-info btn-small" href="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>"><i class="icon-pencil icon-white"></i>  Edit</a>
+                        <button data-toggle="modal" data-id="<?php echo $device->_id; ?>" data-rev="<?php echo $device->_rev; ?>" title="Delete this Device" class="open-deleteDeviceModal btn btn-danger  btn-small" href="#deleteDeviceModal"><i class="icon-trash icon-white"></i> Delete</button>
                     </td>
                 </tr>
                 <tr>
@@ -66,7 +66,7 @@
             ?>
         </tbody>
     </table>
-    
+
     <!-- MODAL DELETE DEVICE -->
     <div class="modal fade"  id="deleteDeviceModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display:none">
         <div class="modal-dialog">

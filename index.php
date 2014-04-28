@@ -173,7 +173,8 @@ post('/device', function($app) {
         $device->create();
 
         $app->set('success', 'Yes device saved');
-        $app->render('/devices/newdevice');
+        //$app->render('/devices/newdevice');
+        $app->redirect('/devices/editdevice/'.$device->_id);
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');

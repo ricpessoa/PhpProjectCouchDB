@@ -97,7 +97,7 @@
                     <button id="bt_back" type="button" class="btn btn-small" onclick="javascript:showSearchAddress()">Back</button>
                     <button id="bt_save" type="button" class="btn-primary btn-small" onclick="javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)">Save Safezone</button>
                     <button id="bt_editLocation" type="button" class="btn-info btn-small" onclick="javascript:showSearchAddress();
-                            passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].address, objJsonSafezone.safezones[0].latitude, objJsonSafezone.safezones[0].longitude);">Edit Locations</button>
+                        passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].address, objJsonSafezone.safezones[0].latitude, objJsonSafezone.safezones[0].longitude);"><i class="icon-map-marker icon-white"></i> Edit Locations</button>
                     <button id="bt_next" type="button" class="btn btn-small" onclick="javascript:pressNext(selectedGeofence);
                             showEditRadius();">Next</button>
                     <input id="safezone" type="hidden" name="safezone">
