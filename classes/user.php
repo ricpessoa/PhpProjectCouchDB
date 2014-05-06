@@ -110,6 +110,46 @@ class User extends Base {
         }
     }
 
+    public function appLogin($username, $password) {
+        $bones = new Bones();
+        $bones->couch->setDatabase('_users');
+
+        try {
+            $bones->couch->login($username, $password, Sag::$AUTH_COOKIE);
+            return $bones->couch->getSession()->body->userCtx->name;
+        } catch (sagCouchException $e) {
+            if ($e->getCode() == "401") {
+                return -1;
+            }
+        }
+    }
+
+    public function appRegister($name, $email, $username, $password) {
+        $bones = new Bones();
+        $bones->couch->setDatabase('_users');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+
+        if (!$this->isValidEmail($email)) {
+            return -1; //email already in use
+        }
+
+        $this->roles = array();
+        $this->name = preg_replace('/[^a-z0-9-]/', '', strtolower($username));
+        $this->_id = 'org.couchdb.user:' . $this->name;
+        $this->salt = $bones->couch->generateIDs(1)->body->uuids[0];
+        $this->password_sha = sha1($password . $this->salt);
+
+        try {
+            $bones->couch->put($this->_id, $this->to_json());
+            //$bones->couch->send("PUT", "/".$this->name); 
+        } catch (SagCouchException $e) {
+            if ($e->getCode() == "409") {
+                return -2; //the username already exist
+            }
+        }
+        $this->creatDBForUser($username);
+    }
+
     public static function logout() {
         $bones = new Bones();
         $bones->couch->login(null, null);

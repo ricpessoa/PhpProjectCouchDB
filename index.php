@@ -174,7 +174,7 @@ post('/device', function($app) {
 
         $app->set('success', 'Yes device saved');
         //$app->render('/devices/newdevice');
-        $app->redirect('/devices/editdevice/'.$device->_id);
+        $app->redirect('/devices/editdevice/' . $device->_id);
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
@@ -224,20 +224,20 @@ post('/sensor/:id/:rev', function($app) {
 
 /* --------------- SAFEZONE --------------- */
 /*
-get('/safezone/showsafezones', function($app) {
-    if (User::is_authenticated()) {
-        $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
-        $app->set('numberSafezones', $numSafezones);
-        if ($numSafezones != 0) {
-            $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
-        }
-        $app->render('safezone/showsafezones');
-    } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
-    }
-});
-*/
+  get('/safezone/showsafezones', function($app) {
+  if (User::is_authenticated()) {
+  $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
+  $app->set('numberSafezones', $numSafezones);
+  if ($numSafezones != 0) {
+  $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
+  }
+  $app->render('safezone/showsafezones');
+  } else {
+  $app->set('error', 'You must be logged in to do that.');
+  $app->render('user/login');
+  }
+  });
+ */
 post('/safezone', function($app) {
     if (User::is_authenticated()) {
         $safezone_data = $app->form('safezone');
@@ -332,5 +332,69 @@ post('/deletesafezone/:id/:rev', function($app) {
     }
 });
 /* END SAFEZONE */
+
+/* METHODS TO MOBILE APPLICATIONS */
+
+post('/applogin', function($app) {
+    if (isset($_POST["username"]) && isset($_POST["password"])) {
+        $username = $_POST["username"];
+        $password = $_POST["password"];
+        $response = array();
+
+
+        $user = new User();
+        $respLogin = $user->appLogin($username, $password);
+
+        if ($username == $respLogin) {
+            $response['error'] = false;
+            $response['code'] = 1;
+            $response['message'] = "Login Successfull";
+        } else {
+            $response['error'] = true;
+            $response['ceode'] = -1; //'Incorrect login credentials.'
+            $response['message'] = "An error occurred. Please try again";
+        }
+        //$response[test] = "username=" . $username . "password=" . $password . "res=".$respLogin;
+        echo json_encode($response);
+    } else {
+        echo "Error";
+    }
+});
+/*
+ *  */
+post('/appregister', function($app) {
+    if (isset($_POST["name"]) && isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["password"])) {
+        $name = $_POST["name"];
+        $email = $_POST["email"];
+        $username = $_POST["username"];
+        $password = $_POST["password"];
+        $response = array();
+
+
+        $user = new User();
+        $user->full_name = $name;
+        $user->email = $email;
+        $respRegister = $user->appRegister($name, $email, $username, $password);
+
+        if ($respRegister == -1) {
+            $response['error'] = true;
+            $response['code'] = -1;
+            $response['message'] = "This email already exists";
+        } else if ($respRegister == -2) {
+            $response['error'] = true;
+            $response['code'] = -2;
+            $response['message'] = "A user with this username already exists";
+        } else {
+            $response['error'] = false;
+            $response['code'] = 1;
+            $response['message'] = "Register successfull";
+        }
+        //$response[test] = "name=" . $name . "email=" . $email . "username=" . $username . "password=" . $password;
+        echo json_encode($response);
+    } else {
+        echo "Error";
+    }
+});
+
 
 resolve(); //if the route not exist page not found
