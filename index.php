@@ -397,4 +397,59 @@ post('/appregister', function($app) {
 });
 
 
+post('/devicepost', function($app) {
+    /* from device */
+    $macaddress = $_POST["mac"];
+    $battery = $_POST["batt"];
+    /* from gps */
+    $latfrom = $_POST["latfrom"];
+    $lonfrom = $_POST["lngfrom"];
+    $latto = $_POST["latto"];
+    $lonto = $_POST["lonto"];
+    /* from temperature */
+    $temperature = $_POST["temp"];
+    /* from panic button */
+    $pressed = $_POST["press"];
+
+    //get in couchdb the safezones (view
+    //foreach safezones points
+    //calc the distance is < radius [check in]
+    //else distance > radius [check out]
+});
+/*
+  function haversineGreatCircleDistance(
+  $latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000)
+  {
+  // convert from degrees to radians
+  $latFrom = deg2rad($latitudeFrom);
+  $lonFrom = deg2rad($longitudeFrom);
+  $latTo = deg2rad($latitudeTo);
+  $lonTo = deg2rad($longitudeTo);
+
+  $latDelta = $latTo - $latFrom;
+  $lonDelta = $lonTo - $lonFrom;
+
+  $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+  cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+  return $angle * $earthRadius;
+  }
+
+  get('/', function($app) {
+  if (User::is_authenticated()) {
+  $devices = Device::getDevices(User::current_user());
+  $app->set('devices', $devices);
+  }
+  /*
+  41.112564,-8.629493 ( casa )
+  41.106511,-8.62683 (casa da avó)
+  41.23206,-8.698981(casa da ines)
+  $distanceA = haversineGreatCircleDistance(41.112564, -8.629493, 41.106511, -8.62683);
+  $distanceB = haversineGreatCircleDistance(41.112564, -8.629493, 41.23206,-8.698981);
+
+  $app->set('success', 'Welcome Back! Distance A:'.$distanceA." Distance B:".$distanceB);
+  $app->render('home');
+
+
+  });
+ *  */
 resolve(); //if the route not exist page not found
