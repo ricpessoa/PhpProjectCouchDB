@@ -404,35 +404,39 @@ post('/devicepost', function($app) {
     /* from gps */
     $latfrom = $_POST["latfrom"];
     $lonfrom = $_POST["lngfrom"];
-    $latto = $_POST["latto"];
-    $lonto = $_POST["lonto"];
     /* from temperature */
     $temperature = $_POST["temp"];
     /* from panic button */
     $pressed = $_POST["press"];
+    $response = array();
 
+    $usernamedb = User::findUsernameByMACAddress($macaddress);
+
+    if ($usernamedb == NULL) {
+        /* test only for when user add new device */
+        //$devices = User::registeDeviceInUser("rpessoa", $macaddress, FALSE);
+        $response['error'] = true;
+        $response['message'] = "Device not found to user: " . $macaddress . " - " . $devices;
+    } else {
+        /* test only for when user delete device */
+        //$devices = User::registeDeviceInUser("rpessoa", $macaddress, TRUE);
+        $str = "";
+        if ($latfrom != NULL && $lonfrom != NULL) {
+            $str.= MSGPS::saveMonitoringSensor($usernamedb, $macaddress, $latfrom, $lonfrom);
+        }
+        $response['error'] = false;
+        $response['message'] = $usernamedb . " found " . $str;
+
+        //echo ''.$usernamedb;
+    }
+    echo json_encode($response);
     //get in couchdb the safezones (view
     //foreach safezones points
     //calc the distance is < radius [check in]
     //else distance > radius [check out]
 });
 /*
-  function haversineGreatCircleDistance(
-  $latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000)
-  {
-  // convert from degrees to radians
-  $latFrom = deg2rad($latitudeFrom);
-  $lonFrom = deg2rad($longitudeFrom);
-  $latTo = deg2rad($latitudeTo);
-  $lonTo = deg2rad($longitudeTo);
 
-  $latDelta = $latTo - $latFrom;
-  $lonDelta = $lonTo - $lonFrom;
-
-  $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
-  cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
-  return $angle * $earthRadius;
-  }
 
   get('/', function($app) {
   if (User::is_authenticated()) {

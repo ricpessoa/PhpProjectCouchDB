@@ -30,7 +30,7 @@ if ($msgps === NULL) {
                                 <img class="media-object thumbnail" src="https://cbks0.google.com/cbk?output=thumbnail&w=120&h=120&ll=<?php echo $_gps->latitude; ?>,<?php echo $_gps->longitude; ?>&thumb=0" style="width: 64px; height: 64px;">
                             </a>
                             <div class="media-body">
-                                <h4 class="media-heading">Check-in</h4>
+                                <h4 class="media-heading"><?php echo $_gps->notification; ?></h4>
                                 <!--<div id="streatname<?php echo '' . $z; ?>"></div>-->
                                 <?php echo $_gps->address . "<br>"; ?>
                                 <?php echo 'in ' . $_gps->timestamp; ?>

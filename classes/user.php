@@ -8,6 +8,7 @@ class User extends Base {
     protected $salt;
     protected $password_sha;
     protected $roles;
+    protected $devices;
 
     public function __construct() {
         parent::__construct('user');
@@ -29,6 +30,8 @@ class User extends Base {
         }
 
         $this->roles = array();
+        $this->devices = array();
+
         $this->name = preg_replace('/[^a-z0-9-]/', '', strtolower($username));
         $this->_id = 'org.couchdb.user:' . $this->name;
         $this->salt = $bones->couch->generateIDs(1)->body->uuids[0];
@@ -124,32 +127,6 @@ class User extends Base {
         }
     }
 
-    public function appRegister($name, $email, $username, $password) {
-        $bones = new Bones();
-        $bones->couch->setDatabase('_users');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-
-        if (!$this->isValidEmail($email)) {
-            return -1; //email already in use
-        }
-
-        $this->roles = array();
-        $this->name = preg_replace('/[^a-z0-9-]/', '', strtolower($username));
-        $this->_id = 'org.couchdb.user:' . $this->name;
-        $this->salt = $bones->couch->generateIDs(1)->body->uuids[0];
-        $this->password_sha = sha1($password . $this->salt);
-
-        try {
-            $bones->couch->put($this->_id, $this->to_json());
-            //$bones->couch->send("PUT", "/".$this->name); 
-        } catch (SagCouchException $e) {
-            if ($e->getCode() == "409") {
-                return -2; //the username already exist
-            }
-        }
-        $this->creatDBForUser($username);
-    }
-
     public static function logout() {
         $bones = new Bones();
         $bones->couch->login(null, null);
@@ -207,7 +184,6 @@ class User extends Base {
             }
         }
 
-
         if ($rows) {
             return FALSE;
         } else {
@@ -218,6 +194,103 @@ class User extends Base {
     public function gravatar($size = '50') {
         return 'http://www.gravatar.com/avatar/?gravatar_id=' . md5(strtolower($this->email)) . '&size=' . $size;
     }
+
+    /* this methods is to */
+
+    public function appRegister($name, $email, $username, $password) {
+        $bones = new Bones();
+        $bones->couch->setDatabase('_users');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+
+        if (!$this->isValidEmail($email)) {
+            return -1; //email already in use
+        }
+
+        $this->roles = array();
+        $this->name = preg_replace('/[^a-z0-9-]/', '', strtolower($username));
+        $this->_id = 'org.couchdb.user:' . $this->name;
+        $this->salt = $bones->couch->generateIDs(1)->body->uuids[0];
+        $this->password_sha = sha1($password . $this->salt);
+
+        try {
+            $bones->couch->put($this->_id, $this->to_json());
+            //$bones->couch->send("PUT", "/".$this->name); 
+        } catch (SagCouchException $e) {
+            if ($e->getCode() == "409") {
+                return -2; //the username already exist
+            }
+        }
+        $this->creatDBForUser($username);
+    }
+
+    public function findUsernameByMACAddress($macaddress) {
+        $bones = new Bones();
+        $bones->couch->setDatabase('_users');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+
+        foreach ($bones->couch->get('_design/application/_view/get_username_by_mac_address?key="' . $macaddress . '"')->body->rows as $_mac_address) {
+            return $_mac_address->value;
+        }
+
+        return NULL;
+    }
+
+    public function registeDeviceInUser($username, $device, $delete) {
+        $bones = new Bones();
+        $bones->couch->setDatabase('_users');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+        
+        $document = $bones->couch->get('org.couchdb.user:' . $username)->body;
+        $devices = $document->devices;
+        $str = "add ->";
+        $alreadyHaveThisDevice = FALSE;
+        $i = 0;
+        foreach ($devices as $_device) {
+            if ($_device == $device) {
+                $str.=" " . $_device . "  ";
+                $alreadyHaveThisDevice = true;
+                if ($delete == TRUE) {
+                    //array_pop($devices);
+                    unset($devices[$i]);
+                    $str.="delete = ".$_device."!";
+                }
+                break;
+            }
+            $i++;
+        }
+        if($alreadyHaveThisDevice == FALSE){
+            array_push($devices, $device);
+        }
+        $document->devices = $devices;
+        
+        $str .= "show ->";
+
+        foreach ($devices as $_device) {
+            $str.=" - " . $_device . " - ";
+        }
+        
+        $bones->couch->put($document->_id, $document);
+        
+        return $str;
+        
+    }
+
+//    public function addAddDeviceInUserDB($usename, $macaddress) {
+//        $bones = new Bones();
+//        $bones->couch->setDatabase('_users');
+//        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+//
+//        $user = $bones->couch->get($usename)->body;
+//
+//        return 'devices: ' . $user->value->devices;
+//        /*
+//          foreach ($bones->couch->get('_design/application/_view/get_devices_by_username?key="' . $usename . '"&reduce=false')->body->rows as $_devices) {
+//          $_devices
+//          //return $device;
+//          }
+//          return NULL;
+//          } */
+//    }
 
     public function createFakeData($username) {
         $bones = new Bones();
