@@ -89,30 +89,46 @@ class MSGPS extends Base {
         $safezonesArray = Safezone::getSafezonesByUserAndDevice($username, $macaddress);
         $str = "";
         $smalldistance = INF;
+        $inside = false;
+        $bestSafezone = NULL;
         $typeNotification = "";
+
         foreach ($safezonesArray as $_safezone) {
             $distanceFromSafezoneToCoordinatorReceived = MSGPS::haversineGreatCircleDistance($_safezone->latitude, $_safezone->longitude, $lat, $lng);
             $str.=$_safezone->name;
-            if ($_safezone->notification === "ALL") {
-                $str.="->check in and check out";
-            } else if ($_safezone->notification === "CHECK_INS_ONLY") {
-                $str.="->check in";
-            } else if ($_safezone->notification === "CHECK_OUTS_ONLY") {
-                $str.="->check out";
-            }
-            if ($distanceFromSafezoneToCoordinatorReceived <= $_safezone->radius && ($_safezone->notification === "ALL" || $_safezone->notification === "CHECK_INS_ONLY" )) {
+
+            if ($distanceFromSafezoneToCoordinatorReceived <= $_safezone->radius) {
                 $smalldistance = $distanceFromSafezoneToCoordinatorReceived;
+                $inside = TRUE;
+                $bestSafezone = $_safezone;
                 $typeNotification = "CHECK-IN";
-                break;
+                break; //if point inside of Safezone stop locking
             }
-            if ($distanceFromSafezoneToCoordinatorReceived < $smalldistance && $distanceFromSafezoneToCoordinatorReceived > $_safezone->radius && ($_safezone->notification === "ALL" || $_safezone->notification === "CHECK_OUTS_ONLY")) {
+            if ($distanceFromSafezoneToCoordinatorReceived < $smalldistance && $distanceFromSafezoneToCoordinatorReceived > $_safezone->radius) {
                 $smalldistance = $distanceFromSafezoneToCoordinatorReceived;
+                $inside = FALSE;
                 $typeNotification = "CHECK-OUT";
+                $bestSafezone = $_safezone;
+                // find the safezone closer of point
             }
         }
-        if ($smalldistance < INF) {
-            $str.=" try save " . $typeNotification . " - " . $smalldistance . " need calc streetname ";
-            $str.= MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification);
+        $saveMonitoringSensorGPS = false;
+
+        if ($smalldistance < INF && $bestSafezone != NULL) {
+            $str.="small distance:" . $smalldistance;
+            if ($bestSafezone->notification === "ALL") {
+                $saveMonitoringSensorGPS = TRUE;
+            } else if ($bestSafezone->notification === "CHECK_INS_ONLY" && $inside == TRUE) {
+                $saveMonitoringSensorGPS = TRUE;
+            } else if ($bestSafezone->notification === "CHECK_OUTS_ONLY" && $inside == FALSE) {
+                $saveMonitoringSensorGPS = TRUE;
+            }
+
+            if ($saveMonitoringSensorGPS) {
+                $str.= MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification);
+            } else {
+                $str.="not necessary to save!!!";
+            }
         }
         return $str;
     }
