@@ -422,7 +422,23 @@ post('/devicepost', function($app) {
         //$devices = User::registeDeviceInUser("rpessoa", $macaddress, TRUE);
         $str = "";
         if ($latfrom != NULL && $lonfrom != NULL) {
-            $str.= MSGPS::saveMonitoringSensor($usernamedb, $macaddress, $latfrom, $lonfrom);
+            $str.= MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom);
+        } else {
+            $str.="|| _GPS null";
+        }
+        if ($temperature != NULL) {
+            $str.= MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $temperature);
+        } else {
+            $str.="|| _Temperature null";
+        }
+
+        if ($pressed != NULL) {
+            $boolPressed = $pressed === 'true' ? true : false;
+            if ($boolPressed) {
+                $str.= MSPanicButton::saveMonitoringSensorPanicButton($usernamedb, $macaddress, $boolPressed);
+            }
+        } else {
+            $str.="|| _Panic Button null or false";
         }
         $response['error'] = false;
         $response['message'] = $usernamedb . " found " . $str;
@@ -430,30 +446,6 @@ post('/devicepost', function($app) {
         //echo ''.$usernamedb;
     }
     echo json_encode($response);
-    //get in couchdb the safezones (view
-    //foreach safezones points
-    //calc the distance is < radius [check in]
-    //else distance > radius [check out]
 });
-/*
 
-
-  get('/', function($app) {
-  if (User::is_authenticated()) {
-  $devices = Device::getDevices(User::current_user());
-  $app->set('devices', $devices);
-  }
-  /*
-  41.112564,-8.629493 ( casa )
-  41.106511,-8.62683 (casa da avó)
-  41.23206,-8.698981(casa da ines)
-  $distanceA = haversineGreatCircleDistance(41.112564, -8.629493, 41.106511, -8.62683);
-  $distanceB = haversineGreatCircleDistance(41.112564, -8.629493, 41.23206,-8.698981);
-
-  $app->set('success', 'Welcome Back! Distance A:'.$distanceA." Distance B:".$distanceB);
-  $app->render('home');
-
-
-  });
- *  */
 resolve(); //if the route not exist page not found

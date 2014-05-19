@@ -40,11 +40,11 @@ class MSGPS extends Base {
     public function getMonitoringSensorByKeys($username, $macAddress, $subtype) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
-        //$arrayTimes = array();
+//$arrayTimes = array();
         $sensorsGps = array();
         try {
             foreach ($bones->couch->get('_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=5&descending=true')->body->rows as $_monitoringGPS) {
-                //array_push($arrayTimes, "ola");
+//array_push($arrayTimes, "ola");
                 $monitoringSensorGPS = new MSGPS();
 
                 $monitoringSensorGPS->_id = $_monitoringGPS->id;
@@ -70,7 +70,7 @@ class MSGPS extends Base {
     }
 
     public function getArrayOfGPSToJson($array) {
-        //return json_encode($array);
+//return json_encode($array);
         $jsonReturn = "";
         foreach ($array as $_row) {
             $jsonReturn.='{'
@@ -85,11 +85,43 @@ class MSGPS extends Base {
         return "[" . substr($jsonReturn, 0, -1) . "]";
     }
 
-    public function saveMonitoringSensor($username, $macaddress, $lat, $lng) {
+    public function calcIfCheckInOrCheckOut($username, $macaddress, $lat, $lng) {
+        $safezonesArray = Safezone::getSafezonesByUserAndDevice($username, $macaddress);
+        $str = "";
+        $smalldistance = INF;
+        $typeNotification = "";
+        foreach ($safezonesArray as $_safezone) {
+            $distanceFromSafezoneToCoordinatorReceived = MSGPS::haversineGreatCircleDistance($_safezone->latitude, $_safezone->longitude, $lat, $lng);
+            $str.=$_safezone->name;
+            if ($_safezone->notification === "ALL") {
+                $str.="->check in and check out";
+            } else if ($_safezone->notification === "CHECK_INS_ONLY") {
+                $str.="->check in";
+            } else if ($_safezone->notification === "CHECK_OUTS_ONLY") {
+                $str.="->check out";
+            }
+            if ($distanceFromSafezoneToCoordinatorReceived <= $_safezone->radius && ($_safezone->notification === "ALL" || $_safezone->notification === "CHECK_INS_ONLY" )) {
+                $smalldistance = $distanceFromSafezoneToCoordinatorReceived;
+                $typeNotification = "CHECK-IN";
+                break;
+            }
+            if ($distanceFromSafezoneToCoordinatorReceived < $smalldistance && $distanceFromSafezoneToCoordinatorReceived > $_safezone->radius && ($_safezone->notification === "ALL" || $_safezone->notification === "CHECK_OUTS_ONLY")) {
+                $smalldistance = $distanceFromSafezoneToCoordinatorReceived;
+                $typeNotification = "CHECK-OUT";
+            }
+        }
+        if ($smalldistance < INF) {
+            $str.=" try save " . $typeNotification . " - " . $smalldistance . " need calc streetname ";
+            $str.= MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification);
+        }
+        return $str;
+    }
+
+    public function saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification) {
         $monitoringSensorGPS = new MSGPS();
         $timestamp = time();
 
-        $monitoringSensorGPS->_id = $macaddress . "_" . $timestamp;
+        $monitoringSensorGPS->_id = $macaddress . "_ms_gps_" . $timestamp;
         $monitoringSensorGPS->type = "monitoring_sensor";
         $monitoringSensorGPS->subtype = "GPS";
         $monitoringSensorGPS->latitude = $lat;
@@ -97,15 +129,8 @@ class MSGPS extends Base {
         $monitoringSensorGPS->timestamp = $timestamp;
         $monitoringSensorGPS->mac_address = $macaddress;
         $monitoringSensorGPS->address = "get mtf address from google maps!";
+        $monitoringSensorGPS->notification = $typeNotification;
 
-        //calc if the coordinators is out of safezones
-        // 41.112564,-8.629493 ( casa ) to coordinator received
-        $distanceFromSafezoneToCoordinatorReceived = MSGPS::haversineGreatCircleDistance(41.112564, -8.629493, $lat, $lng);
-        if ($distanceFromSafezoneToCoordinatorReceived <= 1000) {
-            $monitoringSensorGPS->notification = "Check-in";
-        } else {
-            $monitoringSensorGPS->notification = "Check-out";
-        }
         $bones = new Bones();
         $bones->couch->setDatabase($username);
         try {
@@ -113,11 +138,11 @@ class MSGPS extends Base {
         } catch (SagCouchException $e) {
             return "some error in save monitoring gps";
         }
-        return "see in couchdb ".$username.",".$macaddress.", ".$lat."," .$lng.",".$distanceFromSafezoneToCoordinatorReceived;
+        return " - see in couchdb " . $username . "," . $macaddress . ", " . $lat . "," . $lng . "," . $typeNotification;
     }
 
     public function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000) {
-        // convert from degrees to radians
+// convert from degrees to radians
         $latFrom = deg2rad($latitudeFrom);
         $lonFrom = deg2rad($longitudeFrom);
         $latTo = deg2rad($latitudeTo);
