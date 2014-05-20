@@ -3,7 +3,6 @@ window.arrayOfSafezones = new Array();
 window.arrayMarkersSafezones = new Array();
 window.arrayOfPOI = new Array();
 window.objJsonSafezone;
-var newArrayPoint = new Array();
 var newMarkers = new Array();
 var newAddress = new Array();
 var newArrayPoint = new Array();
@@ -31,7 +30,7 @@ function getSafezones(dataSafezone) {
 
         if (window.update)
             deviceAddress = objJsonSafezone.safezones[x].device;
-        
+
         arrayMarkersSafezones[x] = marker;
         arrayOfSafezones[x] = safezone;
         map.addMarker(arrayMarkersSafezones[x]);
@@ -356,6 +355,7 @@ function removePreviousSearch() {
     newMarkers = [];
     newAddress = [];
     newArrayPoint = [];
+    arrayOfSafezones = [];
 
 }
 
