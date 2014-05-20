@@ -30,6 +30,7 @@ class Device extends Base {
         }
         try {
             $bones->couch->put($this->_id, $arr);
+            User::registeDeviceInUser(User::current_user(), $this->_id, FALSE);
         } catch (SagCouchException $e) {
             if ($e->getCode() == "409") {
                 $bones->set('error', 'A device with this mac address already exists.');
@@ -86,7 +87,6 @@ class Device extends Base {
         }
     }
 
-   
     public function getNumberOfDevices($username) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);

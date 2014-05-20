@@ -59,7 +59,7 @@ get('/user/:username', function($app) {
         $app->set('post_count', Post::get_post_count_by_user($app->request('username')));
         $app->render('user/profile');
     } else {
-        //$app->redirect('/user/' . User::current_user());
+//$app->redirect('/user/' . User::current_user());
         $app->redirect('/');
     }
 });
@@ -173,7 +173,7 @@ post('/device', function($app) {
         $device->create();
 
         $app->set('success', 'Yes device saved');
-        //$app->render('/devices/newdevice');
+//$app->render('/devices/newdevice');
         $app->redirect('/devices/editdevice/' . $device->_id);
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -190,7 +190,7 @@ post('/deletedevice/:id/:rev', function($app) {
         $device->_id = $app->request('id');
         $device->_rev = $app->request('rev');
         $device->delete(User::current_user());
-
+        User::registeDeviceInUser(User::current_user(), $device->_id , TRUE);
         $app->set('success', 'Delete Device successfull');
         $app->redirect('/devices/showdevices');
     } else {
@@ -213,7 +213,7 @@ post('/deletedevice/:id/:rev', function($app) {
 post('/sensor/:id/:rev', function($app) {
     if (User::is_authenticated()) {
         Temperature::updateTemperature(User::current_user(), $app->request('id'), $app->request('rev'), $app->form('max_temp_notification'), $app->form('min_temp_notification'));
-        //$app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
+//$app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
         $app->redirect('/device/editdevice/' . $app->request('id'));
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -253,8 +253,8 @@ post('/safezone', function($app) {
         $safezone->radius = $json_safezone["radius"];
         $safezone->notification = $json_safezone["notification"];
         $safezone->device = $json_safezone["device"];
-        //$safezone->timestamp= $json_safezone["timestamp"]; //timestamp generate by server
-        //$safezone->shared = $json_safezone["shared"]; //safezone sared by other devices not yet implemented
+//$safezone->timestamp= $json_safezone["timestamp"]; //timestamp generate by server
+//$safezone->shared = $json_safezone["shared"]; //safezone sared by other devices not yet implemented
         $safezone->create();
 
 
@@ -263,7 +263,7 @@ post('/safezone', function($app) {
         if ($numSafezones != 0) {
             $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
         }
-        //$app->set('success', 'Yes safezone saved');
+//$app->set('success', 'Yes safezone saved');
         $app->redirect('/devices/editdevice/' . $safezone->device);
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -354,7 +354,7 @@ post('/applogin', function($app) {
             $response['ceode'] = -1; //'Incorrect login credentials.'
             $response['message'] = "An error occurred. Please try again";
         }
-        //$response[test] = "username=" . $username . "password=" . $password . "res=".$respLogin;
+//$response[test] = "username=" . $username . "password=" . $password . "res=".$respLogin;
         echo json_encode($response);
     } else {
         echo "Error";
@@ -389,13 +389,36 @@ post('/appregister', function($app) {
             $response['code'] = 1;
             $response['message'] = "Register successfull";
         }
-        //$response[test] = "name=" . $name . "email=" . $email . "username=" . $username . "password=" . $password;
+//$response[test] = "name=" . $name . "email=" . $email . "username=" . $username . "password=" . $password;
         echo json_encode($response);
     } else {
         echo "Error";
     }
 });
 
+post('/deviceAddOrDelete', function($app) {
+    if (isset($_POST["name"]) && isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["password"])) {
+
+        $userDB = $_POST["user"];
+        $macaddress = $_POST["mac"];
+        $delete = $_POST["delete"];
+
+        $deleteDevice = $delete === 'true' ? true : false;
+        $response = array();
+
+        $deviceResponse = User::registeDeviceInUser($userDB, $macaddress, $deleteDevice);
+        if ($deviceResponse != NULL) {
+            $response['error'] = false;
+            $response['message'] = "Add device in " . $userDB . "Save successful ";
+        } else {
+            $response['error'] = true;
+            $response['message'] = "Error try to save device in " . $userDB;
+        }
+    } else {
+        $response['error'] = true;
+        $response['message'] = "Error receiving data";
+    }
+});
 
 post('/devicepost', function($app) {
     /* from device */
@@ -414,12 +437,12 @@ post('/devicepost', function($app) {
 
     if ($usernamedb == NULL) {
         /* test only for when user add new device */
-        //$devices = User::registeDeviceInUser("rpessoa", $macaddress, FALSE);
+//$devices = User::registeDeviceInUser("rpessoa", $macaddress, FALSE);
         $response['error'] = true;
         $response['message'] = "Device not found to user: " . $macaddress . " - " . $devices;
     } else {
         /* test only for when user delete device */
-        //$devices = User::registeDeviceInUser("rpessoa", $macaddress, TRUE);
+//$devices = User::registeDeviceInUser("rpessoa", $macaddress, TRUE);
         $str = "";
         if ($latfrom != NULL && $lonfrom != NULL) {
             $str.= MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom);
@@ -443,7 +466,7 @@ post('/devicepost', function($app) {
         $response['error'] = false;
         $response['message'] = $usernamedb . " found " . $str;
 
-        //echo ''.$usernamedb;
+//echo ''.$usernamedb;
     }
     echo json_encode($response);
 });

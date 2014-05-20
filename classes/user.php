@@ -239,7 +239,7 @@ class User extends Base {
         $bones = new Bones();
         $bones->couch->setDatabase('_users');
         $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-        
+
         $document = $bones->couch->get('org.couchdb.user:' . $username)->body;
         $devices = $document->devices;
         $str = "add ->";
@@ -252,45 +252,35 @@ class User extends Base {
                 if ($delete == TRUE) {
                     //array_pop($devices);
                     unset($devices[$i]);
-                    $str.="delete = ".$_device."!";
+                    //$devices[$i] = "";
+                    //$devices = array_diff($devices, array($_device));
+                    $str.="delete = " . $_device . "!";
                 }
                 break;
             }
             $i++;
         }
-        if($alreadyHaveThisDevice == FALSE){
+        if ($alreadyHaveThisDevice == FALSE) {
             array_push($devices, $device);
         }
-        $document->devices = $devices;
-        
+        $document->devices = array_values($devices);
+
         $str .= "show ->";
 
         foreach ($devices as $_device) {
             $str.=" - " . $_device . " - ";
         }
-        
-        $bones->couch->put($document->_id, $document);
-        
-        return $str;
-        
-    }
+        try {
+            
+        } catch (SagCouchException $exc) {
+            echo $exc->getTraceAsString();
+            return NULL;
+        }
 
-//    public function addAddDeviceInUserDB($usename, $macaddress) {
-//        $bones = new Bones();
-//        $bones->couch->setDatabase('_users');
-//        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-//
-//        $user = $bones->couch->get($usename)->body;
-//
-//        return 'devices: ' . $user->value->devices;
-//        /*
-//          foreach ($bones->couch->get('_design/application/_view/get_devices_by_username?key="' . $usename . '"&reduce=false')->body->rows as $_devices) {
-//          $_devices
-//          //return $device;
-//          }
-//          return NULL;
-//          } */
-//    }
+        $bones->couch->put($document->_id, $document);
+
+        return $str;
+    }
 
     public function createFakeData($username) {
         $bones = new Bones();
