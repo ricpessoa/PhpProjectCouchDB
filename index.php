@@ -450,7 +450,8 @@ post('/devicepost', function($app) {
             $str.="|| _GPS null";
         }
         if ($temperature != NULL) {
-            $str.= MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $temperature);
+            $str.= MSTemperature::calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $temperature);
+           // $str.= MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $temperature);
         } else {
             $str.="|| _Temperature null";
         }

@@ -6,8 +6,7 @@ class MSTemperature extends Base {
     protected $value;
     protected $timestamp;
     protected $mac_address;
-    //protected $arrayValues;
-    //protected $arrayTimes;
+    protected $notification; //{"LOW", "RANGE","HIGH"};
 
     public function __construct($type) {
         parent::__construct($type);
@@ -23,15 +22,6 @@ class MSTemperature extends Base {
             $monitoringSensor = new MSTemperature();
 
             foreach ($bones->couch->get('_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=24&descending=false')->body->rows as $_monitoring) {
-//$monitoringSensor = new MonitoringSensor();
-//$monitoringSensor->_id = $_monitoring->id;
-//$monitoringSensor->_rev = $_monitoring->value->_rev;
-//$monitoringSensor->type = $_monitoring->value->type;
-//$monitoringSensor->subtype = $_monitoring->value->date_created;
-//$monitoringSensor->value = $_monitoringgetArrayValues();
-//$monitoringSensor->timestamp = $_monitoring->value->timestamp;
-//$monitoringSensor->mac_address = $_monitoring->value->mac_address;
-//$monitoringSensor
                 array_push($sensorsTime, date('d/m H:i:s', $_monitoring->value->timestamp));
                 array_push($sensorsValues, $_monitoring->value->value);
 
@@ -55,7 +45,7 @@ class MSTemperature extends Base {
         return json_encode($this->arrayTimes);
     }
 
-    public function saveMonitoringSensorTemperature($username, $macaddress, $temperature) {
+    public function saveMonitoringSensorTemperature($username, $macaddress, $temperature,$notification) {
         $monitoringSensorTemperature = new MSTemperature();
         $timestamp = time();
         $monitoringSensorTemperature->_id = $macaddress . "_ms_tmp_" . $timestamp;
@@ -64,6 +54,7 @@ class MSTemperature extends Base {
         $monitoringSensorTemperature->value = (float)$temperature;
         $monitoringSensorTemperature->timestamp = $timestamp;
         $monitoringSensorTemperature->mac_address = $macaddress;
+        $monitoringSensorTemperature->notification = $notification;
 
         $bones = new Bones();
         $bones->couch->setDatabase($username);
@@ -74,5 +65,26 @@ class MSTemperature extends Base {
         }
         return " - see in couchdb value TEMPERATURE:" . $temperature;
     }
-
+    
+    public function calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $numTemperature) {
+        $temperature = Sensor::getSensorTemperatureByUserAndDevice($usernamedb, $macaddress);
+        if($temperature==NULL){
+            return "Error the device "+$macaddress+" dont have sensor temperature";
+        }
+      
+        $minTemp = $temperature->min_temperature;
+        $maxTemp = $temperature->max_temperature;
+        //return "received ".$minTemp ."and" .$maxTemp ."to compare".$numTemperature;
+        $notification = "RANGE";
+        if($minTemp!=null &&  $maxTemp!=null){
+            if($minTemp != $maxTemp){
+                if($minTemp>$numTemperature)
+                    $notification = "LOW";
+                else if($maxTemp<$numTemperature)
+                    $notification = "HIGH";
+            }
+        }
+        //return $minTemp." - ".$numTemperature." - ".$maxTemp." pass ".$notification;
+        return MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $numTemperature, $notification);
+        }
 }

@@ -37,5 +37,22 @@ class Sensor extends Base {
         }
         return $sensors;
     }
+    
+    public function getSensorTemperatureByUserAndDevice($username, $device) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+        foreach ($bones->couch->get('_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false')->body->rows as $_sensor) {
+            if ($_sensor->value->type == "temperature") {
+                $sTemperature = new Temperature();
+                $sTemperature->name_sensor = $_sensor->value->name_sensor;
+                $sTemperature->min_temperature = $_sensor->value->min_temperature;
+                $sTemperature->max_temperature = $_sensor->value->max_temperature;
+                $sTemperature->type = $_sensor->value->type;
+            }
+        }
+        return $sTemperature;
+    }
+    
 
 }
