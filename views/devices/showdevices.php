@@ -59,9 +59,8 @@
                                     <tr>
                                         <td> <i class="icon-tag"></i> <?php echo $sensor->name_sensor; ?></td>
                                         <td>
-
                                             <?php if ($sensor->type == "panic_button") { ?>
-                                                <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" style="visibility:hidden;" onclick="javascript:testemethod('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>')"><i class="icon-pencil icon-white"></i>Edit Settings </button>
+                                                <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" style="visibility:hidden;" onclick="javascript:testemethod('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>')"><i class="icon-pencil icon-white"></i> Settings </button>
                                                 <?php
                                             } else {
                                                 if ($sensor->enable == TRUE) {
