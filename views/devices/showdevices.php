@@ -13,7 +13,7 @@
         <thead>
             <tr>
             <tr>
-                <th>Name</th>
+                <th>Name Device</th>
                 <th>Mac Address</th>
                 <th>Options</th>
             </tr>
@@ -45,34 +45,45 @@
                     <td class="hiddenRow" colspan="3">
                         <div class="accordian-body collapse span6" id="demo<?php echo $i; ?>">
                             <table class="table table-hover " style="margin-top: 5px;margin-bottom: 5px;">
+                                <thead>
+                                    <tr>
+                                    <tr>
+                                        <th>Sensor</th>
+                                        <th style="text-align: center">Options</th>
+                                    </tr>
+                                    </tr>
+                                </thead>
                                 <?php
                                 foreach ($device->sensors as $sensor):
                                     ?>
                                     <tr>
-                                        <td>Sensor <?php echo $sensor->type; ?></td>
+                                        <td> <i class="icon-tag"></i> <?php echo $sensor->name_sensor; ?></td>
                                         <td>
 
                                             <?php if ($sensor->type == "panic_button") { ?>
                                                 <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" style="visibility:hidden;" onclick="javascript:testemethod('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>')"><i class="icon-pencil icon-white"></i>Edit Settings </button>
-                                            <?php
+                                                <?php
                                             } else {
                                                 if ($sensor->enable == TRUE) {
                                                     ?>
-                                                    <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" style="visibility:hidden;" onclick="javascript:testemethod('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>')"><i class="icon-pencil icon-white"></i>Edit Settings </button>
+                                                    <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small"  onclick="javascript:testemethod('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>')"><i class="icon-pencil icon-white"></i> Settings </button>
                                                 <?php } else { ?>
-                                                    <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" onclick="javascript:testemethod('<?php echo $device->_id; ?>')"><i class="icon-pencil icon-white"></i>Edit Settings </button>
+                                                    <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" style="visibility:hidden;" onclick="javascript:testemethod('<?php echo $device->_id; ?>')"><i class="icon-pencil icon-white"></i> Settings </button>
 
                                                     <?php
                                                 }
                                             }
-                                            
                                             ?>
                                             <?php if ($sensor->enable == TRUE) { ?>                                
-                                                <button id="bt_enable<?php echo $j; ?>" type="button" class="btn btn-success btn-small"   onclick="javascript:showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-ok icon-white"></i> Enable </button>
-                                                <button id="bt_disable<?php echo $j; ?>" type="button" class="btn btn-danger btn-small" style="visibility:hidden;" onclick="javascript:showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-remove icon-white"></i> Disable </button>
+                                                <button id="bt_enable<?php echo $j; ?>" type="button" class="btn btn-success btn-small"  style="visibility:hidden;" onclick="javascript:changeEnable('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>', '1');
+                                                                        showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-ok icon-white"></i> Enable </button>
+                                                <button id="bt_disable<?php echo $j; ?>" type="button" class="btn btn-danger btn-small"  onclick="javascript:changeEnable('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>', '0');
+                                                                        showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-remove icon-white"></i> Disable </button>
                                             <?php } else { ?>
-                                                <button id="bt_enable<?php echo $j; ?>" type="button" class="btn btn-success btn-small" style="visibility:hidden;"  onclick="javascript:showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-ok icon-white"></i> Enable </button>
-                                                <button id="bt_disable<?php echo $j; ?>" type="button" class="btn btn-danger btn-small"  onclick="javascript:showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-remove icon-white"></i> Disable </button>
+                                                <button id="bt_enable<?php echo $j; ?>" type="button" class="btn btn-success btn-small" onclick="javascript:changeEnable('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>', '1');
+                                                                        showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-ok icon-white"></i> Enable </button>
+                                                <button id="bt_disable<?php echo $j; ?>" type="button" class="btn btn-danger btn-small" style="visibility:hidden;" onclick="javascript:changeEnable('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>', '0');
+                                                                        showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-remove icon-white"></i> Disable </button>
                                             <?php } ?>
 
                                         </td>
@@ -120,8 +131,21 @@
             var finalURL = '/PhpProjectCouchDB/deletedevice/' + myDocId + '/' + myDocRev;
             $(".modal-footer #form_delete_device").attr('action', finalURL);
         });
-        function testemethod(param) {
-            console.log("teste" + param);
+        /*/sensor/setsensorenable/' . $device->_id . '/' . $device->_rev . '/' . $sensor->type . '/' . 0*/
+        function changeEnable(deviceID, sensorType, value) {
+            //console.log("received: " + "deviceID:" + deviceID + ",sensorType:" + sensorType + ",value:" + value);
+
+            $.ajax({
+                type: 'POST',
+                url: '/PhpProjectCouchDB/sensor/setsensorenable/' + deviceID + "/" + sensorType + "/" + value,
+                context: $(this),
+                success: function() {
+                    //alert("success");
+                },
+                error: function(request, status, error) {
+                    alert('An error occurred, please try again.');
+                }
+            });
         }
         function showEnableOrDisable(sensorposition, type) {
             if (document.getElementById("bt_disable" + sensorposition).style.visibility == "") { //visible
@@ -131,7 +155,7 @@
             } else {
                 document.getElementById('bt_disable' + sensorposition).style.visibility = "";
                 document.getElementById('bt_enable' + sensorposition).style.visibility = "hidden";
-                if(type != "panic_button")
+                if (type != "panic_button")
                     document.getElementById('bt_editsensor' + sensorposition).style.visibility = "";
             }
         }

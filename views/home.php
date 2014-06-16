@@ -19,7 +19,7 @@
                         $varNameDevice = $device->name_device;
                     }
                     ?>
-                    <li <?php if ($i == 1) echo 'class ="active"'; ?>><a href="#pane<?php echo $i; ?>" data-toggle="tab" ><?php echo '<i class="icon-th-large"></i> Device '.$varNameDevice; ?></a></li>
+                    <li <?php if ($i == 1) echo 'class ="active"'; ?>><a href="#pane<?php echo $i; ?>" data-toggle="tab" ><?php echo '<i class="icon-th-large"></i> Device ' . $varNameDevice; ?></a></li>
                     <?php
                     $i = $i + 1;
                 }
@@ -33,16 +33,28 @@
                     <div id="pane<?php echo $i; ?>" class="tab-pane<?php if ($i == 1) echo ' active'; ?>">
                         <?php
                         foreach ($device->sensors as $sensor):
-                            if ($sensor->type === "GPS") {
+                            $numberSensors = 0;
+                            if ($sensor->type === "GPS" && $sensor->enable == TRUE) {
                                 include 'sensors/_gps.php';
+                                $numberSensors++;
                             }
-                            if ($sensor->type === "temperature") {
+                            if ($sensor->type === "temperature" && $sensor->enable == TRUE) {
                                 include 'sensors/_temperature.php';
+                                $numberSensors++;
                             }
-                            if ($sensor->type === "panic_button") {
+                            if ($sensor->type === "panic_button" && $sensor->enable == TRUE) {
                                 include 'sensors/_panicbutton.php';
+                                $numberSensors++;
                             }
+
                         endforeach;
+                        if ($numberSensors == 0) {
+                            ?>
+                            <div class = "alert alert-info">
+                                This device has no active sensors
+                            </div>   
+                            <?php
+                        }
                         ?>
                     </div>
                     <?php
@@ -55,8 +67,8 @@
     } else {
         ?>
         <div class = "alert alert-info">
-        Do not have devices to insert devices go to Page Devices
-    </div>   
+            Do not have devices to insert devices go to Page Devices
+        </div>   
     <?php } ?>
 
 <?php } else { ?>

@@ -67,7 +67,7 @@ class Device extends Base {
         foreach ($bones->couch->get('_design/application/_view/getDevices?key="' . $_id . '"&reduce=false')->body->rows as $_device) {
             $device = new Device();
             $device->_id = $_device->id;
-            //$device->_rev = $_device->value->_rev; to force the couchdb validate
+            $device->_rev =  $_device->value->_rev;
             $device->name_device = $_device->value->name_device;
             $device->timestamp = $_device->value->timestamp;
             $device->sensors = $_device->value->sensors;

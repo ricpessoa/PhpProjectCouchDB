@@ -78,9 +78,8 @@ class Sensor extends Base {
       }
      */
 
-    public function setEnableOfSensor($username, $deviceID, $deviceREV, $sensorType, $enable) {
+    public function setEnableOfSensor($username, $deviceID, $sensorType, $enable) {
         $device = Device::getDevice($username, $deviceID);
-        $device->_rev = $deviceREV;
         foreach ($device->sensors as $_sensor) {
             if ($_sensor->type == $sensorType) {
                 $_sensor->enable = $enable;
