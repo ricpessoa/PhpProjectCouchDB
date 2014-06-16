@@ -40,6 +40,7 @@ class Temperature extends Sensor {
             "min_temperature" => $this->min_temperature,
             "max_temperature" => $this->max_temperature,
             "name_sensor" => $this->name_sensor,
+            "enable" => $this->enable,
             "type" => $this->type
         );
     }

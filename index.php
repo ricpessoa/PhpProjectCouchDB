@@ -220,6 +220,28 @@ post('/sensor/:id/:rev', function($app) {
         $app->render('user/login');
     }
 });
+
+post('/sensor/setsensorenable/:id/:rev/:sensortype/:enable', function($app) {
+    if (User::is_authenticated()) {
+        //$device = new Device();
+        $deviceID = $app->request('id');
+        $deviceREV = $app->request('rev');
+        $sensorType = $app->request('sensortype');
+        $enable = ($app->request('enable') == 1 ? TRUE : FALSE); // returns true
+
+        //$device = Device::getDevice(User::current_user(),$deviceID);
+        Sensor::setEnableOfSensor(User::current_user(),$deviceID,$deviceREV,$sensorType,$enable);
+        //$sensor = Sensor::getSensorByMacAddressandType(User::current_user(), $device->_id, $sensorType);
+        //$sensor->setEnable($enable);
+        //$sensor->saveInDB(User::current_user());
+       
+        $app->set('success', 'receive '.$device->_id." - ".$sensorType ."and".$app->request('enable')."---".(($enable==TRUE)? "yes": "no"));
+        $app->render('/devices/showdevices');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
 /* END SENSOR */
 
 /* --------------- SAFEZONE --------------- */

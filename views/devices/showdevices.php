@@ -21,6 +21,7 @@
         </thead>
         <tbody>
             <?php
+            $j = 0;
             $i = 1;
             foreach ($devices as $device):
                 ?>
@@ -45,12 +46,36 @@
                         <div class="accordian-body collapse span6" id="demo<?php echo $i; ?>">
                             <table class="table table-hover " style="margin-top: 5px;margin-bottom: 5px;">
                                 <?php
-                                $j = 0;
                                 foreach ($device->sensors as $sensor):
                                     ?>
                                     <tr>
                                         <td>Sensor <?php echo $sensor->type; ?></td>
-                                        <td>Options</td>
+                                        <td>
+
+                                            <?php if ($sensor->type == "panic_button") { ?>
+                                                <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" style="visibility:hidden;" onclick="javascript:testemethod('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>')"><i class="icon-pencil icon-white"></i>Edit Settings </button>
+                                            <?php
+                                            } else {
+                                                if ($sensor->enable == TRUE) {
+                                                    ?>
+                                                    <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" style="visibility:hidden;" onclick="javascript:testemethod('<?php echo $device->_id; ?>', '<?php echo $sensor->type; ?>')"><i class="icon-pencil icon-white"></i>Edit Settings </button>
+                                                <?php } else { ?>
+                                                    <button id="bt_editsensor<?php echo $j; ?>" type="button" class="btn btn-info btn-small" onclick="javascript:testemethod('<?php echo $device->_id; ?>')"><i class="icon-pencil icon-white"></i>Edit Settings </button>
+
+                                                    <?php
+                                                }
+                                            }
+                                            
+                                            ?>
+                                            <?php if ($sensor->enable == TRUE) { ?>                                
+                                                <button id="bt_enable<?php echo $j; ?>" type="button" class="btn btn-success btn-small"   onclick="javascript:showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-ok icon-white"></i> Enable </button>
+                                                <button id="bt_disable<?php echo $j; ?>" type="button" class="btn btn-danger btn-small" style="visibility:hidden;" onclick="javascript:showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-remove icon-white"></i> Disable </button>
+                                            <?php } else { ?>
+                                                <button id="bt_enable<?php echo $j; ?>" type="button" class="btn btn-success btn-small" style="visibility:hidden;"  onclick="javascript:showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-ok icon-white"></i> Enable </button>
+                                                <button id="bt_disable<?php echo $j; ?>" type="button" class="btn btn-danger btn-small"  onclick="javascript:showEnableOrDisable(<?php echo $j; ?>, '<?php echo $sensor->type; ?>')"><i class="icon-remove icon-white"></i> Disable </button>
+                                            <?php } ?>
+
+                                        </td>
                                     </tr>
                                     <?php
                                     $j = $j + 1;
@@ -94,8 +119,22 @@
             var myDocRev = $(this).data('rev');
             var finalURL = '/PhpProjectCouchDB/deletedevice/' + myDocId + '/' + myDocRev;
             $(".modal-footer #form_delete_device").attr('action', finalURL);
-
         });
+        function testemethod(param) {
+            console.log("teste" + param);
+        }
+        function showEnableOrDisable(sensorposition, type) {
+            if (document.getElementById("bt_disable" + sensorposition).style.visibility == "") { //visible
+                document.getElementById('bt_disable' + sensorposition).style.visibility = "hidden";
+                document.getElementById('bt_enable' + sensorposition).style.visibility = "";
+                document.getElementById('bt_editsensor' + sensorposition).style.visibility = "hidden";
+            } else {
+                document.getElementById('bt_disable' + sensorposition).style.visibility = "";
+                document.getElementById('bt_enable' + sensorposition).style.visibility = "hidden";
+                if(type != "panic_button")
+                    document.getElementById('bt_editsensor' + sensorposition).style.visibility = "";
+            }
+        }
     </script>
-    <?php
-}?>
+<?php }
+?>

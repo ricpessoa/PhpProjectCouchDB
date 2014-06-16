@@ -54,7 +54,9 @@
         <?php
     } else {
         ?>
-        <p>Não tem devices</p>    
+        <div class = "alert alert-info">
+        Do not have devices to insert devices go to Page Devices
+    </div>   
     <?php } ?>
 
 <?php } else { ?>
