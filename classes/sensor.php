@@ -43,6 +43,33 @@ class Sensor extends Base {
         }
         return $sensors;
     }
+    
+    public function getSensorByType($username, $device,$type) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+
+        $sensors = array();
+
+        foreach ($bones->couch->get('_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false')->body->rows as $_sensor) {
+            if ($_sensor->value->type == "GPS" && "GPS" == $type) {
+                $sensor = new Sensor("GPS");
+                $sensor->enable = $_sensor->value->enable;
+                array_push($sensors, $_sensor->value->type);
+            } else if ($_sensor->value->type == "panic_button" && "panic_button" == $type) {
+                $sensor = new Sensor("panic_button");
+                $sensor->enable = $_sensor->value->enable;
+                array_push($sensors, $_sensor->value->type);
+            } else if ($_sensor->value->type == "temperature" && "temperature" == $type) {
+                $sTemperature = new Temperature();
+                $sTemperature->name_sensor = $_sensor->value->name_sensor;
+                $sTemperature->min_temperature = $_sensor->value->min_temperature;
+                $sTemperature->max_temperature = $_sensor->value->max_temperature;
+                $sTemperature->type = $_sensor->value->type;
+                array_push($sensors, $sTemperature);
+            }
+        }
+        return $sensors;
+    }
 
     public function getSensorTemperatureByUserAndDevice($username, $device) {
         $bones = new Bones();

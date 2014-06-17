@@ -65,15 +65,15 @@
                                             if ($sensor->enable == TRUE) {
                                                 if ($sensor->type == "panic_button") {
                                                     ?>
-                                            <a id="bt_editsensor<?php echo $j; ?>" style="visibility:hidden;" class="btn btn-info btn-small" href="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>"><i class="icon-pencil icon-white"></i>  Settings</a>
-                                                    <!--<button id="bt_editsensor<?php echo $j; ?>" type="button" style="visibility:hidden;" class="btn btn-info btn-small" onclick="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>"><i class="icon-pencil icon-white"></i> Settings </button>-->
+                                                    <a id="bt_editsensor<?php echo $j; ?>" style="visibility:hidden;" class="btn btn-info btn-small" href="<?php echo $this->make_route('/sensors/editsensor/' . $device->_id . '/' . $sensor->type) ?>"><i class="icon-pencil icon-white"></i>  Settings</a>
+                                                            <!--<button id="bt_editsensor<?php echo $j; ?>" type="button" style="visibility:hidden;" class="btn btn-info btn-small" onclick="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>"><i class="icon-pencil icon-white"></i> Settings </button>-->
                                                 <?php } else { ?>
-                                            <a id="bt_editsensor<?php echo $j; ?>"  class="btn btn-info btn-small" href="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>"><i class="icon-pencil icon-white"></i>  Settings</a>
+                                                    <a id="bt_editsensor<?php echo $j; ?>"  class="btn btn-info btn-small" href="<?php echo $this->make_route('/sensors/editsensor/' . $device->_id . '/' . $sensor->type) ?>"><i class="icon-pencil icon-white"></i>  Settings</a>
 
                                                 <?php } ?>
                                                 <input type="checkbox" name="my-checkbox" data-deviceid= "<?php echo $device->_id; ?>" data-idsensor="<?php echo $j; ?>" data-sensortype="<?php echo $sensor->type; ?>" checked>
                                             <?php } else { ?>
-                                            <a id="bt_editsensor<?php echo $j; ?>" style="visibility:hidden;" class="btn btn-info btn-small" href="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>"><i class="icon-pencil icon-white"></i>  Settings</a>
+                                                <a id="bt_editsensor<?php echo $j; ?>" style="visibility:hidden;" class="btn btn-info btn-small" href="<?php echo $this->make_route('/sensors/editsensor/' . $device->_id . '/' . $sensor->type) ?>"><i class="icon-pencil icon-white"></i>  Settings</a>
                                                 <input type="checkbox" name="my-checkbox" data-deviceid= "<?php echo $device->_id; ?>" data-idsensor="<?php echo $j; ?>" data-sensortype="<?php echo $sensor->type; ?>">
                                             <?php } ?>
 

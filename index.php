@@ -224,6 +224,33 @@ post('/sensor/:id/:rev', function($app) {
     }
 });
 
+get('/sensors/editsensor/:device/:sensor', function($app) {
+    if (User::is_authenticated()) {
+        if (Device::deviceExist(User::current_user(), $app->request('device'))) {
+            $arraySensors = Sensor::getSensorByType(User::current_user(), $app->request('device'),$app->request('sensor'));
+            $app->set('arraySensors', $arraySensors); //need get the safezones of device
+
+            $device = new Device();
+            $device->_id = $app->request('device');
+            $device->_rev = Device::getDeviceRevisionByID(User::current_user(), $app->request('device'));
+
+            $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
+
+            $app->set('deviceID', $device->_id);
+            $app->set('deviceREV', $device->_rev);
+            $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device
+            $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
+
+            $app->render('/devices/editdevice');
+        } else {
+            $app->render('error/404');
+        }
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
 post('/sensor/setsensorenable/:id/:sensortype/:enable', function($app) {
     if (User::is_authenticated()) {
         $deviceID = $app->request('id');
