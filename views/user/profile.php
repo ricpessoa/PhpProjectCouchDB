@@ -1,51 +1,52 @@
 <div class="page-header">
-    <h1><?php echo $user->full_name; ?>	
-        <?php if ($is_current_user) { ?>
-        <?php } ?>
-    </h1>
+    <h1>My Profile</h1>
 </div>
-
-<div class="container">
-    <div class="row">
+<div class="container-fluid">
+    <div class="row-fluid">
         <div class="span4">
-            <div class="well sidebar-nav">
-                <ul class="nav nav-list">
-                    <li><h3>User Information</h3></li>
-                    <li><img src="<?php echo $user->gravatar('100'); ?>" /></li>
-                    <li><b>Username:</b> <?php echo $user->name; ?></li>
-                    <li><b>Email:</b> <?php echo $user->email; ?></li>
-                </ul>
-            </div>
+            <p style="text-align:center" class="lead"><b>Username: </b> <?php echo $user->name; ?></p>
+            <img src="<?php echo $user->gravatar('150'); ?>" style=" display: block;margin-left: auto;margin-right: auto;" class="img-polaroid" />
+            <br> <p style="text-align:center" class="lead"><b> Number of Devices: </b> <?php echo sizeof($user->devices); ?></p>
         </div>
         <div class="span8">
-            <?php if ($is_current_user) { ?>
-                <h2>Create a new post</h2>
-                <form action="<?php echo $this->make_route('/post') ?>" method="post">
-                    <textarea id="content" name="content" class="span8" rows="3"></textarea>	
-                    <button id="create_post" class="btn btn-primary">Submit</button>
-                </form>
-            <?php } ?>
-
-            <h2>Posts (<?php echo $post_count; ?>)</h2>
-
-            <?php foreach ($posts as $post): ?>
-                <div class="post-item row">
-                    <div class="span7">
-                        <strong><?php echo $user->name; ?></strong>
-                        <p>
-                            <?php echo $post->content; ?>
-                        </p>
-                        <?php echo $post->date_created; ?>
+            <form action="<?php echo $this->make_route('/edituser') ?>" method="post" >
+                <div class="control-group">
+                    <label class="control-label" for="name">Name</label>
+                    <div class="controls">
+                        <input type="text" minlength="3" name="full_name" id="full_name" value="<?php echo $user->full_name; ?>" required/>
+                        <p class="help-block"></p>
                     </div>
-                    <div class="span1">
-                        <?php if ($is_current_user) { ?>
-                            <a href="<?php echo $this->make_route('/post/delete/' . $post->_id . '/' . $post->_rev) ?>" class="delete">(Delete)</a>
-                        <?php } ?>
-                    </div>
-                    <div class="span8"></div>
                 </div>
-            <?php endforeach; ?>
-
+                <div class="control-group">
+                    <label class="control-label" for="email">Email address</label>
+                    <div class="controls">
+                        <input type="email" name="email" id="email" value="<?php echo $user->email; ?>" required>
+                        <p class="help-block"></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="mobile_phone">Mobile Phone</label>
+                    <div class="controls">
+                        <input type="number" minlength="9" name="mobile_phone" id="mobile_phone" value="<?php echo $user->mobile_phone; ?>"/>
+                        <p class="help-block"></p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="contry">Country</label>
+                    <div class="controls">
+                        <input type="text" minlength="5" name="country" id="country"value="<?php echo $user->country; ?>"/>
+                        <p class="help-block"></p>
+                    </div>
+                </div>
+                <!--<div class="control-group">
+                    <label class="control-label" for="email">Password</label>
+                    <div class="controls">
+                        <input type="password" minlength="5" name="password" id="password" required>
+                        <p class="help-block"></p>
+                    </div>
+                </div>-->
+                <button type="submit" class="btn btn-primary"> Save </button><br />
+            </form>
         </div>
     </div>
 </div>

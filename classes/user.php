@@ -9,6 +9,8 @@ class User extends Base {
     protected $password_sha;
     protected $roles;
     protected $devices;
+    protected $country;
+    protected $mobile_phone;
 
     public function __construct() {
         parent::__construct('user');
@@ -160,7 +162,9 @@ class User extends Base {
             $user->name = $document->name;
             $user->email = $document->email;
             $user->full_name = $document->full_name;
-
+            $user->devices = $document->devices;
+            $user->mobile_phone = $document->mobile_phone;
+            $user->country = $document->country;
             return $user;
         } catch (SagCouchException $e) {
             if ($e->getCode() == "404") {
@@ -168,6 +172,25 @@ class User extends Base {
             } else {
                 $bones->error500();
             }
+        }
+    }
+
+    public function updateUserProfile($user) {
+        $bones = new Bones();
+        $bones->couch->setDatabase('_users');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+
+        $document = $bones->couch->get('org.couchdb.user:' . $user->name)->body;
+        $document->email = $user->email;
+        $document->full_name = $user->full_name;
+        $document->country = $user->country;
+        $document->mobile_phone = $user->mobile_phone;
+        
+        try {
+            $bones->couch->put($document->_id, $document);
+        } catch (SagCouchException $exc) {
+            echo $exc->getTraceAsString();
+            return NULL;
         }
     }
 
@@ -270,14 +293,14 @@ class User extends Base {
         foreach ($devices as $_device) {
             $str.=" - " . $_device . " - ";
         }
+
         try {
-            
+            $bones->couch->put($document->_id, $document);
         } catch (SagCouchException $exc) {
             echo $exc->getTraceAsString();
             return NULL;
         }
 
-        $bones->couch->put($document->_id, $document);
 
         return $str;
     }

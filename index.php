@@ -55,8 +55,6 @@ get('/user/:username', function($app) {
     if ($app->request('username') == User::current_user()) {
         $app->set('user', User::get_by_username($app->request('username')));
         $app->set('is_current_user', ($app->request('username') == User::current_user() ? true : false));
-        $app->set('posts', Post::get_posts_by_user($app->request('username')));
-        $app->set('post_count', Post::get_post_count_by_user($app->request('username')));
         $app->render('user/profile');
     } else {
 //$app->redirect('/user/' . User::current_user());
@@ -64,11 +62,16 @@ get('/user/:username', function($app) {
     }
 });
 
-post('/post', function($app) {
+post('/edituser', function($app) {
     if (User::is_authenticated()) {
-        $post = new Post();
-        $post->content = $app->form('content');
-        $post->create();
+        $user = new User();
+        $user->name = User::current_user();
+        $user->email = $app->form('email');
+        $user->full_name = $app->form('full_name');
+        $user->country = $app->form('country');
+        $user->mobile_phone = $app->form('mobile_phone');
+        User::updateUserProfile($user);
+        //$app->set('success', 'User:' . $user->name . '  received to update ' . $user->country . " - " . $user->mobile_phone);
         $app->redirect('/user/' . User::current_user());
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -190,7 +193,7 @@ post('/deletedevice/:id/:rev', function($app) {
         $device->_id = $app->request('id');
         $device->_rev = $app->request('rev');
         $device->delete(User::current_user());
-        User::registeDeviceInUser(User::current_user(), $device->_id , TRUE);
+        User::registeDeviceInUser(User::current_user(), $device->_id, TRUE);
         $app->set('success', 'Delete Device successfull');
         $app->redirect('/devices/showdevices');
     } else {
@@ -228,8 +231,7 @@ post('/sensor/setsensorenable/:id/:sensortype/:enable', function($app) {
         $sensorType = $app->request('sensortype');
         $enable = ($app->request('enable') == 1 ? TRUE : FALSE); // returns true if enable == 1
 
-        Sensor::setEnableOfSensor(User::current_user(),$deviceID,$sensorType,$enable);
-        
+        Sensor::setEnableOfSensor(User::current_user(), $deviceID, $sensorType, $enable);
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
@@ -466,7 +468,7 @@ post('/devicepost', function($app) {
         }
         if ($temperature != NULL) {
             $str.= MSTemperature::calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $temperature);
-           // $str.= MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $temperature);
+            // $str.= MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $temperature);
         } else {
             $str.="|| _Temperature null";
         }
