@@ -5,6 +5,7 @@ class Device extends Base {
     protected $name_device;
     protected $sensors;
     protected $timestamp;
+    protected $owner;
 
     public function __construct() {
         parent::__construct('device');
@@ -60,14 +61,14 @@ class Device extends Base {
         return $devices;
     }
 
-    public function getDevice($username, $_id) { /* one device to update */
+    public static function getDevice($username, $_id) { /* one device to update */
         $bones = new Bones();
         $bones->couch->setDatabase($username);
 
         foreach ($bones->couch->get('_design/application/_view/getDevices?key="' . $_id . '"&reduce=false')->body->rows as $_device) {
             $device = new Device();
             $device->_id = $_device->id;
-            $device->_rev =  $_device->value->_rev;
+            $device->_rev = $_device->value->_rev;
             $device->name_device = $_device->value->name_device;
             $device->timestamp = $_device->value->timestamp;
             $device->sensors = $_device->value->sensors;
@@ -77,7 +78,7 @@ class Device extends Base {
         return NULL;
     }
 
-    public function updateSensor($username, $device) {
+    public static function updateSensor($username, $device) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
         try {
@@ -126,6 +127,39 @@ class Device extends Base {
         } else {
             return FALSE;
         }
+    }
+
+    //
+    public static function getNumberOfDevicesInDBDevices() {
+        $bones = new Bones();
+        $bones->couch->setDatabase('devices');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+        $rows = $bones->couch->get('_design/application/_view/getAllDevice?descending=true&reduce=true')->body->rows;
+        if ($rows) {
+            return $rows[0]->value;
+        } else {
+            return 0;
+        }
+    }
+
+    public static function getAllDevicesInDBDevices() {
+        $bones = new Bones();
+        $bones->couch->setDatabase('devices');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+        $devices = array();
+
+        foreach ($bones->couch->get('_design/application/_view/getAllDevice?descending=false&reduce=false')->body->rows as $_device) {
+            $device = new Device();
+            $device->_id = $_device->id;
+            $device->name_device = $_device->value->name_device;
+            $device->timestamp = $_device->value->timestamp;
+            $device->sensors = $_device->value->sensors;
+            $device->owner = $_device->value->sensors;
+
+            array_push($devices, $device);
+        }
+
+        return $devices;
     }
 
 }

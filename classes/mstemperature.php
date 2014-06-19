@@ -61,7 +61,7 @@ class MSTemperature extends Base {
         try {
             $bones->couch->put($monitoringSensorTemperature->_id, $monitoringSensorTemperature->to_json());
         } catch (SagCouchException $e) {
-            return "some error in save monitoring gps";
+            return "some error in save monitoring temperature";
         }
         return " - see in couchdb value TEMPERATURE:" . $temperature;
     }

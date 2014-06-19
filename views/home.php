@@ -35,15 +35,19 @@
                         foreach ($device->sensors as $sensor):
                             $numberSensors = 0;
                             if ($sensor->type === "GPS" && $sensor->enable == TRUE) {
-                                include 'sensors/_gps.php';
+                                include 'sensors/monitorsensors/_ms_gps.php';
                                 $numberSensors++;
                             }
                             if ($sensor->type === "temperature" && $sensor->enable == TRUE) {
-                                include 'sensors/_temperature.php';
+                                include 'sensors/monitorsensors/_ms_temperature.php';
                                 $numberSensors++;
                             }
                             if ($sensor->type === "panic_button" && $sensor->enable == TRUE) {
-                                include 'sensors/_panicbutton.php';
+                                include 'sensors/monitorsensors/_ms_panicbutton.php';
+                                $numberSensors++;
+                            }
+                            if ($sensor->type === "battery" && $sensor->enable == TRUE) {
+                                include 'sensors/monitorsensors/_ms_battery.php';
                                 $numberSensors++;
                             }
 

@@ -1,64 +1,24 @@
-<h3>Sensor Temperature</h3>
-
-<?php
-$monitoringsensors = MSTemperature::getMonitoringSensorByKeys(User::current_user(), $device->_id, "temperature");
-if ($monitoringsensors != NULL || sizeof($monitoringsensors) > 0) {
-    //echo '<br>' . $monitoringsensors->getArrayTimes() . '<br>' . $monitoringsensors->getArrayValues();
-    if (sizeof($monitoringsensors->arrayValues) > 0) {
-        ?>
-        <div id = "container<?php echo $i; ?>" style = "height: auto;width: 600px; margin:0 auto;"></div>
-
-        <script>
-            $(function() {
-                $('#container<?php echo $i; ?>').highcharts({
-                    chart: {
-                        type: 'spline'
-                    },
-                    title: {
-                        text: 'Average Temperature'
-                    },
-                    xAxis: {
-                        categories: <?php echo $monitoringsensors->getArrayTimes(); ?>
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'Temperature'
-                        },
-                        labels: {
-                            formatter: function() {
-                                return this.value + '°'
-                            }
-                        }
-                    },
-                    tooltip: {
-                        crosshairs: true,
-                        shared: true
-                    },
-                    plotOptions: {
-                        spline: {
-                            marker: {
-                                radius: 4,
-                                lineColor: '#666666',
-                                lineWidth: 1
-                            }
-                        }
-                    },
-                    series: [{
-                            name: 'Temperature',
-                            marker: {
-                                symbol: 'diamond'
-                            },
-                            data: <?php echo $monitoringsensors->getArrayValues(); ?>
-                        }]
-                });
-            });
-        </script>
-    <?php } else {
-        ?>
-        <div class="alert alert-info">
-            Not yet received any information from Temperature sensor!
+<form action="<?php echo $this->make_route('/configsensortemperature/' . $deviceID.'/'.$deviceREV); ?>" method="post">
+    <div class="control-group">
+        <div id="div_propreties_temperature"> 
+            <div class="well">
+                <h4>Temperature Settings</h4>
+                <div class="control-group">
+                    <label class="control-label">Minimum Temperature Notification</label>
+                    <div class="controls">
+                        <input id="min_temp_notification" type="number" min="0" max="99" name="min_temp_notification" value="<?php echo $sensor->min_temperature; ?>"/>
+                        <p class="help-block">NEED VALIDATE THE VALUE TO ABNORMAL LIKE hypothermia VALUES</p>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Maximum Temperature Notification</label>
+                    <div class="controls">
+                        <input id="max_temp_notification" type="number" min="22" max="100" name="max_temp_notification" value="<?php echo $sensor->max_temperature; ?>"/>
+                        <p class="help-block">NEED VALIDATE THE VALUE TO ABNORMAL LIKE FEVER VALUES</p>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save <i class="icon-ok icon-white"></i></button><br />
+            </div>
         </div>
-        <?php
-    }
-}
-?>
+    </div> 
+</form>

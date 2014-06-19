@@ -135,7 +135,7 @@ class User extends Base {
         session_start();
         session_destroy();
     }
-
+    
     public static function current_user() {
         //session_start();
         return $_SESSION['username'];
@@ -144,6 +144,14 @@ class User extends Base {
 
     public static function is_authenticated() {
         if (self::current_user()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public static function is_current_admin_authenticated(){
+        if (self::current_user()=="admin") {
             return true;
         } else {
             return false;

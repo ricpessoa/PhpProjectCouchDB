@@ -6,10 +6,16 @@ get('/', function($app) {
     if (User::is_authenticated()) {
         $devices = Device::getDevices(User::current_user());
         $app->set('devices', $devices);
+        if (User::is_current_admin_authenticated()) {
+            $app->set('userpermission', "admin");
+            $app->redirect('/admin/manager_dashboard');
+            return;
+        }
     }
     $app->set('message', 'Welcome Back!');
     $app->render('home');
 });
+
 
 get('/signup', function($app) {
     $app->render('user/signup');
@@ -35,9 +41,13 @@ post('/login', function($app) {
     $user->login($app->form('password'));
 
     $app->set('success', 'You are now logged in!');
-    if (User::is_authenticated()) {
+    if (User::is_authenticated() && !User::is_current_admin_authenticated()) {
         $devices = Device::getDevices(User::current_user());
         $app->set('devices', $devices);
+    }
+    if (User::is_current_admin_authenticated()) {
+        $app->render('/admin/manager_dashboard');
+        return;
     }
     $app->render('home');
 });
@@ -71,7 +81,7 @@ post('/edituser', function($app) {
         $user->country = $app->form('country');
         $user->mobile_phone = $app->form('mobile_phone');
         User::updateUserProfile($user);
-        //$app->set('success', 'User:' . $user->name . '  received to update ' . $user->country . " - " . $user->mobile_phone);
+//$app->set('success', 'User:' . $user->name . '  received to update ' . $user->country . " - " . $user->mobile_phone);
         $app->redirect('/user/' . User::current_user());
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -114,70 +124,83 @@ get('/devices/newdevice', function($app) {
     }
 });
 
-
-get('/devices/editdevice/:device', function($app) {
+get('/devices/newdevice/:device', function($app) {
+    $deviceID = $app->request('device');
     if (User::is_authenticated()) {
-        if (Device::deviceExist(User::current_user(), $app->request('device'))) {
-            $arraySensors = Sensor::getSensors(User::current_user(), $app->request('device'));
-            $app->set('arraySensors', $arraySensors); //need get the safezones of device
-
-            $device = new Device();
-            $device->_id = $app->request('device');
-            $device->_rev = Device::getDeviceRevisionByID(User::current_user(), $app->request('device'));
-
-            $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
-
-            $app->set('deviceID', $device->_id);
-            $app->set('deviceREV', $device->_rev);
-            $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device
-            $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
-
-            $app->render('/devices/editdevice');
-        } else {
-            $app->render('error/404');
+        if ($deviceID != "") {
+            $device = Device::getDevice(User::current_user(), $deviceID);
+            if ($device != NULL) {
+                $app->set('editDevice', true);
+                $app->set('deviceMacAddress', $device->_id);
+                $app->set('deviceName', $device->name_device);
+                $app->set('success', 'this is to edit the device ' . $deviceID);
+            }
         }
+        $app->render('/devices/newdevice');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
     }
 });
 
+
 /* Create new device 
- * need refacturing because when create the new device isn't receive the max and min temperature
+ * 
  *  */
 post('/device', function($app) {
     if (User::is_authenticated()) {
-        $device = new Device();
-        $device->_id = $app->form('mac_address');
+        $mac_device = $app->form('mac_address');
         $name_device = $app->form('name_device');
-        if (trim($name_device) != '') {
-            $device->name_device = $name_device;
-        }
-        $myArray = array();
-        if ($app->form('check_panic_bt_send') == "1") {
-            $sensorPanic = new Sensor("panic_button");
-            $sensorPanic->name_sensor = "Panic Button";
-            $myArray[] = $sensorPanic;
-        }
-        if ($app->form('check_gps_send') == "1") {
-            $sensorGPS = new Sensor("GPS");
-            $sensorGPS->name_sensor = "Sensor GPS";
-            $myArray[] = $sensorGPS;
-        }
-        if ($app->form('check_temperature_send') == "1") {
-            $temperature = new Temperature();
-            $temperature->min_temperature = $app->form('min_temp_notification');
-            $temperature->max_temperature = $app->form('max_temp_notification');
-            $myArray[] = $temperature;
-        }
+        $isToEditDevice = $app->form('isEditDevice');
+        if ($isToEditDevice == "1") {
+            $device = Device::getDevice(User::current_user(), $mac_device);
+            if ($device != NULL) {
+                if ($device->name_device != $name_device) {
+                    $device->name_device = $name_device;
+                    Device::updateSensor(User::current_user(), $device);
+                }
+                $app->redirect('/devices/showdevices/');
+            } else {
+                $app->redirect('/');
+            }
+        } else {
+            //this condition is to admin
+            /* $device = new Device();
+              $device->_id = $mac_device;
+              if (trim($name_device) != '') {
+              $device->name_device = $name_device;
+              }
+              $myArray = array();
+              if ($app->form('check_panic_bt_send') == "1") {
+              $sensorPanic = new Sensor("panic_button");
+              $sensorPanic->name_sensor = "Panic Button";
+              $myArray[] = $sensorPanic;
+              }
+              if ($app->form('check_gps_send') == "1") {
+              $sensorGPS = new Sensor("GPS");
+              $sensorGPS->name_sensor = "Sensor GPS";
+              $myArray[] = $sensorGPS;
+              }
+              if ($app->form('check_temperature_send') == "1") {
+              $temperature = new Temperature();
+              //$temperature->min_temperature = $app->form('min_temp_notification');
+              //$temperature->max_temperature = $app->form('max_temp_notification');
+              $myArray[] = $temperature;
+              }
+              if ($app->form('check_battery_lvl_send') == "1") {
+              $battery = new Battery();
+              //$temperature->min_temperature = $app->form('min_temp_notification');
+              //$temperature->max_temperature = $app->form('max_temp_notification');
+              $myArray[] = $battery;
+              }
 
-        $device->sensors = $myArray;
+              $device->sensors = $myArray;
 
-        $device->create();
+              $device->create();
 
-        $app->set('success', 'Yes device saved');
-//$app->render('/devices/newdevice');
-        $app->redirect('/devices/editdevice/' . $device->_id);
+              $app->set('success', 'Yes device saved'); */
+            //$app->redirect('/devices/showdevices/'); 
+        }
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
@@ -213,26 +236,39 @@ post('/deletedevice/:id/:rev', function($app) {
  *  $app->form('max_temp_notification')
  *  $app->form('min_temp_notification') */
 
-post('/sensor/:id/:rev', function($app) {
+post('/configsensortemperature/:id/:rev', function($app) {
     if (User::is_authenticated()) {
         Temperature::updateTemperature(User::current_user(), $app->request('id'), $app->request('rev'), $app->form('max_temp_notification'), $app->form('min_temp_notification'));
-//$app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
-        $app->redirect('/device/editdevice/' . $app->request('id'));
+        $app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
+        $app->redirect('/devices/showdevices');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
     }
 });
 
-get('/sensors/editsensor/:device/:sensor', function($app) {
+post('/configsensorbattery/:id/:rev', function($app) {
     if (User::is_authenticated()) {
-        if (Device::deviceExist(User::current_user(), $app->request('device'))) {
-            $arraySensors = Sensor::getSensorByType(User::current_user(), $app->request('device'),$app->request('sensor'));
+        Battery::updateBattery(User::current_user(), $app->request('id'), $app->request('rev'), $app->form('low_battery_notification'), $app->form('critical_battery_notification'));
+        $app->redirect('/devices/showdevices');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+//sensors/editsensor/azzzz/temperature
+get('/sensors/editsensor/:device/:sensor', function($app) {
+    $deviceID = $app->request('device');
+    $sensorType = $app->request('sensor');
+
+    if (User::is_authenticated()) {
+        if (Device::deviceExist(User::current_user(), $deviceID)) {
+            $arraySensors = Sensor::getSensorByType(User::current_user(), $deviceID, $sensorType);
             $app->set('arraySensors', $arraySensors); //need get the safezones of device
 
             $device = new Device();
-            $device->_id = $app->request('device');
-            $device->_rev = Device::getDeviceRevisionByID(User::current_user(), $app->request('device'));
+            $device->_id = $deviceID;
+            $device->_rev = Device::getDeviceRevisionByID(User::current_user(), $deviceID);
 
             $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
 
@@ -241,7 +277,7 @@ get('/sensors/editsensor/:device/:sensor', function($app) {
             $app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device
             $app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
 
-            $app->render('/devices/editdevice');
+            $app->render('/sensors/editsensor');
         } else {
             $app->render('error/404');
         }
@@ -282,6 +318,7 @@ post('/sensor/setsensorenable/:id/:sensortype/:enable', function($app) {
   }
   });
  */
+//add safezone method 
 post('/safezone', function($app) {
     if (User::is_authenticated()) {
         $safezone_data = $app->form('safezone');
@@ -297,25 +334,22 @@ post('/safezone', function($app) {
         $safezone->radius = $json_safezone["radius"];
         $safezone->notification = $json_safezone["notification"];
         $safezone->device = $json_safezone["device"];
-//$safezone->timestamp= $json_safezone["timestamp"]; //timestamp generate by server
-//$safezone->shared = $json_safezone["shared"]; //safezone sared by other devices not yet implemented
         $safezone->create();
-
 
         $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
         $app->set('numberSafezones', $numSafezones);
         if ($numSafezones != 0) {
             $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
         }
-//$app->set('success', 'Yes safezone saved');
-        $app->redirect('/devices/editdevice/' . $safezone->device);
+        //$app->redirect('/devices/editdevice/' . $safezone->device);
+        $app->redirect('/sensors/editsensor/' . $safezone->device . '/GPS');
     } else {
         $app->set('error', 'You must be logged in to do that.');
         $app->render('user/login');
     }
 });
 
-
+//the page to insert new safezone or edit
 post('/safezone/newsafezone', function($app) {
     if (User::is_authenticated()) {
         $macAddress = $app->form('create_safezone');
@@ -333,7 +367,6 @@ post('/safezone/newsafezone', function($app) {
         $app->set("macAddressOfDevice", $macAddress);
         $app->set("editDevice", $editDevice);
 
-        $app->set('success', 'Yes receive the mac_address ' . $macAddress . " edit device?" . $editDevice . " - ");
         $app->render('/safezone/newsafezone');
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -398,7 +431,6 @@ post('/applogin', function($app) {
             $response['ceode'] = -1; //'Incorrect login credentials.'
             $response['message'] = "An error occurred. Please try again";
         }
-//$response[test] = "username=" . $username . "password=" . $password . "res=".$respLogin;
         echo json_encode($response);
     } else {
         echo "Error";
@@ -413,7 +445,6 @@ post('/appregister', function($app) {
         $username = $_POST["username"];
         $password = $_POST["password"];
         $response = array();
-
 
         $user = new User();
         $user->full_name = $name;
@@ -433,7 +464,6 @@ post('/appregister', function($app) {
             $response['code'] = 1;
             $response['message'] = "Register successfull";
         }
-//$response[test] = "name=" . $name . "email=" . $email . "username=" . $username . "password=" . $password;
         echo json_encode($response);
     } else {
         echo "Error";
@@ -515,5 +545,40 @@ post('/devicepost', function($app) {
     }
     echo json_encode($response);
 });
+
+
+/* ADMIN */
+get('/admin/manager_dashboard', function($app) {
+    if (User::is_authenticated() && User::is_current_admin_authenticated()) {
+
+        $app->render('/admin/manager_dashboard');
+    } else {
+        $app->redirect('/');
+    }
+});
+
+get('/admin/manager_showdevices', function($app) {
+    if (User::is_authenticated() && User::is_current_admin_authenticated()) {
+        $numberOfDevices = Device::getNumberOfDevicesInDBDevices();
+        $app->set('numberDevices', $numberOfDevices);
+
+        if ($numberOfDevices != 0) {
+            $app->set('devices', Device::getAllDevicesInDBDevices());
+        }
+        $app->render('/admin/manager_showdevices');
+    } else {
+        $app->redirect('/');
+    }
+});
+
+get('/admin/manager_newdevice', function($app) {
+    if (User::is_authenticated() && User::is_current_admin_authenticated()) {
+        $app->render('/admin/manager_newdevice');
+    } else {
+        $app->redirect('/');
+    }
+});
+
+
 
 resolve(); //if the route not exist page not found

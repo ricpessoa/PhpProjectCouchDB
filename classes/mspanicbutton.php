@@ -48,7 +48,7 @@ class MSPanicButton extends Base {
         return NULL;
     }
 
-    public function saveMonitoringSensorPanicButton($username, $macaddress, $pressed) {
+    public static function saveMonitoringSensorPanicButton($username, $macaddress, $pressed) {
         $monitoringSensorTemperature = new MSTemperature();
         $timestamp = time();
         $monitoringSensorTemperature->_id = $macaddress . "_ms_pb_" . $timestamp;
@@ -63,7 +63,7 @@ class MSPanicButton extends Base {
         try {
             $bones->couch->put($monitoringSensorTemperature->_id, $monitoringSensorTemperature->to_json());
         } catch (SagCouchException $e) {
-            return "some error in save monitoring gps";
+            return "some error in save monitoring panic button";
         }
         return " - see in couchdb value PANIC BUTTON:" . $pressed;
     }

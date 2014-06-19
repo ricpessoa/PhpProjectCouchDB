@@ -2,8 +2,8 @@
 
 class Temperature extends Sensor {
 
-    protected $min_temperature;
-    protected $max_temperature;
+    protected $min_temperature = 20;
+    protected $max_temperature = 35;
 
     public function __construct() {
         parent::__construct('temperature');
