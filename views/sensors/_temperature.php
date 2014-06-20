@@ -7,14 +7,14 @@
                     <label class="control-label">Minimum Temperature Notification</label>
                     <div class="controls">
                         <input id="min_temp_notification" type="number" min="0" max="99" name="min_temp_notification" value="<?php echo $sensor->min_temperature; ?>"/>
-                        <p class="help-block">NEED VALIDATE THE VALUE TO ABNORMAL LIKE hypothermia VALUES</p>
+                        <p class="help-block">Notifies the user when Minimum Temperature is exceeded</p>
                     </div>
                 </div>
                 <div class="control-group">
                     <label class="control-label">Maximum Temperature Notification</label>
                     <div class="controls">
                         <input id="max_temp_notification" type="number" min="22" max="100" name="max_temp_notification" value="<?php echo $sensor->max_temperature; ?>"/>
-                        <p class="help-block">NEED VALIDATE THE VALUE TO ABNORMAL LIKE FEVER VALUES</p>
+                        <p class="help-block">Notifies the user when Maximum Temperature is exceeded</p>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Save <i class="icon-ok icon-white"></i></button><br />

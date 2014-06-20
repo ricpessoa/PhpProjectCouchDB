@@ -46,7 +46,7 @@ post('/login', function($app) {
         $app->set('devices', $devices);
     }
     if (User::is_current_admin_authenticated()) {
-        $app->render('/admin/manager_dashboard');
+        $app->redirect('/admin/manager_dashboard');
         return;
     }
     $app->render('home');
@@ -164,41 +164,11 @@ post('/device', function($app) {
                 $app->redirect('/');
             }
         } else {
-            //this condition is to admin
-            /* $device = new Device();
-              $device->_id = $mac_device;
-              if (trim($name_device) != '') {
-              $device->name_device = $name_device;
-              }
-              $myArray = array();
-              if ($app->form('check_panic_bt_send') == "1") {
-              $sensorPanic = new Sensor("panic_button");
-              $sensorPanic->name_sensor = "Panic Button";
-              $myArray[] = $sensorPanic;
-              }
-              if ($app->form('check_gps_send') == "1") {
-              $sensorGPS = new Sensor("GPS");
-              $sensorGPS->name_sensor = "Sensor GPS";
-              $myArray[] = $sensorGPS;
-              }
-              if ($app->form('check_temperature_send') == "1") {
-              $temperature = new Temperature();
-              //$temperature->min_temperature = $app->form('min_temp_notification');
-              //$temperature->max_temperature = $app->form('max_temp_notification');
-              $myArray[] = $temperature;
-              }
-              if ($app->form('check_battery_lvl_send') == "1") {
-              $battery = new Battery();
-              //$temperature->min_temperature = $app->form('min_temp_notification');
-              //$temperature->max_temperature = $app->form('max_temp_notification');
-              $myArray[] = $battery;
-              }
-
-              $device->sensors = $myArray;
-
-              $device->create();
-
-              $app->set('success', 'Yes device saved'); */
+            //TODO: need get the device on Devices DB,
+            // now if is available 
+            //change document->owner to user
+            // copy device/document to user DB
+            //and update in db devices
             //$app->redirect('/devices/showdevices/'); 
         }
     } else {
@@ -229,12 +199,7 @@ post('/deletedevice/:id/:rev', function($app) {
 
 /* ---------------START SENSOR --------------- */
 /*
- * This method is to update the sensor temperature and receive the next information
- *  User::current_user()
- *  $app->request('id')
- *  $app->request('rev')
- *  $app->form('max_temp_notification')
- *  $app->form('min_temp_notification') */
+ * This method is to update the sensor temperature and receive the next information */
 
 post('/configsensortemperature/:id/:rev', function($app) {
     if (User::is_authenticated()) {
@@ -256,7 +221,8 @@ post('/configsensorbattery/:id/:rev', function($app) {
         $app->render('user/login');
     }
 });
-//sensors/editsensor/azzzz/temperature
+
+/* THIS METHOD CAN BE REFACTURE TO OPTIMEZE */
 get('/sensors/editsensor/:device/:sensor', function($app) {
     $deviceID = $app->request('device');
     $sensorType = $app->request('sensor');
@@ -287,6 +253,7 @@ get('/sensors/editsensor/:device/:sensor', function($app) {
     }
 });
 
+/* this method is to enable sensor of device and show the notifications or not */
 post('/sensor/setsensorenable/:id/:sensortype/:enable', function($app) {
     if (User::is_authenticated()) {
         $deviceID = $app->request('id');
@@ -303,21 +270,7 @@ post('/sensor/setsensorenable/:id/:sensortype/:enable', function($app) {
 /* END SENSOR */
 
 /* --------------- SAFEZONE --------------- */
-/*
-  get('/safezone/showsafezones', function($app) {
-  if (User::is_authenticated()) {
-  $numSafezones = Safezone::get_safezones_count_by_user(User::current_user());
-  $app->set('numberSafezones', $numSafezones);
-  if ($numSafezones != 0) {
-  $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
-  }
-  $app->render('safezone/showsafezones');
-  } else {
-  $app->set('error', 'You must be logged in to do that.');
-  $app->render('user/login');
-  }
-  });
- */
+
 //add safezone method 
 post('/safezone', function($app) {
     if (User::is_authenticated()) {
@@ -341,7 +294,6 @@ post('/safezone', function($app) {
         if ($numSafezones != 0) {
             $app->set('safezones', Safezone::get_safezones_by_user(User::current_user()));
         }
-        //$app->redirect('/devices/editdevice/' . $safezone->device);
         $app->redirect('/sensors/editsensor/' . $safezone->device . '/GPS');
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -374,25 +326,26 @@ post('/safezone/newsafezone', function($app) {
     }
 });
 
-post('/deletesafezone/:id/:rev/:dev', function($app) {
-    if (User::is_authenticated()) {
-        $safezone = new Safezone();
-        $safezone->_id = $app->request('id');
-        $safezone->_rev = $app->request('rev');
-        $safezone->delete(User::current_user());
+/* Comment because i dont now the parameter dev???
+ * post('/deletesafezone/:id/:rev/:dev', function($app) {
+  if (User::is_authenticated()) {
+  $safezone = new Safezone();
+  $safezone->_id = $app->request('id');
+  $safezone->_rev = $app->request('rev');
+  $safezone->delete(User::current_user());
 
-        $deviceadd = $app->request('dev');
-        if ($deviceadd == NULL || $deviceadd === "") {
-            $app->set('success', 'The safezone was deleted');
-            $app->redirect('/safezone/showsafezones');
-        } else {
-            $app->redirect('/devices/editdevice/' . $app->request('dev'));
-        }
-    } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
-    }
-});
+  $deviceadd = $app->request('dev');
+  if ($deviceadd == NULL || $deviceadd === "") {
+  $app->set('success', 'The safezone was deleted');
+  $app->redirect('/safezone/showsafezones');
+  } else {
+  $app->redirect('/devices/editdevice/' . $app->request('dev'));
+  }
+  } else {
+  $app->set('error', 'You must be logged in to do that.');
+  $app->render('user/login');
+  }
+  }); */
 
 post('/deletesafezone/:id/:rev', function($app) {
     if (User::is_authenticated()) {
@@ -547,10 +500,25 @@ post('/devicepost', function($app) {
 });
 
 
-/* ADMIN */
+/* ---------- ADMIN  ---------- */
+/* Create new device  */
+
+post('/manager_newdevice', function($app) {
+    if (User::is_authenticated() && User::is_current_admin_authenticated()) {
+        Device::createDeviceFromManagerDevice($app);
+
+        //$app->set('success', 'Yes device saved');
+        $app->redirect('/admin/manager_showdevices');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
 get('/admin/manager_dashboard', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-
+        $app->set("numbAvailableDevices", Device::getAvailableDevices());
+        $app->set("numbAllDevices", Device::getNumberOfDevicesInDBDevices());
         $app->render('/admin/manager_dashboard');
     } else {
         $app->redirect('/');

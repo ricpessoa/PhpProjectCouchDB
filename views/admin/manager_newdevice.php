@@ -32,15 +32,15 @@
     $(document).ready(function() {
         $('#check_temperature').click(function() {
             if ($('#check_temperature').is(':checked')) {
-                //$('#div_propreties_temperature').collapse('show');
-                //$('#min_temp_notification').prop("required", true);
-                //$('#max_temp_notification').prop("required", true);
+                $('#div_propreties_temperature').collapse('show');
+                $('#min_temp_notification').prop("required", true);
+                $('#max_temp_notification').prop("required", true);
                 $('#check_temperature_send').val("1");
                 $('#check_temperature_send').attr('checked', true);
             } else {
-                //$('#div_propreties_temperature').collapse('hide');
-                //$('#min_temp_notification').prop("required", false);
-                //$('#max_temp_notification').prop("required", false);
+                $('#div_propreties_temperature').collapse('hide');
+                $('#min_temp_notification').prop("required", false);
+                $('#max_temp_notification').prop("required", false);
                 $('#check_temperature_send').val("0");
                 $('#check_temperature_send').attr('checked', false);
 
@@ -70,15 +70,21 @@
             if ($('#check_battery_lvl').is(':checked')) {
                 $('#check_battery_lvl_send').val("1");
                 $('#check_battery_lvl_send').attr('checked', true);
+                $('#div_propreties_battery').collapse('show');
+                $('#low_battery_notification').prop("required", true);
+                $('#critical_battery_notification').prop("required", true);
             } else {
                 $('#check_battery_lvl_send').val("0");
                 $('#check_battery_lvl_send').attr('checked', false);
+                $('#div_propreties_battery').collapse('hide');
+                $('#low_battery_notification').prop("required", true);
+                $('#critical_battery_notification').prop("required", true);
             }
         });
     });
 </script>
 
-<form action="<?php echo $this->make_route('/device') ?>" method="post">
+<form action="<?php echo $this->make_route('/manager_newdevice') ?>" method="post">
     <legend>Add Device</legend>
     <div class="control-group">
         <label class="control-label">Name device:</label>
@@ -123,7 +129,7 @@
                 <input id="check_panic_bt" type="checkbox" name="check_" value="0"/> Panic Button
             </label>
             <label class="checkbox">
-                <input id="check_battery_lvl" type="checkbox" name="check_" value="1" checked/> Battery Level
+                <input id="check_battery_lvl" type="checkbox" name="check_" value="0"/> Battery Level
             </label>
             <label class="checkbox" style="display:none">
                 <input id="check_temperature_send" type="checkbox" name="check_temperature_send" value="0"/> Test1
@@ -135,9 +141,51 @@
                 <input id="check_panic_bt_send" type="checkbox" name="check_panic_bt_send" value="0"/> Test3
             </label>
             <label class="checkbox" style="display:none">
-                <input id="check_battery_lvl_send" type="checkbox" name="check_battery_lvl_send" value="1" checked/> Test4
+                <input id="check_battery_lvl_send" type="checkbox" name="check_battery_lvl_send" value="0"/> Test4
             </label>
             <p class="help-block"></p>
+        </div>
+        <div class="control-group">
+            <div id="div_propreties_temperature" class="collapse"> 
+                <div class="well">
+                    <h5>Temperature Settings</h5>
+                    <div class="control-group">
+                        <label class="control-label">Minimum Temperature Notification</label>
+                        <div class="controls">
+                            <input id="min_temp_notification" type="number" min="0" max="99" name="min_temp_notification" value="<?php echo 20 ?>"/>
+                            <p class="help-block">Notifies the user when Minimum Temperature is exceeded</p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Maximum Temperature Notification</label>
+                        <div class="controls">
+                            <input id="max_temp_notification" type="number" min="22" max="100" name="max_temp_notification" value="<?php echo 35 ?>"/>
+                            <p class="help-block">Notifies the user when Maximum Temperature is exceeded</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="control-group">
+            <div id="div_propreties_battery" class="collapse"> 
+                <div class="well">
+                    <h5>Battery Level Settings</h5>
+                    <div class="control-group">
+                        <label class="control-label">Low Battery Level Notification</label>
+                        <div class="controls">
+                            <input id="low_battery_notification" type="number" min="10" max="50" name="low_battery_notification" value="<?php echo 25 ?>"/>
+                            <p class="help-block">Notifies the user when Low Battery Level is exceeded</p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Critical Battery Level Notification</label>
+                        <div class="controls">
+                            <input id="critical_battery_notification" type="number" min="1" max="30" name="critical_battery_notification" value="<?php echo 15 ?>"/>
+                            <p class="help-block">Notifies the user when Critical Battery Level is exceeded </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

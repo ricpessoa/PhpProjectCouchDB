@@ -2,8 +2,8 @@
 
 class Battery extends Sensor {
 
-    protected $low_battery = 25;
-    protected $critical_battery = 15;
+    protected static $low_battery = 25;
+    protected static $critical_battery = 15;
 
     public function __construct() {
         parent::__construct('battery');

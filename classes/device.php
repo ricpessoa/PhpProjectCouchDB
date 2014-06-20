@@ -13,7 +13,7 @@ class Device extends Base {
 
     public function create() {
         $bones = new Bones();
-        $bones->couch->setDatabase($_SESSION['username']);
+        $bones->couch->setDatabase($bones->config->db_database_devices);
 
         $this->timestamp = time();
 
@@ -31,14 +31,52 @@ class Device extends Base {
         }
         try {
             $bones->couch->put($this->_id, $arr);
-            User::registeDeviceInUser(User::current_user(), $this->_id, FALSE);
+            //User::registeDeviceInUser(User::current_user(), $this->_id, FALSE);
         } catch (SagCouchException $e) {
             if ($e->getCode() == "409") {
+                //return FALSE;
                 $bones->set('error', 'A device with this mac address already exists.');
-                $bones->render('/devices/newdevice');
-                exit;
+                $bones->render('/admin/manager_newdevice');
+                exit();
             }
         }
+        //return TRUE;
+    }
+
+    public static function createDeviceFromManagerDevice($app) {
+        $mac_device = $app->form('mac_address');
+        $name_device = $app->form('name_device');
+        $device = new Device();
+        $device->_id = $mac_device;
+        if (trim($name_device) != '') {
+            $device->name_device = $name_device;
+        }
+        $myArray = array();
+        if ($app->form('check_panic_bt_send') == "1") {
+            $sensorPanic = new Sensor("panic_button");
+            $sensorPanic->name_sensor = "Panic Button";
+            $myArray[] = $sensorPanic;
+        }
+        if ($app->form('check_gps_send') == "1") {
+            $sensorGPS = new Sensor("GPS");
+            $sensorGPS->name_sensor = "Sensor GPS";
+            $myArray[] = $sensorGPS;
+        }
+        if ($app->form('check_temperature_send') == "1") {
+            $temperature = new Temperature();
+            $temperature->min_temperature = $app->form('min_temp_notification');
+            $temperature->max_temperature = $app->form('max_temp_notification');
+            $myArray[] = $temperature;
+        }
+        if ($app->form('check_battery_lvl_send') == "1") {
+            $battery = new Battery();
+            $battery->low_battery = $app->form('low_battery_notification');
+            $battery->critical_battery = $app->form('critical_battery_notification');
+            $myArray[] = $battery;
+        }
+        $device->sensors = $myArray;
+
+        $device->create();
     }
 
     public function getDevices($username) { /* all devices to show in lists */
@@ -77,6 +115,52 @@ class Device extends Base {
         }
         return NULL;
     }
+
+    public static function getAvailableDevices() {
+        $bones = new Bones();
+        $bones->couch->setDatabase('devices');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+        $rows = $bones->couch->get('_design/application/_view/getAvailableDevices?reduce=true')->body->rows;
+        if ($rows) {
+            return $rows[0]->value;
+        } else {
+            return 0;
+        }
+    }
+     //
+    public static function getNumberOfDevicesInDBDevices() {
+        $bones = new Bones();
+        $bones->couch->setDatabase('devices');
+        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+        $rows = $bones->couch->get('_design/application/_view/getAllDevice?descending=true&reduce=true')->body->rows;
+        if ($rows) {
+            return $rows[0]->value;
+        } else {
+            return 0;
+        }
+    }
+
+    
+    public static function getNumberAllDevices() {
+        $bones = new Bones();
+        $bones->couch->setDatabase($bones->config->db_database_devices);
+        $rows = $bones->couch->get('_design/application/_view/getAllDevice?reduce=true')->body->rows;
+        if($rows){
+            return $rows->value;
+        }
+        return NULL;
+    }
+    
+    
+    /*public static function getNumberAvailableDevices() {
+        $bones = new Bones();
+        $bones->couch->setDatabase($bones->config->db_database_devices);
+        $rows = $bones->couch->get('_design/application/_view/getAvailableDevices?reduce=true')->body->rows;
+        if($rows){
+            return $rows->value;
+        }
+        return NULL;
+    }*/
 
     public static function updateSensor($username, $device) {
         $bones = new Bones();
@@ -129,19 +213,7 @@ class Device extends Base {
         }
     }
 
-    //
-    public static function getNumberOfDevicesInDBDevices() {
-        $bones = new Bones();
-        $bones->couch->setDatabase('devices');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-        $rows = $bones->couch->get('_design/application/_view/getAllDevice?descending=true&reduce=true')->body->rows;
-        if ($rows) {
-            return $rows[0]->value;
-        } else {
-            return 0;
-        }
-    }
-
+   
     public static function getAllDevicesInDBDevices() {
         $bones = new Bones();
         $bones->couch->setDatabase('devices');
@@ -154,7 +226,7 @@ class Device extends Base {
             $device->name_device = $_device->value->name_device;
             $device->timestamp = $_device->value->timestamp;
             $device->sensors = $_device->value->sensors;
-            $device->owner = $_device->value->sensors;
+            $device->owner = $_device->value->owner;
 
             array_push($devices, $device);
         }

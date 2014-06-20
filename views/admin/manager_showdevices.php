@@ -10,7 +10,9 @@
     <form action="<?php echo $this->make_route('/admin/manager_newdevice') ?>" method="get">	
         <button id="create_device" class="btn btn-success "><i class="icon-plus icon-white"></i> Add Device</button>
     </form>   
-    <?php if ($numberDevices > 0) { ?>
+    <?php
+    if ($numberDevices > 0) {
+        ?>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -24,13 +26,7 @@
                 <?php foreach ($devices as $_device): ?>
                     <tr>
                         <td><?php echo $_device->_id; ?></td>
-                        <?php
-                        $i = 0;
-                        foreach ($_device->sensors as $sensor) {
-                            $i++;
-                        }
-                        ?>
-                        <td><?php echo $i ?></td>
+                        <td><?php echo "number of sensors: ".sizeof($_device->sensors); ?></td>
                         <td>Edit Delete</td>
                         <td><?php echo $_device->owner; ?></td>
                     </tr>

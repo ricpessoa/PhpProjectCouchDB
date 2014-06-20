@@ -1,10 +1,4 @@
 <script type="text/javascript" src="<?php echo $this->make_route('/js/prettify.js') ?>"></script>
-<?php
-//$app->set('editDevice', true);
-//$app->set('deviceMacAddress', $device->_id);
-//$app->set('deviceName', $device->name_device);
-//$app->set('success', 'this is to edit the device ' . $deviceID);
-?>
 
 <form action = "<?php echo $this->make_route('/device') ?>" method = "post">
     <legend>Add Device</legend>
