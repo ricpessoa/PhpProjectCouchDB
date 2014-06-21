@@ -6,6 +6,7 @@ class Device extends Base {
     protected $sensors;
     protected $timestamp;
     protected $owner;
+    protected $deleted = FALSE;
 
     public function __construct() {
         parent::__construct('device');
@@ -51,6 +52,7 @@ class Device extends Base {
 
     public function create() {
         $bones = new Bones();
+        $bones->couch->setDatabase($bones->config->db_database_devices);
 
         $this->timestamp = time();
 
@@ -67,29 +69,30 @@ class Device extends Base {
                 array_push($arr['sensors'], $sensor->to_json());
         }
         try {
-//Base::insertOrUpdateObjectInDB($bones->config->db_database_devices, $arr, TRUE);
             $bones->couch->put($this->_id, $arr); // NEED REFACTURE
         } catch (SagCouchException $e) {
             if ($e->getCode() == "409") {
-//return FALSE;
                 $bones->set('error', 'A device with this mac address already exists.');
                 $bones->render('/admin/manager_newdevice');
                 exit();
             }
         }
-//return TRUE;
     }
 
-    public function getDevices($username) { /* all devices to show in lists */
+    public function getDevices($usernameDB) { /* all devices to show in lists */
         $devices = array();
-        foreach (Base::getViewToIterateBasedInUrl($username, '_design/application/_view/getDevices?descending=false&reduce=false') as $_device) {
-            $device = new Device();
-            $device->_id = $_device->id;
-            $device->_rev = $_device->value->_rev;
-            $device->name_device = $_device->value->name_device;
-            $device->timestamp = $_device->value->timestamp;
-            $device->sensors = $_device->value->sensors;
-            array_push($devices, $device);
+        foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getDevices?descending=false&reduce=false') as $_device) {
+            if ($_device->value->deleted == FALSE) {
+                $device = new Device();
+                $device->_id = $_device->id;
+                $device->_rev = $_device->value->_rev;
+                $device->name_device = $_device->value->name_device;
+                $device->timestamp = $_device->value->timestamp;
+                $device->sensors = $_device->value->sensors;
+                $device->owner = $_device->value->owner;
+                $device->deleted = $_device->value->deleted;
+                array_push($devices, $device);
+            }
         }
         return $devices;
     }
@@ -102,7 +105,8 @@ class Device extends Base {
             $device->name_device = $_device->value->name_device;
             $device->timestamp = $_device->value->timestamp;
             $device->sensors = $_device->value->sensors;
-
+            $device->owner = $_device->value->owner;
+            $device->deleted = $_device->value->deleted;
             return $device;
         }
         return NULL;
@@ -112,25 +116,33 @@ class Device extends Base {
         Base::insertOrUpdateObjectInDB($username, $device, FALSE);
     }
 
-    /* GET ON USERDB the number of devices */
-
-//TODO: delete=false
-    public function getNumberOfDevices($usernameDB) {
-        return Base::getViewReduceCountBasedInUrl($usernameDB, '_design/application/_view/getDevices?descending=true&reduce=true');
-    }
-
-//getRevision of documento must be generic -> pass to BASE Class
-    public function getDeviceRevisionByID($username, $device) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-        foreach ($bones->couch->get('_design/application/_view/getDevices?key="' . $device . '"&reduce=false')->body->rows as $_device) {
-            return $_device->value->_rev;
+    public static function insertOrEditDevice($usernameDB, $mac_device, $name_device, $isToEditDevice) {
+        $deviceOfUser = Device::getDevice($usernameDB, $mac_device);
+        if ($isToEditDevice == "1" && $deviceOfUser != NULL) {
+//edit device name
+            if ($deviceOfUser->name_device != $name_device) {
+                $deviceOfUser->name_device = $name_device;
+                return Base::insertOrUpdateObjectInDB($usernameDB, $deviceOfUser, FALSE);
+            }
+        } else if ($isToEditDevice == "0" && $deviceOfUser != NULL) {
+//revert delete is to insert but $deviceUser was founded
+            $deviceOfUser->deleted = false;
+            return Base::insertOrUpdateObjectInDB($usernameDB, $deviceOfUser, FALSE);
+        } else if ($isToEditDevice == "0" && $deviceOfUser == NULL) {
+            //insert for first time -> deviceUser not founded
+            $deviceOfDevices = Device::findTheDeviceOnDevicesDB($mac_device);
+            if ($deviceOfDevices != NULL) {
+                $deviceOfDevices->owner = $usernameDB;
+                if (Device::updateTheOwnerDeviceOnDeviesDB($deviceOfDevices)) {
+                    return Device::saveDeviceInUserDB($deviceOfDevices);
+                }
+            }
         }
-        return NULL;
+        return FALSE;
     }
 
+    
     /* Based in mac address of device ask on db if device exist in DB */
-
     public function deviceExist($usernameDB, $device) {
         try {
             $valueReturn = Base::getViewReduceCountBasedInUrl($usernameDB, '_design/application/_view/getDevices?key="' . $device . '"&reduce=true');
@@ -188,13 +200,14 @@ class Device extends Base {
 
     public static function saveDeviceInUserDB($device) {
         $bones = new Bones();
-        //create new device to not send the previous revision of documment in devicesDB
+//create new device to not send the previous revision of documment in devicesDB
         $newDevice = new Device();
         $newDevice->_id = $device->_id;
         $newDevice->name_device = $device->name_device;
         $newDevice->timestamp = $device->timestamp;
         $newDevice->sensors = $device->sensors;
         $newDevice->owner = $device->owner;
+        $newDevice->deleted = FALSE;
 
         try {
             Base::insertOrUpdateObjectInDB(User::current_user(), $newDevice, FALSE);
@@ -215,4 +228,59 @@ class Device extends Base {
         return Base::getViewReduceCountBasedInUrl($bones->config->db_database_devices, '_design/application/_view/getAllDevice?descending=true&reduce=true');
     }
 
+    public static function findUserOfDevice($macaddress) {
+        $bones = new Bones();
+        foreach (Base::getViewToIterateBasedInUrl($bones->config->db_database_devices, '_design/application/_view/getUserOfDevice?key="' . $macaddress . '"') as $_mac_address) {
+            return $_mac_address->value;
+        }
+        return NULL;
+    }
+
+    /* NEED REFACTURING ON APP WHEN ADD NEW DEVICE
+     * public function registeDeviceInUser($username, $device, $delete) {
+      $bones = new Bones();
+      $bones->couch->setDatabase('_users');
+      $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+
+      $document = $bones->couch->get('org.couchdb.user:' . $username)->body;
+      $devices = $document->devices;
+      $str = "add ->";
+      $alreadyHaveThisDevice = FALSE;
+      $i = 0;
+      foreach ($devices as $_device) {
+      if ($_device == $device) {
+      $str.=" " . $_device . "  ";
+      $alreadyHaveThisDevice = true;
+      if ($delete == TRUE) {
+      //array_pop($devices);
+      unset($devices[$i]);
+      //$devices[$i] = "";
+      //$devices = array_diff($devices, array($_device));
+      $str.="delete = " . $_device . "!";
+      }
+      break;
+      }
+      $i++;
+      }
+      if ($alreadyHaveThisDevice == FALSE) {
+      array_push($devices, $device);
+      }
+      $document->devices = array_values($devices);
+
+      $str .= "show ->";
+
+      foreach ($devices as $_device) {
+      $str.=" - " . $_device . " - ";
+      }
+
+      try {
+      $bones->couch->put($document->_id, $document);
+      } catch (SagCouchException $exc) {
+      echo $exc->getTraceAsString();
+      return NULL;
+      }
+
+
+      return $str;
+      } */
 }

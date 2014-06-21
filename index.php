@@ -102,12 +102,8 @@ delete('/post/delete/:id/:rev', function($app) {
 
 get('devices/showdevices', function($app) {
     if (User::is_authenticated()) {
-        $numberOfDevices = Device::getNumberOfDevices(User::current_user());
-        $app->set('numberDevices', $numberOfDevices);
-
-        if ($numberOfDevices != 0) {
-            $app->set('devices', Device::getDevices(User::current_user()));
-        }
+        $devicesUser = Device::getDevices(User::current_user());
+        $app->set('devices', $devicesUser);
         $app->render('/devices/showdevices');
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -133,7 +129,6 @@ get('/devices/newdevice/:device', function($app) {
                 $app->set('editDevice', true);
                 $app->set('deviceMacAddress', $device->_id);
                 $app->set('deviceName', $device->name_device);
-                $app->set('success', 'this is to edit the device ' . $deviceID);
             }
         }
         $app->render('/devices/newdevice');
@@ -144,42 +139,24 @@ get('/devices/newdevice/:device', function($app) {
 });
 
 
-/* Create new device 
- * 
+/* Create new device The user DON'T create device
+ * but copy the document of device from devicesDB to your db
  *  */
-post('/device', function($app) {
+post('/devices/newdevice', function($app) {
     if (User::is_authenticated()) {
         $mac_device = $app->form('mac_address');
         $name_device = $app->form('name_device');
         $isToEditDevice = $app->form('isEditDevice');
-        if ($isToEditDevice == "1") { //edit device name
-            $device = Device::getDevice(User::current_user(), $mac_device);
-            if ($device != NULL) {
-                if ($device->name_device != $name_device) {
-                    $device->name_device = $name_device;
-                    Device::updateSensor(User::current_user(), $device);
-                }
-                $app->redirect('/devices/showdevices/');
-            } else {
-                $app->redirect('/');
-            }
-        } else { // add new device
-            //TODO: need get the device on Devices DB,
-            // now if is available 
-            //change document->owner to user
-            // copy device/document to user DB
-            //and update in db devices
-            $device = Device::findTheDeviceOnDevicesDB($mac_device);
-            if ($device != NULL) {
-                if (trim($name_device) != '' && $name_device != $device->name_device) {
-                    $device->name_device = $name_device;
-                }
-                $device->owner = User::current_user();
-            }
-            if (Device::updateTheOwnerDeviceOnDeviesDB($device)) {
-                Device::saveDeviceInUserDB($device);
-            };
+        $result = Device::insertOrEditDevice(User::current_user(), $mac_device, $name_device, $isToEditDevice);
+        if ($result == TRUE) {
             $app->redirect('/devices/showdevices');
+        } else {
+            if ($isToEditDevice == "1") {
+                $app->set('deviceMacAddress', $mac_device);
+                $app->set('deviceName', $name_device);
+            }
+            $app->set('error', "Device not Founded");
+            $app->render('/devices/newdevice');
         }
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -192,11 +169,14 @@ post('/device', function($app) {
  * _rev of document of device  */
 post('/deletedevice/:id/:rev', function($app) {
     if (User::is_authenticated()) {
-        $device = new Device();
-        $device->_id = $app->request('id');
-        $device->_rev = $app->request('rev');
-        $device->delete(User::current_user());
-        User::registeDeviceInUser(User::current_user(), $device->_id, TRUE);
+        $mac_device = $app->request('id');
+        $device = Device::getDevice(User::current_user(), $mac_device);
+        if ($device != NULL) {
+            $device->deleted = true;
+            Base::insertOrUpdateObjectInDB(User::current_user(), $device, FALSE);
+        }
+        ////$device->delete(User::current_user());
+        //User::registeDeviceInUser(User::current_user(), $device->_id, TRUE);
         $app->set('success', 'Delete Device successfull');
         $app->redirect('/devices/showdevices');
     } else {
@@ -468,7 +448,7 @@ post('/devicepost', function($app) {
     $pressed = $_POST["press"];
     $response = array();
 
-    $usernamedb = User::findUsernameByMACAddress($macaddress);
+    $usernamedb = Device::findUserOfDevice($macaddress);
 
     if ($usernamedb == NULL) {
         /* test only for when user add new device */

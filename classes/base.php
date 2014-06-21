@@ -28,11 +28,17 @@ abstract class Base {
     public static function insertOrUpdateObjectInDB($db, $object, $onJson) /* need throw Exception */ {
         $bones = new Bones();
         $bones->couch->setDatabase($db);
-        if ($onJson) {
-            $bones->couch->put($object->_id, $object);
-        } else {
-            $bones->couch->put($object->_id, $object->to_json());
+        try {
+            if ($onJson) {
+                $bones->couch->put($object->_id, $object);
+            } else {
+                $bones->couch->put($object->_id, $object->to_json());
+            }
+        } catch (SagException $exc) {
+            echo $exc->getTraceAsString();
+            return FALSE;
         }
+        return TRUE;
     }
 
     public static function getViewToIterateBasedInUrl($db, $urlOfRequest) {

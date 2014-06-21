@@ -1,6 +1,6 @@
 <script type="text/javascript" src="<?php echo $this->make_route('/js/prettify.js') ?>"></script>
 
-<form action = "<?php echo $this->make_route('/device') ?>" method = "post">
+<form action = "<?php echo $this->make_route('/devices/newdevice') ?>" method = "post">
     <legend>Add Device</legend>
     <div class = "control-group">
         <label class = "control-label">Name device:</label>
