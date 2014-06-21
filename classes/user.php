@@ -41,7 +41,6 @@ class User extends Base {
 
         try {
             $bones->couch->put($this->_id, $this->to_json());
-            //$bones->couch->send("PUT", "/".$this->name); 
         } catch (SagCouchException $e) {
             if ($e->getCode() == "409") {
                 $bones->set('error', 'A user with this name already exists.');
@@ -226,7 +225,7 @@ class User extends Base {
         return 'http://www.gravatar.com/avatar/?gravatar_id=' . md5(strtolower($this->email)) . '&size=' . $size;
     }
 
-    /* this methods is to */
+    /* this methods is to applivation */
 
     public function appRegister($name, $email, $username, $password) {
         $bones = new Bones();
@@ -254,65 +253,8 @@ class User extends Base {
         $this->creatDBForUser($username);
     }
 
-    public function findUsernameByMACAddress($macaddress) {
-        $bones = new Bones();
-        $bones->couch->setDatabase('_users');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-
-        foreach ($bones->couch->get('_design/application/_view/get_username_by_mac_address?key="' . $macaddress . '"')->body->rows as $_mac_address) {
-            return $_mac_address->value;
-        }
-
-        return NULL;
-    }
-
-    public function registeDeviceInUser($username, $device, $delete) {
-        $bones = new Bones();
-        $bones->couch->setDatabase('_users');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-
-        $document = $bones->couch->get('org.couchdb.user:' . $username)->body;
-        $devices = $document->devices;
-        $str = "add ->";
-        $alreadyHaveThisDevice = FALSE;
-        $i = 0;
-        foreach ($devices as $_device) {
-            if ($_device == $device) {
-                $str.=" " . $_device . "  ";
-                $alreadyHaveThisDevice = true;
-                if ($delete == TRUE) {
-                    //array_pop($devices);
-                    unset($devices[$i]);
-                    //$devices[$i] = "";
-                    //$devices = array_diff($devices, array($_device));
-                    $str.="delete = " . $_device . "!";
-                }
-                break;
-            }
-            $i++;
-        }
-        if ($alreadyHaveThisDevice == FALSE) {
-            array_push($devices, $device);
-        }
-        $document->devices = array_values($devices);
-
-        $str .= "show ->";
-
-        foreach ($devices as $_device) {
-            $str.=" - " . $_device . " - ";
-        }
-
-        try {
-            $bones->couch->put($document->_id, $document);
-        } catch (SagCouchException $exc) {
-            echo $exc->getTraceAsString();
-            return NULL;
-        }
-
-
-        return $str;
-    }
-
+  
+    /*this method is only to create data to user on DEBUG*/
     public function createFakeData($username) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);

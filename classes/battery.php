@@ -10,17 +10,17 @@ class Battery extends Sensor {
         $this->name_sensor = "Battery Level";
     }
 
-    public function create() {
-        $bones = new Bones();
-        $bones->couch->setDatabase($_SESSION['username']);
-        $this->_id = "$bones->couch->generateIDs(1)->body->uuids[0]";
-
-        try {
-            $bones->couch->put($this->_id, $this->to_json());
-        } catch (SagCouchException $e) {
-            $bones->error500($e);
-        }
-    }
+//    public function create() {
+//        $bones = new Bones();
+//        $bones->couch->setDatabase($_SESSION['username']);
+//        //$this->_id = "$bones->couch->generateIDs(1)->body->uuids[0]";
+//
+//        try {
+//            $bones->couch->put($this->_id, $this->to_json());
+//        } catch (SagCouchException $e) {
+//            $bones->error500($e);
+//        }
+//    }
 
     public static function updateBattery($username, $_id, $_rev, $low, $critical) {
         $sBat = Device::getDevice($username, $_id);

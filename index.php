@@ -152,7 +152,7 @@ post('/device', function($app) {
         $mac_device = $app->form('mac_address');
         $name_device = $app->form('name_device');
         $isToEditDevice = $app->form('isEditDevice');
-        if ($isToEditDevice == "1") {
+        if ($isToEditDevice == "1") { //edit device name
             $device = Device::getDevice(User::current_user(), $mac_device);
             if ($device != NULL) {
                 if ($device->name_device != $name_device) {
@@ -163,13 +163,23 @@ post('/device', function($app) {
             } else {
                 $app->redirect('/');
             }
-        } else {
+        } else { // add new device
             //TODO: need get the device on Devices DB,
             // now if is available 
             //change document->owner to user
             // copy device/document to user DB
             //and update in db devices
-            //$app->redirect('/devices/showdevices/'); 
+            $device = Device::findTheDeviceOnDevicesDB($mac_device);
+            if ($device != NULL) {
+                if (trim($name_device) != '' && $name_device != $device->name_device) {
+                    $device->name_device = $name_device;
+                }
+                $device->owner = User::current_user();
+            }
+            if (Device::updateTheOwnerDeviceOnDeviesDB($device)) {
+                Device::saveDeviceInUserDB($device);
+            };
+            $app->redirect('/devices/showdevices');
         }
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -257,10 +267,8 @@ get('/sensors/editsensor/:device/:sensor', function($app) {
 post('/sensor/setsensorenable/:id/:sensortype/:enable', function($app) {
     if (User::is_authenticated()) {
         $deviceID = $app->request('id');
-        $deviceREV = $app->request('rev');
         $sensorType = $app->request('sensortype');
         $enable = ($app->request('enable') == 1 ? TRUE : FALSE); // returns true if enable == 1
-
         Sensor::setEnableOfSensor(User::current_user(), $deviceID, $sensorType, $enable);
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -517,7 +525,7 @@ post('/manager_newdevice', function($app) {
 
 get('/admin/manager_dashboard', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-        $app->set("numbAvailableDevices", Device::getAvailableDevices());
+        $app->set("numbAvailableDevices", Device::getNumberOfAvailableDevices());
         $app->set("numbAllDevices", Device::getNumberOfDevicesInDBDevices());
         $app->render('/admin/manager_dashboard');
     } else {

@@ -12,20 +12,14 @@ class MSBattery extends Base {
         parent::__construct($type);
     }
 
-    public function getMonitoringSensorByKeys($username, $macAddress, $subtype) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
+    public function getMonitoringSensorByKeys($usernameDB, $macAddress, $subtype) {
         $sensorsBattery = array();
         $sensorsValues = array();
-        try {//\[
-//foreach ($bones->couch->get('_design/application/_view/getMonitoringSensor?key=\["' . $macAddress . '","' . $subtype . '"\]')->body->rows as $_monitoring) {
+        try {
             $monitoringSensor = new MSBattery();
-
-            foreach ($bones->couch->get('_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=24&descending=false')->body->rows as $_monitoring) {
+            foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=24&descending=false') as $_monitoring) {
                 array_push($sensorsBattery, date('d/m H:i:s', $_monitoring->value->timestamp));
                 array_push($sensorsValues, $_monitoring->value->value);
-
-//array_push($sensorsMonitoring, $monitoringSensor->value);
             }
             $monitoringSensor->arrayTimes = $sensorsBattery;
             $monitoringSensor->arrayValues = $sensorsValues;
@@ -45,7 +39,7 @@ class MSBattery extends Base {
         return json_encode($this->arrayTimes);
     }
 
-    public static function saveMonitoringSensorBattery($username, $macaddress, $level, $notification) {
+    public static function saveMonitoringSensorBattery($usernameDB, $macaddress, $level, $notification) {
         $monitoringSensorBattery = new MSBattery();
         $timestamp = time();
         $monitoringSensorBattery->_id = $macaddress . "_ms_batlvl_" . $timestamp;
@@ -56,10 +50,8 @@ class MSBattery extends Base {
         $monitoringSensorBattery->mac_address = $macaddress;
         $monitoringSensorBattery->notification = $notification;
 
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
         try {
-            $bones->couch->put($monitoringSensorBattery->_id, $monitoringSensorBattery->to_json());
+            Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorBattery, FALSE);
         } catch (SagCouchException $e) {
             return "some error in save monitoring battery";
         }

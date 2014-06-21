@@ -11,37 +11,7 @@ class Device extends Base {
         parent::__construct('device');
     }
 
-    public function create() {
-        $bones = new Bones();
-        $bones->couch->setDatabase($bones->config->db_database_devices);
-
-        $this->timestamp = time();
-
-        $str = $this->to_json();
-        $arr = json_decode($str, true);
-
-        //remove all empty array objects :S
-        foreach ($arr['sensors'] as $key => $values) {
-            unset($arr['sensors'][$key]);
-        }
-
-        foreach ($this->sensors as $sensor) {
-            if ($sensor != null)
-                array_push($arr['sensors'], $sensor->to_json());
-        }
-        try {
-            $bones->couch->put($this->_id, $arr);
-            //User::registeDeviceInUser(User::current_user(), $this->_id, FALSE);
-        } catch (SagCouchException $e) {
-            if ($e->getCode() == "409") {
-                //return FALSE;
-                $bones->set('error', 'A device with this mac address already exists.');
-                $bones->render('/admin/manager_newdevice');
-                exit();
-            }
-        }
-        //return TRUE;
-    }
+    /* Create new device in db of Devices by Admin */
 
     public static function createDeviceFromManagerDevice($app) {
         $mac_device = $app->form('mac_address');
@@ -79,33 +49,55 @@ class Device extends Base {
         $device->create();
     }
 
-    public function getDevices($username) { /* all devices to show in lists */
+    public function create() {
         $bones = new Bones();
-        $bones->couch->setDatabase($username);
 
+        $this->timestamp = time();
+
+        $str = $this->to_json();
+        $arr = json_decode($str, true);
+
+//remove all empty array objects :S
+        foreach ($arr['sensors'] as $key => $values) {
+            unset($arr['sensors'][$key]);
+        }
+
+        foreach ($this->sensors as $sensor) {
+            if ($sensor != null)
+                array_push($arr['sensors'], $sensor->to_json());
+        }
+        try {
+//Base::insertOrUpdateObjectInDB($bones->config->db_database_devices, $arr, TRUE);
+            $bones->couch->put($this->_id, $arr); // NEED REFACTURE
+        } catch (SagCouchException $e) {
+            if ($e->getCode() == "409") {
+//return FALSE;
+                $bones->set('error', 'A device with this mac address already exists.');
+                $bones->render('/admin/manager_newdevice');
+                exit();
+            }
+        }
+//return TRUE;
+    }
+
+    public function getDevices($username) { /* all devices to show in lists */
         $devices = array();
-
-        foreach ($bones->couch->get('_design/application/_view/getDevices?descending=false&reduce=false')->body->rows as $_device) {
+        foreach (Base::getViewToIterateBasedInUrl($username, '_design/application/_view/getDevices?descending=false&reduce=false') as $_device) {
             $device = new Device();
             $device->_id = $_device->id;
             $device->_rev = $_device->value->_rev;
             $device->name_device = $_device->value->name_device;
             $device->timestamp = $_device->value->timestamp;
             $device->sensors = $_device->value->sensors;
-
             array_push($devices, $device);
         }
-
         return $devices;
     }
 
     public static function getDevice($username, $_id) { /* one device to update */
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-
-        foreach ($bones->couch->get('_design/application/_view/getDevices?key="' . $_id . '"&reduce=false')->body->rows as $_device) {
+        foreach (Base::getViewToIterateBasedInUrl($username, '_design/application/_view/getDevices?key="' . $_id . '"&reduce=false') as $_device) {
             $device = new Device();
-            $device->_id = $_device->id;
+            $device->_id = $_device->value->_id;
             $device->_rev = $_device->value->_rev;
             $device->name_device = $_device->value->name_device;
             $device->timestamp = $_device->value->timestamp;
@@ -116,75 +108,18 @@ class Device extends Base {
         return NULL;
     }
 
-    public static function getAvailableDevices() {
-        $bones = new Bones();
-        $bones->couch->setDatabase('devices');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-        $rows = $bones->couch->get('_design/application/_view/getAvailableDevices?reduce=true')->body->rows;
-        if ($rows) {
-            return $rows[0]->value;
-        } else {
-            return 0;
-        }
-    }
-     //
-    public static function getNumberOfDevicesInDBDevices() {
-        $bones = new Bones();
-        $bones->couch->setDatabase('devices');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-        $rows = $bones->couch->get('_design/application/_view/getAllDevice?descending=true&reduce=true')->body->rows;
-        if ($rows) {
-            return $rows[0]->value;
-        } else {
-            return 0;
-        }
-    }
-
-    
-    public static function getNumberAllDevices() {
-        $bones = new Bones();
-        $bones->couch->setDatabase($bones->config->db_database_devices);
-        $rows = $bones->couch->get('_design/application/_view/getAllDevice?reduce=true')->body->rows;
-        if($rows){
-            return $rows->value;
-        }
-        return NULL;
-    }
-    
-    
-    /*public static function getNumberAvailableDevices() {
-        $bones = new Bones();
-        $bones->couch->setDatabase($bones->config->db_database_devices);
-        $rows = $bones->couch->get('_design/application/_view/getAvailableDevices?reduce=true')->body->rows;
-        if($rows){
-            return $rows->value;
-        }
-        return NULL;
-    }*/
-
     public static function updateSensor($username, $device) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-        try {
-            $bones->couch->put($device->_id, $device->to_json());
-        } catch (SagCouchException $e) {
-            $bones->error500($e);
-        }
+        Base::insertOrUpdateObjectInDB($username, $device, FALSE);
     }
 
-    public function getNumberOfDevices($username) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
+    /* GET ON USERDB the number of devices */
 
-
-        $rows = $bones->couch->get('_design/application/_view/getDevices?descending=true&reduce=true')->body->rows;
-        if ($rows) {
-            return $rows[0]->value;
-        } else {
-            return 0;
-        }
+//TODO: delete=false
+    public function getNumberOfDevices($usernameDB) {
+        return Base::getViewReduceCountBasedInUrl($usernameDB, '_design/application/_view/getDevices?descending=true&reduce=true');
     }
 
+//getRevision of documento must be generic -> pass to BASE Class
     public function getDeviceRevisionByID($username, $device) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
@@ -194,44 +129,90 @@ class Device extends Base {
         return NULL;
     }
 
-    public function deviceExist($username, $device) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
+    /* Based in mac address of device ask on db if device exist in DB */
 
+    public function deviceExist($usernameDB, $device) {
         try {
-            $rows = $bones->couch->get('_design/application/_view/getDevices?key="' . $device . '"')->body->rows;
+            $valueReturn = Base::getViewReduceCountBasedInUrl($usernameDB, '_design/application/_view/getDevices?key="' . $device . '"&reduce=true');
+            if ($valueReturn > 0) {
+                return TRUE;
+            }
         } catch (SagCouchException $e) {
             if ($e->getCode() == "401") {
                 return FALSE;
             }
         }
-
-        if ($rows) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return FALSE;
     }
 
-   
     public static function getAllDevicesInDBDevices() {
-        $bones = new Bones();
-        $bones->couch->setDatabase('devices');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+        $bones = new Bones(); // lazy 
         $devices = array();
-
-        foreach ($bones->couch->get('_design/application/_view/getAllDevice?descending=false&reduce=false')->body->rows as $_device) {
+        foreach (Base::getViewToIterateBasedInUrl($bones->config->db_database_devices, '_design/application/_view/getAllDevice?descending=false&reduce=false')as $_device) {
             $device = new Device();
-            $device->_id = $_device->id;
+            $device->_id = $_device->value->_id;
             $device->name_device = $_device->value->name_device;
             $device->timestamp = $_device->value->timestamp;
             $device->sensors = $_device->value->sensors;
             $device->owner = $_device->value->owner;
-
             array_push($devices, $device);
         }
-
         return $devices;
+    }
+
+    public static function findTheDeviceOnDevicesDB($macAddress) {
+        $bones = new Bones();
+        foreach (Base::getViewToIterateBasedInUrl($bones->config->db_database_devices, '_design/application/_view/getAllDevice?key=["' . $macAddress . '",null]&descending=false&reduce=false')as $_device) {
+            $device = new Device();
+            $device->_id = $_device->value->_id;
+            $device->_rev = $_device->value->_rev;
+            $device->name_device = $_device->value->name_device;
+            $device->timestamp = $_device->value->timestamp;
+            $device->sensors = $_device->value->sensors;
+            $device->owner = $_device->value->owner;
+            return $device; //only one device
+        }
+        return NULL;
+    }
+
+    public static function updateTheOwnerDeviceOnDeviesDB($device) {
+        $bones = new Bones();
+        try {
+            Base::insertOrUpdateObjectInDB($bones->config->db_database_devices, $device, FALSE);
+        } catch (SagCouchException $e) {
+            $bones->error500($e);
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    public static function saveDeviceInUserDB($device) {
+        $bones = new Bones();
+        //create new device to not send the previous revision of documment in devicesDB
+        $newDevice = new Device();
+        $newDevice->_id = $device->_id;
+        $newDevice->name_device = $device->name_device;
+        $newDevice->timestamp = $device->timestamp;
+        $newDevice->sensors = $device->sensors;
+        $newDevice->owner = $device->owner;
+
+        try {
+            Base::insertOrUpdateObjectInDB(User::current_user(), $newDevice, FALSE);
+        } catch (SagCouchException $e) {
+            $bones->error500($e);
+            return FALSE;
+        }
+        return TRUE;
+    }
+
+    public static function getNumberOfAvailableDevices() {
+        $bones = new Bones();
+        return Base::getViewReduceCountBasedInUrl($bones->config->db_database_devices, '_design/application/_view/getAvailableDevices?reduce=true');
+    }
+
+    public static function getNumberOfDevicesInDBDevices() {
+        $bones = new Bones();
+        return Base::getViewReduceCountBasedInUrl($bones->config->db_database_devices, '_design/application/_view/getAllDevice?descending=true&reduce=true');
     }
 
 }

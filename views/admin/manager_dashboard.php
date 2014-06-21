@@ -1,6 +1,9 @@
 <?php
 if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-    $percentAvailable = ($numbAvailableDevices / $numbAllDevices ) * 100;
+    $percentAvailable = 100;
+    if ($numbAllDevices != 0) {
+        $percentAvailable = ($numbAvailableDevices / $numbAllDevices ) * 100;
+    }
     ?>
     <script src="<?php echo $this->make_route('/js/highcharts.js') ?>"></script>
 

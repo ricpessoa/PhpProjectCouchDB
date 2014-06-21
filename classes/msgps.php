@@ -1,28 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of msgps
- *
- * @author rpessoa
- */
-/* {
-  "_id": "ms_MACADDRESS_TIMESTAMP",
-  "_rev": "rev",
-  "type": "monitoring_sensor",
-  "subtype": "GPS",
-  "latitude": 0.91561,
-  "longitude": 0.91561,
-  "timestamp": "TIMESTAMP",
-  "mac_address": "MACADDRESS"
-  "address":"Rua"
-  "notification": "Check-in ! Check-out"
- *  } */
 class MSGPS extends Base {
 
     protected $subtype;
@@ -37,14 +14,10 @@ class MSGPS extends Base {
         parent::__construct($type);
     }
 
-    public function getMonitoringSensorByKeys($username, $macAddress, $subtype) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-//$arrayTimes = array();
+    public function getMonitoringSensorByKeys($usernameDB, $macAddress, $subtype) {
         $sensorsGps = array();
         try {
-            foreach ($bones->couch->get('_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=5&descending=true')->body->rows as $_monitoringGPS) {
-//array_push($arrayTimes, "ola");
+            foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=5&descending=true')as $_monitoringGPS) {
                 $monitoringSensorGPS = new MSGPS();
 
                 $monitoringSensorGPS->_id = $_monitoringGPS->id;
@@ -70,7 +43,6 @@ class MSGPS extends Base {
     }
 
     public function getArrayOfGPSToJson($array) {
-//return json_encode($array);
         $jsonReturn = "";
         foreach ($array as $_row) {
             $jsonReturn.='{'
@@ -133,7 +105,7 @@ class MSGPS extends Base {
         return $str;
     }
 
-    public function saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification) {
+    public function saveMonitoringSensorGPS($usernameDB, $macaddress, $lat, $lng, $typeNotification) {
         $monitoringSensorGPS = new MSGPS();
         $timestamp = time();
 
@@ -147,18 +119,16 @@ class MSGPS extends Base {
         $monitoringSensorGPS->address = "get mtf address from google maps!";
         $monitoringSensorGPS->notification = $typeNotification;
 
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
         try {
-            $bones->couch->put($monitoringSensorGPS->_id, $monitoringSensorGPS->to_json());
+            Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorGPS, FALSE);
         } catch (SagCouchException $e) {
             return "some error in save monitoring gps";
         }
-        return " - see in couchdb " . $username . "," . $macaddress . ", " . $lat . "," . $lng . "," . $typeNotification;
+        return " - see in couchdb " . $usernameDB . "," . $macaddress . ", " . $lat . "," . $lng . "," . $typeNotification;
     }
 
     public function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000) {
-// convert from degrees to radians
+        // convert from degrees to radians
         $latFrom = deg2rad($latitudeFrom);
         $lonFrom = deg2rad($longitudeFrom);
         $latTo = deg2rad($latitudeTo);

@@ -10,18 +10,6 @@ class Temperature extends Sensor {
         $this->name_sensor = "Sensor Temperature";
     }
 
-    public function create() {
-        $bones = new Bones();
-        $bones->couch->setDatabase($_SESSION['username']);
-        $this->_id = "$bones->couch->generateIDs(1)->body->uuids[0]";
-
-        try {
-            $bones->couch->put($this->_id, $this->to_json());
-        } catch (SagCouchException $e) {
-            $bones->error500($e);
-        }
-    }
-
     public function updateTemperature($username, $_id, $_rev, $max, $min) {
         $sTemp = Device::getDevice($username, $_id);
         $sTemp->_rev = $_rev;

@@ -7,24 +7,21 @@ class Safezone extends Base {
     protected $latitude;
     protected $longitude;
     protected $radius;
-    protected $notification;
+    protected $notification; //[CHECK-IN CHECK-OUT OR BOTH]
     protected $timestamp;
     protected $device;
 
     public function __construct() {
         parent::__construct('safezone');
     }
-
+    
     public function create() { /*     * Need test the creation of Safezone */
         $bones = new Bones();
-        $bones->couch->setDatabase($_SESSION['username']);
-
-        //$this->_id = $bones->couch->generateIDs(1)->body->uuids[0];
 
         $this->timestamp = time();
 
         try {
-            $bones->couch->put($this->_id, $this->to_json());
+            Base::insertOrUpdateObjectInDB(User::current_user(), $this, FALSE);
         } catch (SagCouchException $e) {
             $bones->error500($e);
             $bones->set('error', 'Error try save the safezone');
@@ -33,13 +30,10 @@ class Safezone extends Base {
         }
     }
 
-    public function get_safezones_by_user($username) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-
+    public function get_safezones_by_user($usernameDB) {
         $safezones = array();
 
-        foreach ($bones->couch->get('_design/application/_view/getSafezones?reduce=false')->body->rows as $_safezone) {
+        foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getSafezones?reduce=false') as $_safezone) {
             $safezone = new Safezone();
             $safezone->_id = $_safezone->value->_id;
             $safezone->_rev = $_safezone->value->_rev;
@@ -57,12 +51,9 @@ class Safezone extends Base {
         return $safezones;
     }
 
-    public function getSafezonesByUserAndDevice($username, $mac_address) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-
+    public function getSafezonesByUserAndDevice($usernameDB, $mac_address) {
         $safezones = array();
-        foreach ($bones->couch->get('_design/application/_view/getSafezones?key="' . $mac_address . '"&reduce=false')->body->rows as $_safezone) {
+        foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getSafezones?key="' . $mac_address . '"&reduce=false') as $_safezone) {
             $safezone = new Safezone();
             $safezone->_id = $_safezone->value->_id;
             $safezone->_rev = $_safezone->value->_rev;
@@ -77,7 +68,6 @@ class Safezone extends Base {
 
             array_push($safezones, $safezone);
         }
-
         return $safezones;
     }
 

@@ -17,13 +17,10 @@ class Sensor extends Base {
         );
     }
 
-    public function getSensors($username, $device) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-
+    public function getSensors($usernameDB, $device) {
         $sensors = array();
 
-        foreach ($bones->couch->get('_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false')->body->rows as $_sensor) {
+        foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false')as $_sensor) {
             if ($_sensor->value->type == "GPS") {
                 $sensor = new Sensor("GPS");
                 $sensor->enable = $_sensor->value->enable;
@@ -51,13 +48,10 @@ class Sensor extends Base {
         return $sensors;
     }
 
-    public function getSensorByType($username, $device, $type) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-
+    public function getSensorByType($usernameDB, $device, $type) {
         $sensors = array();
 
-        foreach ($bones->couch->get('_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false')->body->rows as $_sensor) {
+        foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false') as $_sensor) {
             if ($_sensor->value->type == "GPS") {
                 $sensor = new Sensor("GPS");
                 $sensor->enable = $_sensor->value->enable;
@@ -89,11 +83,8 @@ class Sensor extends Base {
         return $sensors;
     }
 
-    public function getSensorTemperatureByUserAndDevice($username, $device) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-
-        foreach ($bones->couch->get('_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false')->body->rows as $_sensor) {
+    public function getSensorTemperatureByUserAndDevice($usernameDB, $device) {
+        foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false') as $_sensor) {
             if ($_sensor->value->type == "temperature") {
                 $sTemperature = new Temperature();
                 $sTemperature->name_sensor = $_sensor->value->name_sensor;
@@ -104,12 +95,9 @@ class Sensor extends Base {
         }
         return $sTemperature;
     }
-    
-    public function getSensorBatteryByUserAndDevice($username, $device) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
 
-        foreach ($bones->couch->get('_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false')->body->rows as $_sensor) {
+    public function getSensorBatteryByUserAndDevice($usernameDB, $device) {
+        foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false') as $_sensor) {
             if ($_sensor->value->type == "battery") {
                 $sBattery = new Battery();
                 $sBattery->name_sensor = $_sensor->value->name_sensor;
@@ -121,30 +109,12 @@ class Sensor extends Base {
         return $sBattery;
     }
 
-    /* public function getSensorByMacAddressandType($username, $device, $type) {
-      $bones = new Bones();
-      $bones->couch->setDatabase($username);
-
-      foreach ($bones->couch->get('_design/application/_view/getSensors?key="' . $device . '"&descending=true&reduce=false')->body->rows as $_sensor) {
-      if ($_sensor->value->type == $type) {
-      $sensor = new Sensor($type);
-      $sensor->_id = $_sensor->id;
-      $sensor->_rev = $_sensor->value->_rev;
-      $sensor->name_sensor = $sensor->value->name_sensor;
-      $sensor->enable = $_sensor->value->enable;
-      return $sensor;
-      }
-      }
-      return NULL;
-      }
-     */
-
     public function setEnableOfSensor($username, $deviceID, $sensorType, $enable) {
         $device = Device::getDevice($username, $deviceID);
         foreach ($device->sensors as $_sensor) {
             if ($_sensor->type == $sensorType) {
                 $_sensor->enable = $enable;
-                Device::updateSensor($username, $device);
+                Base::insertOrUpdateObjectInDB($username, $device, FALSE); // attention this a rude form to do it inside foreach
             }
         }
     }
@@ -158,26 +128,4 @@ class Sensor extends Base {
         return $enable;
     }
 
-    public function saveInDB($username) {
-        $bones = new Bones();
-        $bones->couch->setDatabase($username);
-        try {
-            $bones->couch->put($this->_id, $this->to_json());
-        } catch (SagCouchException $e) {
-            $bones->error500($e);
-        }
-    }
-
-    /*
-      public function updateSensor($username, $device) {
-      $bones = new Bones();
-      $bones->couch->setDatabase($username);
-      try {
-      $bones->couch->put($device->_id, $device->to_json());
-      } catch (SagCouchException $e) {
-      $bones->error500($e);
-      }
-      }
-
-     *      */
 }
