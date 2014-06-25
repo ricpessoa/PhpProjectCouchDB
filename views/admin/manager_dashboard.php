@@ -33,31 +33,7 @@ if (User::is_authenticated() && User::is_current_admin_authenticated()) {
             </ul>
         </div>
     </div>
-    <div class="span12 thumbnail">
-        <h3 class="well well-small">Statics of Users</h3>
-        <div class="span6">
-            <div id="container" style="min-width: 310px; height: 400px; max-width: 600px;"></div>
-        </div>
-        <div class="span4">
-            <ul class="thumbnails">
-                <li class="span4">
-                    <div class="thumbnail">
-                        <br>
-                        <h4><?php echo $numbAvailableDevices; ?> Devices Available</h4>
-                        <br>
-                        <h4><?php echo $numbAllDevices - $numbAvailableDevices; ?> Devices Unavailable</h4>
-                        <br>
-                        <h4><?php echo $numbAllDevices; ?> Total Devices</h4>
-                        <br>
-                        <h4> Bar Status of Devices Available</h4>
-                        <div class="progress">
-                            <div class="bar bar-success" style="width: <?php echo 100 - $percentAvailable; ?>%;"></div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
+   
     <script>
         $(function() {
             $('#container').highcharts({

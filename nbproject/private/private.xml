@@ -3,10 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/var/www/PhpProjectCouchDB/views/admin/manager_device.php</file>
             <file>file:/var/www/PhpProjectCouchDB/index.php</file>
             <file>file:/var/www/PhpProjectCouchDB/classes/device.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/admin/manager_showdevices.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/admin/manager_newdevice.php</file>
         </group>
     </open-files>
 </project-private>

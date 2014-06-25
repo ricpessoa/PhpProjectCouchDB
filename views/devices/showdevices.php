@@ -164,18 +164,6 @@ if ($numberDevices == 0) {
                 }
             });
         }
-        //        function showEnableOrDisable(sensorposition, type) {
-        //            if (document.getElementById("bt_disable" + sensorposition).style.visibility == "") { //visible
-        //                document.getElementById('bt_disable' + sensorposition).style.visibility = "hidden";
-        //                document.getElementById('bt_enable' + sensorposition).style.visibility = "";
-        //                document.getElementById('bt_editsensor' + sensorposition).style.visibility = "hidden";
-        //            } else {
-        //                document.getElementById('bt_disable' + sensorposition).style.visibility = "";
-        //                document.getElementById('bt_enable' + sensorposition).style.visibility = "hidden";
-        //                if (type != "panic_button")
-        //                    document.getElementById('bt_editsensor' + sensorposition).style.visibility = "";
-        //            }
-        //        }
     </script>
 <?php }
 ?>

@@ -138,7 +138,6 @@ get('/devices/newdevice/:device', function($app) {
     }
 });
 
-
 /* Create new device The user DON'T create device
  * but copy the document of device from devicesDB to your db
  *  */
@@ -337,10 +336,7 @@ post('/safezone/newsafezone', function($app) {
 
 post('/deletesafezone/:id/:rev', function($app) {
     if (User::is_authenticated()) {
-        $safezone = new Safezone();
-        $safezone->_id = $app->request('id');
-        $safezone->_rev = $app->request('rev');
-        $safezone->delete(User::current_user());
+        Base::deleteDocument(User::current_user(), $app->request('id'), $app->request('rev'));
 
         $app->set('success', 'The safezone was deleted');
         $app->redirect('/safezone/showsafezones');
@@ -491,10 +487,10 @@ post('/devicepost', function($app) {
 /* ---------- ADMIN  ---------- */
 /* Create new device  */
 
-post('/manager_newdevice', function($app) {
+post('/manager_device', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
+        
         Device::createDeviceFromManagerDevice($app);
-
         //$app->set('success', 'Yes device saved');
         $app->redirect('/admin/manager_showdevices');
     } else {
@@ -515,26 +511,43 @@ get('/admin/manager_dashboard', function($app) {
 
 get('/admin/manager_showdevices', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-        $numberOfDevices = Device::getNumberOfDevicesInDBDevices();
-        $app->set('numberDevices', $numberOfDevices);
-
-        if ($numberOfDevices != 0) {
-            $app->set('devices', Device::getAllDevicesInDBDevices());
-        }
+        $app->set('devices', Device::getAllDevicesInDBDevices());
         $app->render('/admin/manager_showdevices');
     } else {
         $app->redirect('/');
     }
 });
 
-get('/admin/manager_newdevice', function($app) {
+get('/admin/manager_device', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-        $app->render('/admin/manager_newdevice');
+        $app->render('/admin/manager_device');
     } else {
         $app->redirect('/');
     }
 });
 
+get('/admin/manager_device/:id', function($app) {
+    if (User::is_authenticated() && User::is_current_admin_authenticated()) {
+        $id = $app->request('id');
+        if ($id != "") {
+            $deviceToEdit = Device::findTheDeviceOnDevicesDB($id);
+            $app->set('deviceToEdit', Device::findTheDeviceOnDevicesDB($id));
+        }
+        $app->render('/admin/manager_device');
+    } else {
+        $app->redirect('/');
+    }
+});
 
+post('/admin/deletedevice/:id/:rev', function($app) {
+    if (User::is_authenticated() && User::is_current_admin_authenticated()) {
+        $bones = new Bones();
+        Base::deleteDocument($bones->config->db_database_devices, $app->request('id'), $app->request('rev'));
+        $app->redirect('/admin/manager_showdevices');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
 
 resolve(); //if the route not exist page not found

@@ -60,15 +60,16 @@ abstract class Base {
         }
     }
 
-//TO DELETE THE OBJECTS LIKE DEVICE SAFEZONE CAN BE DELETED BY FATHER CLASS
-    public function delete($db) {
+    public static function deleteDocument($db, $id, $rev) {
         $bones = new Bones();
         $bones->couch->setDatabase($db);
         try {
-            $bones->couch->delete($this->_id, $this->_rev);
+            $bones->couch->delete($id, $rev);
         } catch (SagCouchException $e) {
             $bones->error500($e);
+            return FALSE;
         }
+        return TRUE;
     }
 
 }

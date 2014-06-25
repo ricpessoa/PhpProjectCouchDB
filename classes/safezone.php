@@ -89,7 +89,7 @@ class Safezone extends Base {
             $safezone->device = $_safezone->device;
             return $safezone;
         }
-        return $_idsafezone . " doc? " . $doc->_id;
+        return $_idsafezone . " doc? " . $_idsafezone;
     }
 
     public function get_safezones_count_by_user($username) {

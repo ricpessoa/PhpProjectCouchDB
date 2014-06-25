@@ -17,7 +17,13 @@ class Device extends Base {
     public static function createDeviceFromManagerDevice($app) {
         $mac_device = $app->form('mac_address');
         $name_device = $app->form('name_device');
-        $device = new Device();
+        $isToEdit = $app->form('isEditDevice');
+        if ($isToEdit == "1") {
+            $device = Device::findTheDeviceOnDevicesDB($mac_device);
+        } else {
+            $device = new Device();
+        }
+
         $device->_id = $mac_device;
         if (trim($name_device) != '') {
             $device->name_device = $name_device;
@@ -141,8 +147,8 @@ class Device extends Base {
         return FALSE;
     }
 
-    
     /* Based in mac address of device ask on db if device exist in DB */
+
     public function deviceExist($usernameDB, $device) {
         try {
             $valueReturn = Base::getViewReduceCountBasedInUrl($usernameDB, '_design/application/_view/getDevices?key="' . $device . '"&reduce=true');
@@ -163,6 +169,7 @@ class Device extends Base {
         foreach (Base::getViewToIterateBasedInUrl($bones->config->db_database_devices, '_design/application/_view/getAllDevice?descending=false&reduce=false')as $_device) {
             $device = new Device();
             $device->_id = $_device->value->_id;
+            $device->_rev = $_device->value->_rev;
             $device->name_device = $_device->value->name_device;
             $device->timestamp = $_device->value->timestamp;
             $device->sensors = $_device->value->sensors;
