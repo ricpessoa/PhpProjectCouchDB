@@ -19,7 +19,7 @@ if ($numberDevices == 0) {
         <thead>
             <tr>
             <tr>
-                <th>Name Device</th>
+                <th>Device Name</th>
                 <th>Mac Address</th>
                 <th>Options</th>
             </tr>

@@ -18,6 +18,7 @@
             <thead>
                 <tr>
                     <th>Device MAC</th>
+                    <th>Device Name</th>
                     <th>Number of Sensors</th>
                     <th>User</th>
                     <th>Options</th>
@@ -27,7 +28,7 @@
                 <?php foreach ($devices as $_device): ?>
                     <tr>
                         <td><?php echo $_device->_id; ?></td>
-
+                        <td><?php echo $_device->name_device; ?></td>
                         <td>
                             <?php
                             $nSensors = 0;

@@ -1,3 +1,5 @@
+<script type="text/javascript" src="jquery.jcryption.3.0.1.js"></script>
+
 <div class="page-header">
     <h1>Login</h1>
 </div>

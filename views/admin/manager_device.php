@@ -117,7 +117,7 @@ foreach ($deviceToEdit->sensors as $_sersor) {
 <form action="<?php echo $this->make_route('/manager_device') ?>" method="post">
     <legend>Add Device</legend>
     <div class="control-group">
-        <label class="control-label">Name device:</label>
+        <label class="control-label">Device Name:</label>
         <div class="controls">
             <input 
                 id="name_device"
