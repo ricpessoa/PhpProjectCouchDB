@@ -116,7 +116,7 @@ class MSGPS extends Base {
         $monitoringSensorGPS->longitude = $lng;
         $monitoringSensorGPS->timestamp = $timestamp;
         $monitoringSensorGPS->mac_address = $macaddress;
-        $monitoringSensorGPS->address = "get mtf address from google maps!";
+        $monitoringSensorGPS->address = MSGPS::getAddress($lat, $lng);
         $monitoringSensorGPS->notification = $typeNotification;
 
         try {
@@ -140,6 +140,19 @@ class MSGPS extends Base {
         $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
                                 cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
         return $angle * $earthRadius;
+    }
+
+    public static function getAddress($lat, $lon) {
+        $url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" .
+                $lat . "," . $lon . "&sensor=false";
+        $json = @file_get_contents($url);
+        $data = json_decode($json);
+        $status = $data->status;
+        $address = '';
+        if ($status == "OK") {
+            $address = $data->results[0]->formatted_address;
+        }
+        return $address;
     }
 
 }

@@ -12,6 +12,7 @@ Bootstrap <br>
 MapStraction (to show geofences in map) <br>
 Highcharts (to show charts)<br>
 Bootstrap Switch 3 (button toogle to activate sensors)<br>
+Jcription (to encrypt the information from browser to server)<br>
 
 <p>Sometimes the project was available online in: http://linuxrp.kd.io/PhpProjectCouchDB</p>
 

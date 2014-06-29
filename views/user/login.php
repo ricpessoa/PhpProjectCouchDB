@@ -1,28 +1,11 @@
-<script type="text/javascript" src="jquery.jcryption.3.0.1.js"></script>
+<script type="text/javascript" src="<?php echo $this->make_route('/js/jquery.jcryption.3.0.1.js') ?>"></script>
 
 <div class="page-header">
     <h1>Login</h1>
 </div>
-<!--
 <div class="row">
     <div class="span12">
-        <form action="<?php echo $this->make_route('/login') ?>" method="post">
-            <fieldset>
-                <?php Bootstrap::make_input('username', 'Username', 'text'); ?>
-                <?php Bootstrap::make_input('password', 'Password', 'password'); ?>
-
-                <div class="form-actions">
-                    <button class="btn btn-primary">Login</button>
-                </div>
-            </fieldset>
-        </form>
-    </div>
-</div>-->
-
-<div class="row">
-    <div class="span12">
-
-        <form action="<?php echo $this->make_route('/login') ?>" method="post" >
+        <form id="formlogin" action="<?php echo $this->make_route('/login') ?>" method="post" >
             <div class="control-group">
                 <label class="control-label" for="name">Username</label>
                 <div class="controls">
@@ -43,3 +26,10 @@
         </form>
     </div>
 </div>
+
+<script type="text/javascript">
+//    //http://old.jcryption.org/
+//    $(function() {
+//        $("#formlogin").jCryption();
+//    });
+</script>
