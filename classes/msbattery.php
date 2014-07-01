@@ -17,7 +17,7 @@ class MSBattery extends Base {
         $sensorsValues = array();
         try {
             $monitoringSensor = new MSBattery();
-            foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=24&descending=false') as $_monitoring) {
+            foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=24&descending=true') as $_monitoring) {
                 array_push($sensorsBattery, date('d/m H:i:s', $_monitoring->value->timestamp));
                 array_push($sensorsValues, $_monitoring->value->value);
             }
@@ -45,7 +45,7 @@ class MSBattery extends Base {
         $monitoringSensorBattery->_id = $macaddress . "_ms_batlvl_" . $timestamp;
         $monitoringSensorBattery->type = "monitoring_sensor";
         $monitoringSensorBattery->subtype = "battery";
-        $monitoringSensorBattery->value = $level;
+        $monitoringSensorBattery->value = (float)$level;
         $monitoringSensorBattery->timestamp = $timestamp;
         $monitoringSensorBattery->mac_address = $macaddress;
         $monitoringSensorBattery->notification = $notification;

@@ -64,7 +64,7 @@ class MSGPS extends Base {
         $inside = false;
         $bestSafezone = NULL;
         $typeNotification = "";
-
+        
         foreach ($safezonesArray as $_safezone) {
             $distanceFromSafezoneToCoordinatorReceived = MSGPS::haversineGreatCircleDistance($_safezone->latitude, $_safezone->longitude, $lat, $lng);
             $str.=$_safezone->name;
@@ -84,6 +84,7 @@ class MSGPS extends Base {
                 // find the safezone closer of point
             }
         }
+        
         $saveMonitoringSensorGPS = false;
 
         if ($smalldistance < INF && $bestSafezone != NULL) {

@@ -7,6 +7,7 @@ class Device extends Base {
     protected $timestamp;
     protected $owner;
     protected $deleted = FALSE;
+    protected $monitoring = TRUE;
 
     public function __construct() {
         parent::__construct('device');
@@ -97,6 +98,7 @@ class Device extends Base {
                 $device->sensors = $_device->value->sensors;
                 $device->owner = $_device->value->owner;
                 $device->deleted = $_device->value->deleted;
+                $device->monitoring = $_device->value->monitoring;
                 array_push($devices, $device);
             }
         }
@@ -113,6 +115,7 @@ class Device extends Base {
             $device->sensors = $_device->value->sensors;
             $device->owner = $_device->value->owner;
             $device->deleted = $_device->value->deleted;
+            $device->monitoring = $_device->value->monitoring;
             return $device;
         }
         return NULL;
@@ -133,6 +136,7 @@ class Device extends Base {
         } else if ($isToEditDevice == "0" && $deviceOfUser != NULL) {
 //revert delete is to insert but $deviceUser was founded
             $deviceOfUser->deleted = false;
+            $deviceOfUser->monitoring = true;
             return Base::insertOrUpdateObjectInDB($usernameDB, $deviceOfUser, FALSE);
         } else if ($isToEditDevice == "0" && $deviceOfUser == NULL) {
             //insert for first time -> deviceUser not founded
@@ -215,6 +219,7 @@ class Device extends Base {
         $newDevice->sensors = $device->sensors;
         $newDevice->owner = $device->owner;
         $newDevice->deleted = FALSE;
+        $newDevice->monitoring = TRUE;
 
         try {
             Base::insertOrUpdateObjectInDB(User::current_user(), $newDevice, FALSE);
@@ -243,6 +248,15 @@ class Device extends Base {
         return NULL;
     }
 
+     public function getDeviceRevisionByID($username, $device) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+        foreach ($bones->couch->get('_design/application/_view/getDevices?key="' . $device . '"&reduce=false')->body->rows as $_device) {
+            return $_device->value->_rev;
+        }
+        return NULL;
+    }
+    
     /* NEED REFACTURING ON APP WHEN ADD NEW DEVICE
      * public function registeDeviceInUser($username, $device, $delete) {
       $bones = new Bones();

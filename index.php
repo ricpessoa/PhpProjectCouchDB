@@ -313,27 +313,6 @@ post('/safezone/newsafezone', function($app) {
     }
 });
 
-/* Comment because i dont now the parameter dev???
- * post('/deletesafezone/:id/:rev/:dev', function($app) {
-  if (User::is_authenticated()) {
-  $safezone = new Safezone();
-  $safezone->_id = $app->request('id');
-  $safezone->_rev = $app->request('rev');
-  $safezone->delete(User::current_user());
-
-  $deviceadd = $app->request('dev');
-  if ($deviceadd == NULL || $deviceadd === "") {
-  $app->set('success', 'The safezone was deleted');
-  $app->redirect('/safezone/showsafezones');
-  } else {
-  $app->redirect('/devices/editdevice/' . $app->request('dev'));
-  }
-  } else {
-  $app->set('error', 'You must be logged in to do that.');
-  $app->render('user/login');
-  }
-  }); */
-
 post('/deletesafezone/:id/:rev', function($app) {
     if (User::is_authenticated()) {
         Base::deleteDocument(User::current_user(), $app->request('id'), $app->request('rev'));
@@ -434,7 +413,6 @@ post('/deviceAddOrDelete', function($app) {
 post('/devicepost', function($app) {
     /* from device */
     $macaddress = $_POST["mac"];
-    $battery = $_POST["batt"];
     /* from gps */
     $latfrom = $_POST["latfrom"];
     $lonfrom = $_POST["lngfrom"];
@@ -442,6 +420,9 @@ post('/devicepost', function($app) {
     $temperature = $_POST["temp"];
     /* from panic button */
     $pressed = $_POST["press"];
+    /* from battery */
+    $battery = $_POST["batt"];
+
     $response = array();
 
     $usernamedb = Device::findUserOfDevice($macaddress);
@@ -463,8 +444,10 @@ post('/devicepost', function($app) {
         if ($temperature != NULL) {
             $str.= MSTemperature::calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $temperature);
             // $str.= MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $temperature);
-        } else {
-            $str.="|| _Temperature null";
+        }
+        if ($battery != NULL) {
+            $str.= MSBattery::calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $battery);
+            //$str.="|| _Temperature null";
         }
 
         if ($pressed != NULL) {
@@ -489,7 +472,7 @@ post('/devicepost', function($app) {
 
 post('/manager_device', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-        
+
         Device::createDeviceFromManagerDevice($app);
         //$app->set('success', 'Yes device saved');
         $app->redirect('/admin/manager_showdevices');
