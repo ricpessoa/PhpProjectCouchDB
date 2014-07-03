@@ -184,6 +184,34 @@ post('/deletedevice/:id/:rev', function($app) {
     }
 });
 
+get('/devices/monitoringdevice/:device', function($app) {
+    $deviceID = $app->request('device');
+    if (User::is_authenticated()) {
+        if ($deviceID != "") {
+            $device = Device::getDevice(User::current_user(), $deviceID);
+            if ($device != NULL) {
+                $app->set('deviceMacAddress', $device->_id);
+                $app->set('userName',  User::current_user());
+            }
+        }
+        $app->render('/devices/monitoringdevice');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
+get('/devices/client', function($app) {
+    $deviceID = $app->request('device');
+    if (User::is_authenticated()) {
+        
+        $app->render('/devices/client');
+    } else {
+        $app->set('error', 'You must be logged in to do that.');
+        $app->render('user/login');
+    }
+});
+
 /* END DEVICE */
 
 /* ---------------START SENSOR --------------- */
