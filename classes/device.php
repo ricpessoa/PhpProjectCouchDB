@@ -248,7 +248,7 @@ class Device extends Base {
         return NULL;
     }
 
-     public function getDeviceRevisionByID($username, $device) {
+    public function getDeviceRevisionByID($username, $device) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
         foreach ($bones->couch->get('_design/application/_view/getDevices?key="' . $device . '"&reduce=false')->body->rows as $_device) {
@@ -256,7 +256,7 @@ class Device extends Base {
         }
         return NULL;
     }
-    
+
     /* NEED REFACTURING ON APP WHEN ADD NEW DEVICE
      * public function registeDeviceInUser($username, $device, $delete) {
       $bones = new Bones();

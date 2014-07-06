@@ -191,7 +191,7 @@ get('/devices/monitoringdevice/:device', function($app) {
             $device = Device::getDevice(User::current_user(), $deviceID);
             if ($device != NULL) {
                 $app->set('deviceMacAddress', $device->_id);
-                $app->set('userName',  User::current_user());
+                $app->set('userName', User::current_user());
             }
         }
         $app->render('/devices/monitoringdevice');
@@ -204,7 +204,7 @@ get('/devices/monitoringdevice/:device', function($app) {
 get('/devices/client', function($app) {
     $deviceID = $app->request('device');
     if (User::is_authenticated()) {
-        
+
         $app->render('/devices/client');
     } else {
         $app->set('error', 'You must be logged in to do that.');
@@ -438,7 +438,30 @@ post('/deviceAddOrDelete', function($app) {
     }
 });
 
+post('/sendnotification', function($app) {
+//    Device::sendNotification();
+    require_once 'notification_server/client/lib/class.websocket_client.php';
+
+    $client = new WebsocketClient;
+    $client->connect('192.168.0.104', 8000, '/monitoring_devices', 'foo.lh');
+
+    usleep(5000);
+
+//    $payload = json_encode(array(
+//        'action' => 'echo',
+//        'data' => '{username:rpessoa,mac_address:az}'
+//            ), JSON_FORCE_OBJECT);
+    $jsonReturn = '{'
+            . '"action":' . '"echo",'
+            . '"data":' . '[{"username":"rpessoa","mac_address":"az"}]'
+            . '}';
+    $client->sendData($jsonReturn);
+    usleep(5000);
+    echo $jsonReturn;
+});
+
 post('/devicepost', function($app) {
+
     /* from device */
     $macaddress = $_POST["mac"];
     /* from gps */
@@ -486,9 +509,28 @@ post('/devicepost', function($app) {
         } else {
             $str.="|| _Panic Button null or false";
         }
+
+        /* send notification to user */
+
+        require_once 'notification_server/client/lib/class.websocket_client.php';
+
+        $client = new WebsocketClient;
+        $client->connect('192.168.0.104', 8000, '/monitoring_devices', 'foo.lh');
+
+        //usleep(500);
+
+        $jsonReturn = '{'
+                . '"action":' . '"echo",'
+                . '"data":' . '[{"username":"' . $usernamedb . '","mac_address":"' . $macaddress . '",'
+                . '"lat":"' . $latfrom . '","log":"' . $lonfrom . '","tmp":"' . $temperature . '",'
+                . '"bat":"' . $battery . '","press":"' . $pressed . '","time":"' . date("H:i:s d/m/Y ") . '"}]'
+                . '}';
+        //"time":"' . date("d-m H:i:s") .
+        $client->sendData($jsonReturn);
+        //usleep(500);
+
         $response['error'] = false;
         $response['message'] = $usernamedb . " found " . $str;
-
 //echo ''.$usernamedb;
     }
     echo json_encode($response);
@@ -498,65 +540,65 @@ post('/devicepost', function($app) {
 /* ---------- ADMIN  ---------- */
 /* Create new device  */
 
-post('/manager_device', function($app) {
+post('/manager_device ', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
 
         Device::createDeviceFromManagerDevice($app);
         //$app->set('success', 'Yes device saved');
         $app->redirect('/admin/manager_showdevices');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
+        $app->set('error ', 'You must be logged in to do that.');
         $app->render('user/login');
     }
 });
 
-get('/admin/manager_dashboard', function($app) {
+get('/admin/manager_dashboard ', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
         $app->set("numbAvailableDevices", Device::getNumberOfAvailableDevices());
         $app->set("numbAllDevices", Device::getNumberOfDevicesInDBDevices());
-        $app->render('/admin/manager_dashboard');
+        $app->render(' / admin / manager_dashboard');
     } else {
         $app->redirect('/');
     }
 });
 
-get('/admin/manager_showdevices', function($app) {
+get('/admin/manager_showdevices ', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-        $app->set('devices', Device::getAllDevicesInDBDevices());
+        $app->set('devices ', Device::getAllDevicesInDBDevices());
         $app->render('/admin/manager_showdevices');
     } else {
         $app->redirect('/');
     }
 });
 
-get('/admin/manager_device', function($app) {
+get('/admin/manager_device ', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-        $app->render('/admin/manager_device');
+        $app->render(' / admin/manager_device');
     } else {
         $app->redirect('/');
     }
 });
 
-get('/admin/manager_device/:id', function($app) {
+get('/admin/manager_device/:id ', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
         $id = $app->request('id');
         if ($id != "") {
             $deviceToEdit = Device::findTheDeviceOnDevicesDB($id);
             $app->set('deviceToEdit', Device::findTheDeviceOnDevicesDB($id));
         }
-        $app->render('/admin/manager_device');
+        $app->render(' /admin/manager_device');
     } else {
         $app->redirect('/');
     }
 });
 
-post('/admin/deletedevice/:id/:rev', function($app) {
+post('/admin/deletedevice/:id/:rev ', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
         $bones = new Bones();
-        Base::deleteDocument($bones->config->db_database_devices, $app->request('id'), $app->request('rev'));
+        Base::deleteDocument($bones->config->db_database_devices, $app->request('id'), $app->request('  rev'));
         $app->redirect('/admin/manager_showdevices');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
+        $app->set('error ', 'You must be logged in to do that.');
         $app->render('user/login');
     }
 });
