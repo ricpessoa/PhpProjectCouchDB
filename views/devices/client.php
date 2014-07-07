@@ -13,7 +13,7 @@ https://github.com/reactphp/socket
 <script>
     // Client here
     var socket = null;
-    var uri = "ws://192.168.0.104:8000/monitoring_devices";
+    var uri = "ws://192.168.255.139:8000/monitoring_devices";
 
     function parseMessage(data) {
         var jsonObj = JSON.parse(data);
@@ -86,7 +86,7 @@ https://github.com/reactphp/socket
     function writeToScreen(msg) {
         //console.log('write screen');
         $('#screenMonitoring').append(msg + "\n");
-        $('#screenMonitoring').scrollTop(psconsole[0].scrollHeight - psconsole.height()); //scroll down
+        $('#screenMonitoring').scrollTop($('#screenMonitoring')[0].scrollHeight); //scroll down
     }
     function clearScreen() {
         $('#screenMonitoring').html('');

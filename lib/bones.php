@@ -175,4 +175,33 @@ class Bones {
         }
     }
 
+    public static function Unencrypter($valueEncrypted) {
+        // Start the session so we can use sessions
+        session_start();
+
+        $descriptorspec = array(
+            0 => array("pipe", "r"), // stdin is a pipe that the child will read from
+            1 => array("pipe", "w")  // stdout is a pipe that the child will write to
+        );
+
+        if (isset($valueEncrypted)) {
+            $key = $_SESSION["key"];
+
+            // Decrypt the client's request and send it to the clients(uncrypted)
+            $cmd = sprintf("openssl enc -aes-256-cbc -pass pass:" . escapeshellarg($key) . " -d");
+            $process = proc_open($cmd, $descriptorspec, $pipes);
+            if (is_resource($process)) {
+                fwrite($pipes[0], base64_decode($valueEncrypted));
+                fclose($pipes[0]);
+
+                $data = stream_get_contents($pipes[1]);
+                fclose($pipes[1]);
+                proc_close($process);
+            }
+
+            return $data;
+            //print_r($output);
+        }
+    }
+
 }

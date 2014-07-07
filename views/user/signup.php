@@ -1,8 +1,4 @@
-<script>
-    $(function() {
-        $("input,select,textarea").not("[type=submit]").jqBootstrapValidation();
-    });
-</script>
+<script type="text/javascript" src="<?php echo $this->make_route('/js/jquery.jcryption.3.0.1.js') ?>"></script>
 
 <div class="page-header">
     <h1>Signup</h1>
@@ -11,11 +7,11 @@
 <div class="row">
     <div class="span12">
 
-        <form action="<?php echo $this->make_route('/signup') ?>" method="post" >
+        <form id="formsignup" action="<?php echo $this->make_route('/signup') ?>" method="post" >
             <div class="control-group">
                 <label class="control-label" for="name">Name</label>
                 <div class="controls">
-                   <input type="text" minlength="3" name="full_name" id="full_name" value="<?php echo $ename; ?>" required/>
+                    <input type="text" minlength="3" name="full_name" id="full_name" value="<?php echo $ename; ?>" required/>
                     <p class="help-block"></p>
                 </div>
             </div>
@@ -41,8 +37,14 @@
                 </div>
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Sign Up <i class="icon-ok icon-white"></i></button><br />
+                <button type="submit" class="btn btn-primary">Sign Up</button><br />
             </div>
         </form>
     </div>
 </div>
+
+<script type="text/javascript">
+    $(function() {
+        $("#formsignup").jCryption();
+    });
+</script>

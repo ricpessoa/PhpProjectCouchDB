@@ -1,7 +1,6 @@
 <?php
 
 include 'lib/bones.php';
-
 get('/', function($app) {
     if (User::is_authenticated()) {
         $devices = Device::getDevices(User::current_user());
@@ -22,10 +21,12 @@ get('/signup', function($app) {
 });
 
 post('/signup', function($app) {
+    parse_str(Bones::Unencrypter($app->form('jCryption')), $output);
+
     $user = new User();
-    $user->full_name = $app->form('full_name');
-    $user->email = $app->form('email');
-    $user->signup($app->form('username'), $app->form('password'), $app->form('email'));
+    $user->full_name = $output['full_name'];
+    $user->email = $output['email'];
+    $user->signup($output['username'], $output['password'], $output['email']);
 
     $app->set('success', 'Thanks for Signing Up ' . $user->full_name . '!');
     $app->render('home');
@@ -36,9 +37,11 @@ get('/login', function($app) {
 });
 
 post('/login', function($app) {
+    //echo 'crypted: ' . $app->form('jCryption');
+    parse_str(Bones::Unencrypter($app->form('jCryption')), $output);
     $user = new User();
-    $user->name = $app->form('username');
-    $user->login($app->form('password'));
+    $user->name = $output['username'];
+    $user->login($output['password']);
 
     $app->set('success', 'You are now logged in!');
     if (User::is_authenticated() && !User::is_current_admin_authenticated()) {
@@ -515,7 +518,7 @@ post('/devicepost', function($app) {
         require_once 'notification_server/client/lib/class.websocket_client.php';
 
         $client = new WebsocketClient;
-        $client->connect('192.168.0.104', 8000, '/monitoring_devices', 'foo.lh');
+        $client->connect('192.168.255.139', 8000, '/monitoring_devices', 'foo.lh');
 
         //usleep(500);
 
