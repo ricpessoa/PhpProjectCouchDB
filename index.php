@@ -543,7 +543,7 @@ post('/devicepost', function($app) {
 /* ---------- ADMIN  ---------- */
 /* Create new device  */
 
-post('/manager_device ', function($app) {
+post('/manager_device', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
 
         Device::createDeviceFromManagerDevice($app);
@@ -555,47 +555,47 @@ post('/manager_device ', function($app) {
     }
 });
 
-get('/admin/manager_dashboard ', function($app) {
+get('/admin/manager_dashboard', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
         $app->set("numbAvailableDevices", Device::getNumberOfAvailableDevices());
         $app->set("numbAllDevices", Device::getNumberOfDevicesInDBDevices());
-        $app->render(' / admin / manager_dashboard');
+        $app->render('/admin/manager_dashboard');
     } else {
         $app->redirect('/');
     }
 });
 
-get('/admin/manager_showdevices ', function($app) {
+get('/admin/manager_showdevices', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-        $app->set('devices ', Device::getAllDevicesInDBDevices());
+        $app->set('devices', Device::getAllDevicesInDBDevices());
         $app->render('/admin/manager_showdevices');
     } else {
         $app->redirect('/');
     }
 });
 
-get('/admin/manager_device ', function($app) {
+get('/admin/manager_device', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
-        $app->render(' / admin/manager_device');
+        $app->render('/admin/manager_device');
     } else {
         $app->redirect('/');
     }
 });
 
-get('/admin/manager_device/:id ', function($app) {
+get('/admin/manager_device/:id', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
         $id = $app->request('id');
         if ($id != "") {
             $deviceToEdit = Device::findTheDeviceOnDevicesDB($id);
             $app->set('deviceToEdit', Device::findTheDeviceOnDevicesDB($id));
         }
-        $app->render(' /admin/manager_device');
+        $app->render('/admin/manager_device');
     } else {
         $app->redirect('/');
     }
 });
 
-post('/admin/deletedevice/:id/:rev ', function($app) {
+post('/admin/deletedevice/:id/:rev', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
         $bones = new Bones();
         Base::deleteDocument($bones->config->db_database_devices, $app->request('id'), $app->request('  rev'));

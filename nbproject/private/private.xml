@@ -4,9 +4,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/var/www/PhpProjectCouchDB/index.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/notification_server/server/server.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/notification_server/client/lib/class.websocket_client.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/views/devices/client.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/README.md</file>
+            <file>file:/var/www/PhpProjectCouchDB/lib/bones.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/views/user/signup.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/jcryption.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/lib/configuration.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/views/user/login.php</file>
         </group>
     </open-files>
 </project-private>

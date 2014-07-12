@@ -10,5 +10,8 @@
         if ($sensor === "panic_button") {
             include '_panicbutton.php';
         }
+        if ($sensor->type === "battery") {
+            include '_battery.php';
+        }
     endforeach;
     ?>
