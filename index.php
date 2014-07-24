@@ -11,7 +11,6 @@ get('/', function($app) {
             return;
         }
     }
-    $app->set('message', 'Welcome Back!');
     $app->render('home');
 });
 
@@ -42,8 +41,6 @@ post('/login', function($app) {
     $user = new User();
     $user->name = $output['username'];
     $user->login($output['password']);
-
-    $app->set('success', 'You are now logged in!');
     if (User::is_authenticated() && !User::is_current_admin_authenticated()) {
         $devices = Device::getDevices(User::current_user());
         $app->set('devices', $devices);
@@ -84,20 +81,9 @@ post('/edituser', function($app) {
         $user->country = $app->form('country');
         $user->mobile_phone = $app->form('mobile_phone');
         User::updateUserProfile($user);
-//$app->set('success', 'User:' . $user->name . '  received to update ' . $user->country . " - " . $user->mobile_phone);
         $app->redirect('/user/' . User::current_user());
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
-    }
-});
-
-delete('/post/delete/:id/:rev', function($app) {
-    if (User::is_authenticated()) {
-        $post = new Post();
-        $post->_id = $app->request('id');
-        $post->_rev = $app->request('rev');
-        $post->delete(User::current_user());
+        $app->redirect('/user/login');
     }
 });
 
@@ -109,8 +95,7 @@ get('devices/showdevices', function($app) {
         $app->set('devices', $devicesUser);
         $app->render('/devices/showdevices');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -118,8 +103,7 @@ get('/devices/newdevice', function($app) {
     if (User::is_authenticated()) {
         $app->render('/devices/newdevice');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -136,8 +120,7 @@ get('/devices/newdevice/:device', function($app) {
         }
         $app->render('/devices/newdevice');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -161,8 +144,7 @@ post('/devices/newdevice', function($app) {
             $app->render('/devices/newdevice');
         }
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 /*
@@ -177,13 +159,10 @@ post('/deletedevice/:id/:rev', function($app) {
             $device->deleted = true;
             Base::insertOrUpdateObjectInDB(User::current_user(), $device, FALSE);
         }
-        ////$device->delete(User::current_user());
-        //User::registeDeviceInUser(User::current_user(), $device->_id, TRUE);
         $app->set('success', 'Delete Device successfull');
         $app->redirect('/devices/showdevices');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -199,8 +178,7 @@ get('/devices/monitoringdevice/:device', function($app) {
         }
         $app->render('/devices/monitoringdevice');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -210,8 +188,7 @@ get('/devices/client', function($app) {
 
         $app->render('/devices/client');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -224,11 +201,10 @@ get('/devices/client', function($app) {
 post('/configsensortemperature/:id/:rev', function($app) {
     if (User::is_authenticated()) {
         Temperature::updateTemperature(User::current_user(), $app->request('id'), $app->request('rev'), $app->form('max_temp_notification'), $app->form('min_temp_notification'));
-        $app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
+        //$app->set('success', 'Yes receive the id' . $app->request('id') . " and rev" . $app->request('rev') . " - max " . $app->form('max_temp_notification') . " min " . $app->form('min_temp_notification') . "<br>");
         $app->redirect('/devices/showdevices');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -237,8 +213,7 @@ post('/configsensorbattery/:id/:rev', function($app) {
         Battery::updateBattery(User::current_user(), $app->request('id'), $app->request('rev'), $app->form('low_battery_notification'), $app->form('critical_battery_notification'));
         $app->redirect('/devices/showdevices');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -268,8 +243,7 @@ get('/sensors/editsensor/:device/:sensor', function($app) {
             $app->render('error/404');
         }
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -281,8 +255,7 @@ post('/sensor/setsensorenable/:id/:sensortype/:enable', function($app) {
         $enable = ($app->request('enable') == 1 ? TRUE : FALSE); // returns true if enable == 1
         Sensor::setEnableOfSensor(User::current_user(), $deviceID, $sensorType, $enable);
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 /* END SENSOR */
@@ -314,8 +287,7 @@ post('/safezone', function($app) {
         }
         $app->redirect('/sensors/editsensor/' . $safezone->device . '/GPS');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -339,20 +311,19 @@ post('/safezone/newsafezone', function($app) {
 
         $app->render('/safezone/newsafezone');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
-post('/deletesafezone/:id/:rev', function($app) {
+post('/deletesafezone/:id/:rev/:device', function($app) {
     if (User::is_authenticated()) {
         Base::deleteDocument(User::current_user(), $app->request('id'), $app->request('rev'));
 
         $app->set('success', 'The safezone was deleted');
-        $app->redirect('/safezone/showsafezones');
+        //$app->redirect('/safezone/showsafezones');
+        $app->redirect('/sensors/editsensor/' . $app->request('device') . '/GPS');
     } else {
-        $app->set('error', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 /* END SAFEZONE */
@@ -440,28 +411,28 @@ post('/deviceAddOrDelete', function($app) {
         $response['message'] = "Error receiving data";
     }
 });
-
-post('/sendnotification', function($app) {
-//    Device::sendNotification();
-    require_once 'notification_server/client/lib/class.websocket_client.php';
-
-    $client = new WebsocketClient;
-    $client->connect('192.168.0.104', 8000, '/monitoring_devices', 'foo.lh');
-
-    usleep(5000);
-
-//    $payload = json_encode(array(
-//        'action' => 'echo',
-//        'data' => '{username:rpessoa,mac_address:az}'
-//            ), JSON_FORCE_OBJECT);
-    $jsonReturn = '{'
-            . '"action":' . '"echo",'
-            . '"data":' . '[{"username":"rpessoa","mac_address":"az"}]'
-            . '}';
-    $client->sendData($jsonReturn);
-    usleep(5000);
-    echo $jsonReturn;
-});
+/** TESTE NOTIFICATION */
+//post('/sendnotification', function($app) {
+////    Device::sendNotification();
+//    require_once 'notification_server/client/lib/class.websocket_client.php';
+//
+//    $client = new WebsocketClient;
+//    $client->connect('192.168.0.104', 8000, '/monitoring_devices', 'foo.lh');
+//
+//    usleep(5000);
+//
+////    $payload = json_encode(array(
+////        'action' => 'echo',
+////        'data' => '{username:rpessoa,mac_address:az}'
+////            ), JSON_FORCE_OBJECT);
+//    $jsonReturn = '{'
+//            . '"action":' . '"echo",'
+//            . '"data":' . '[{"username":"rpessoa","mac_address":"az"}]'
+//            . '}';
+//    $client->sendData($jsonReturn);
+//    usleep(5000);
+//    echo $jsonReturn;
+//});
 
 post('/devicepost', function($app) {
 
@@ -550,8 +521,7 @@ post('/manager_device', function($app) {
         //$app->set('success', 'Yes device saved');
         $app->redirect('/admin/manager_showdevices');
     } else {
-        $app->set('error ', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 
@@ -561,7 +531,7 @@ get('/admin/manager_dashboard', function($app) {
         $app->set("numbAllDevices", Device::getNumberOfDevicesInDBDevices());
         $app->render('/admin/manager_dashboard');
     } else {
-        $app->redirect('/');
+        $app->redirect('/user/login');
     }
 });
 
@@ -570,7 +540,7 @@ get('/admin/manager_showdevices', function($app) {
         $app->set('devices', Device::getAllDevicesInDBDevices());
         $app->render('/admin/manager_showdevices');
     } else {
-        $app->redirect('/');
+        $app->redirect('/user/login');
     }
 });
 
@@ -578,7 +548,7 @@ get('/admin/manager_device', function($app) {
     if (User::is_authenticated() && User::is_current_admin_authenticated()) {
         $app->render('/admin/manager_device');
     } else {
-        $app->redirect('/');
+        $app->redirect('/user/login');
     }
 });
 
@@ -591,7 +561,7 @@ get('/admin/manager_device/:id', function($app) {
         }
         $app->render('/admin/manager_device');
     } else {
-        $app->redirect('/');
+        $app->redirect('/user/login');
     }
 });
 
@@ -601,8 +571,7 @@ post('/admin/deletedevice/:id/:rev', function($app) {
         Base::deleteDocument($bones->config->db_database_devices, $app->request('id'), $app->request('  rev'));
         $app->redirect('/admin/manager_showdevices');
     } else {
-        $app->set('error ', 'You must be logged in to do that.');
-        $app->render('user/login');
+        $app->redirect('/user/login');
     }
 });
 

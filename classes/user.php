@@ -64,17 +64,20 @@ class User extends Base {
         }
 
         $bones->couch->setDatabase($username);
-        //create the views
-        $doc_json = '{
-   "_id": "_design/application",
+//create the views
+//
+        //
+        //
+
+$doc_json = '{"_id": "_design/application",
    "language": "javascript",
    "views": {
        "getSafezones": {
-           "map": "function(doc) {\n  if(doc.type == ' . "'" . safezone . "'" . ')  \n   emit(doc.type, doc);\n}",
+           "map": "function(doc) {\n  if(doc.type == ' . "'" . safezone . "'" . ')  \n   emit(doc.device, doc);\n}",
            "reduce": "_count"
        },
        "getDevices": {
-           "map": "function(doc) {\nif(doc.type == ' . "'" . device . "'" . ')\n  emit(doc.type, doc);\n}\n",
+           "map": "function(doc) {\nif(doc.type == ' . "'" . device . "'" . ')\n  emit(doc._id, doc);\n}\n",
            "reduce": "_count"
        },
        "getSensors": {
@@ -86,6 +89,28 @@ class User extends Base {
        }
    }
 }';
+
+//        $doc_json = '{
+//   "_id": "_design/application",
+//   "language": "javascript",
+//   "views": {
+//       "getSafezones": {
+//           "map": "function(doc) {\n  if(doc.type == ' . "'" . safezone . "'" . ')  \n   emit(doc.type, doc);\n}",
+//           "reduce": "_count"
+//       },
+//       "getDevices": {
+//           "map": "function(doc) {\nif(doc.type == ' . "'" . device . "'" . ')\n  emit(doc.type, doc);\n}\n",
+//           "reduce": "_count"
+//       },
+//       "getSensors": {
+//           "map": "function(doc) {\nif(doc.sensors){\nfor(var i in doc.sensors)\n  emit(doc._id,doc.sensors[i]);\n}}",
+//           "reduce": "_count"
+//       },
+//       "getMonitoringSensor": {
+//           "map": "function(doc) {\nif(doc.type == ' . "'" . monitoring_sensor . "'" . '){ \n  emit([doc.mac_address,doc.subtype], doc);\n}\n}"
+//       }
+//   }
+//}';
         try {
             $bones->couch->post($doc_json);
         } catch (SagCouchException $exc) {
@@ -134,9 +159,9 @@ class User extends Base {
         session_start();
         session_destroy();
     }
-    
+
     public static function current_user() {
-        //session_start();
+//session_start();
         return $_SESSION['username'];
         session_write_close();
     }
@@ -148,9 +173,9 @@ class User extends Base {
             return false;
         }
     }
-    
-    public static function is_current_admin_authenticated(){
-        if (self::current_user()=="admin") {
+
+    public static function is_current_admin_authenticated() {
+        if (self::current_user() == "admin") {
             return true;
         } else {
             return false;
@@ -192,7 +217,7 @@ class User extends Base {
         $document->full_name = $user->full_name;
         $document->country = $user->country;
         $document->mobile_phone = $user->mobile_phone;
-        
+
         try {
             $bones->couch->put($document->_id, $document);
         } catch (SagCouchException $exc) {
@@ -244,7 +269,7 @@ class User extends Base {
 
         try {
             $bones->couch->put($this->_id, $this->to_json());
-            //$bones->couch->send("PUT", "/".$this->name); 
+//$bones->couch->send("PUT", "/".$this->name); 
         } catch (SagCouchException $e) {
             if ($e->getCode() == "409") {
                 return -2; //the username already exist
@@ -253,33 +278,45 @@ class User extends Base {
         $this->creatDBForUser($username);
     }
 
-  
-    /*this method is only to create data to user on DEBUG*/
+    /* this method is only to create data to user on DEBUG */
+
     public function createFakeData($username) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
 
         $devicejson = '{
    "_id": "az",
-   "name_device": "Fake Device",
+   "_rev": "267-37c9af7a-195c-485b-bf83-84437cec5669",
    "sensors": {
-       "3": {
+       "1": {
            "name_sensor": "Panic Button",
+           "enable": true,
            "type": "panic_button"
        },
-       "4": {
+       "2": {
            "name_sensor": "Sensor GPS",
+           "enable": true,
            "type": "GPS"
        },
-       "5": {
-           "min_temperature": "23",
-           "max_temperatrue": "27",
+       "3": {
+           "min_temperature": 12,
+           "max_temperature": 88,
            "name_sensor": "Sensor Temperature",
+           "enable": true,
            "type": "temperature"
+       },
+       "4": {
+           "critical_battery": 10,
+           "low_battery": 50,
+           "name_sensor": "Battery Level",
+           "enable": true,
+           "type": "battery"
        }
    },
-   "timestamp": 1397147978,
-   "type": "device"
+   "timestamp": 1406131957525,
+   "monitoring": true,
+   "type": "device",
+   "name_device": "az teste"
 }';
         $msjson = '{"_id": "az_1396963000", "type": "monitoring_sensor", "subtype": "temperature", "value": 29, "timestamp": "1396963000", "mac_address": "az"}';
         $bones->couch->post($msjson);

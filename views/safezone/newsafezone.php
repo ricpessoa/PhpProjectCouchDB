@@ -76,7 +76,7 @@
             <table id="myDynamicTable"></table>
             <div id="div_radius" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
                 <label class="control-label">Radius:</label>
-                <input id="radiusSlider" type="range" class="input-medium" name="points" min="500" max="10000" value="500" onchange="updateTextInput(this.value);">
+                <input id="radiusSlider" type="range" class="input-medium" name="points" min="500" max="5000" value="500" onchange="updateTextInput(this.value);">
                 <input id="radius" type="text" class="input-mini" value="500" onchange="updateSlider(this.value);">
             </div>
             <div id="editSafezone" style="margin-top: 10px;margin-bottom:10px;">
