@@ -18,7 +18,7 @@ class MSTemperature extends Base {
         try {
             $monitoringSensor = new MSTemperature();
 
-            foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=24&descending=false')as $_monitoring) {
+            foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=20&descending=true')as $_monitoring) {
                 array_push($sensorsTime, date('d/m H:i:s', $_monitoring->value->timestamp));
                 array_push($sensorsValues, $_monitoring->value->value);
             }
@@ -33,11 +33,11 @@ class MSTemperature extends Base {
     }
 
     public function getArrayValues() {
-        return json_encode($this->arrayValues);
+        return json_encode(array_reverse($this->arrayValues));
     }
 
     public function getArrayTimes() {
-        return json_encode($this->arrayTimes);
+        return json_encode(array_reverse($this->arrayTimes));
     }
 
     public function saveMonitoringSensorTemperature($usernameDB, $macaddress, $temperature, $notification) {

@@ -486,10 +486,10 @@ post('/devicepost', function($app) {
 
         /* send notification to user */
 
-        require_once 'notification_server/client/lib/class.websocket_client.php';
+        //require_once 'notification_server/client/lib/class.websocket_client.php';
 
-        $client = new WebsocketClient;
-        $client->connect('192.168.255.139', 8000, '/monitoring_devices', 'foo.lh');
+        //$client = new WebsocketClient;
+        //$client->connect('192.168.255.139', 8000, '/monitoring_devices', 'foo.lh');
 
         //usleep(500);
 
@@ -500,8 +500,10 @@ post('/devicepost', function($app) {
                 . '"bat":"' . $battery . '","press":"' . $pressed . '","time":"' . date("H:i:s d/m/Y ") . '"}]'
                 . '}';
         //"time":"' . date("d-m H:i:s") .
-        $client->sendData($jsonReturn);
-        //usleep(500);
+        
+        //$client->sendData($jsonReturn);
+        
+//usleep(500);
 
         $response['error'] = false;
         $response['message'] = $usernamedb . " found " . $str;
