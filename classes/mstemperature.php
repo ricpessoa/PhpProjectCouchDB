@@ -40,14 +40,14 @@ class MSTemperature extends Base {
         return json_encode(array_reverse($this->arrayTimes));
     }
 
-    public function saveMonitoringSensorTemperature($usernameDB, $macaddress, $temperature, $notification) {
+    public function saveMonitoringSensorTemperature($usernameDB, $macaddress, $temperature, $notification, $timestamsOfDevice) {
         $monitoringSensorTemperature = new MSTemperature();
-        $timestamp = time();
-        $monitoringSensorTemperature->_id = $macaddress . "_ms_tmp_" . $timestamp;
+        $monitoringSensorTemperature->_id = "ms_" . $timestamsOfDevice . "_" . $macaddress . "_temperature";
+        //$monitoringSensorTemperature->_id = $macaddress . "_ms_tmp_" . $timestamsOfDevice;
         $monitoringSensorTemperature->type = "monitoring_sensor";
         $monitoringSensorTemperature->subtype = "temperature";
         $monitoringSensorTemperature->value = (float) $temperature;
-        $monitoringSensorTemperature->timestamp = $timestamp;
+        $monitoringSensorTemperature->timestamp = $timestamsOfDevice;
         $monitoringSensorTemperature->mac_address = $macaddress;
         $monitoringSensorTemperature->notification = $notification;
 
@@ -59,7 +59,7 @@ class MSTemperature extends Base {
         return " - see in couchdb value TEMPERATURE:" . $temperature;
     }
 
-    public function calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $numTemperature) {
+    public function calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $numTemperature, $timestamsOfDevice) {
         $temperature = Sensor::getSensorTemperatureByUserAndDevice($usernamedb, $macaddress);
         if ($temperature == NULL) {
             return "Error the device " + $macaddress + " dont have sensor temperature";
@@ -78,7 +78,7 @@ class MSTemperature extends Base {
             }
         }
         //return $minTemp." - ".$numTemperature." - ".$maxTemp." pass ".$notification;
-        return MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $numTemperature, $notification);
+        return MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $numTemperature, $notification, $timestamsOfDevice);
     }
 
 }

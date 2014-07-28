@@ -57,14 +57,14 @@ class MSGPS extends Base {
         return "[" . substr($jsonReturn, 0, -1) . "]";
     }
 
-    public function calcIfCheckInOrCheckOut($username, $macaddress, $lat, $lng) {
+    public function calcIfCheckInOrCheckOut($username, $macaddress, $lat, $lng, $timestamsOfDevice) {
         $safezonesArray = Safezone::getSafezonesByUserAndDevice($username, $macaddress);
         $str = "";
         $smalldistance = INF;
         $inside = false;
         $bestSafezone = NULL;
         $typeNotification = "";
-        
+
         foreach ($safezonesArray as $_safezone) {
             $distanceFromSafezoneToCoordinatorReceived = MSGPS::haversineGreatCircleDistance($_safezone->latitude, $_safezone->longitude, $lat, $lng);
             $str.=$_safezone->name;
@@ -84,7 +84,7 @@ class MSGPS extends Base {
                 // find the safezone closer of point
             }
         }
-        
+
         $saveMonitoringSensorGPS = false;
 
         if ($smalldistance < INF && $bestSafezone != NULL) {
@@ -98,7 +98,7 @@ class MSGPS extends Base {
             }
 
             if ($saveMonitoringSensorGPS) {
-                $str.= MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification);
+                $str.= MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification, $timestamsOfDevice);
             } else {
                 $str.="not necessary to save!!!";
             }
@@ -106,16 +106,15 @@ class MSGPS extends Base {
         return $str;
     }
 
-    public function saveMonitoringSensorGPS($usernameDB, $macaddress, $lat, $lng, $typeNotification) {
+    public function saveMonitoringSensorGPS($usernameDB, $macaddress, $lat, $lng, $typeNotification, $timestamsOfDevice) {
         $monitoringSensorGPS = new MSGPS();
-        $timestamp = time();
-
-        $monitoringSensorGPS->_id = $macaddress . "_ms_gps_" . $timestamp;
+        $monitoringSensorGPS->_id = "ms_" . $timestamsOfDevice . "_" . $macaddress . "_gps";
+        //$monitoringSensorGPS->_id = $macaddress . "_ms_gps_" . $timestamsOfDevice;
         $monitoringSensorGPS->type = "monitoring_sensor";
         $monitoringSensorGPS->subtype = "GPS";
         $monitoringSensorGPS->latitude = $lat;
         $monitoringSensorGPS->longitude = $lng;
-        $monitoringSensorGPS->timestamp = $timestamp;
+        $monitoringSensorGPS->timestamp = $timestamsOfDevice;
         $monitoringSensorGPS->mac_address = $macaddress;
         $monitoringSensorGPS->address = MSGPS::getAddress($lat, $lng);
         $monitoringSensorGPS->notification = $typeNotification;
@@ -152,6 +151,11 @@ class MSGPS extends Base {
         $address = '';
         if ($status == "OK") {
             $address = $data->results[0]->formatted_address;
+            if ($address === "") {
+                $address = "Address not found: Lat:" . $lat . " Lng:" . $lon;
+            }
+        }else{
+            $address = "Address not found: Lat:" . $lat . " Lng:" . $lon;
         }
         return $address;
     }

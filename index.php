@@ -447,9 +447,14 @@ post('/devicepost', function($app) {
     $pressed = $_POST["press"];
     /* from battery */
     $battery = $_POST["batt"];
+    $timestamsOfDevice = $_POST["timestamp"];
+    $str = "";
 
+    if ($timestamsOfDevice == NULL) {
+        $str.= "TIMESTAMP SERVER ||";
+        $timestamsOfDevice = time(); //if empty give timestamp of server
+    }
     $response = array();
-
     $usernamedb = Device::findUserOfDevice($macaddress);
 
     if ($usernamedb == NULL) {
@@ -460,25 +465,24 @@ post('/devicepost', function($app) {
     } else {
         /* test only for when user delete device */
 //$devices = User::registeDeviceInUser("rpessoa", $macaddress, TRUE);
-        $str = "";
         if ($latfrom != NULL && $lonfrom != NULL) {
-            $str.= MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom);
+            $str.= MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom, $timestamsOfDevice);
         } else {
             $str.="|| _GPS null";
         }
         if ($temperature != NULL) {
-            $str.= MSTemperature::calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $temperature);
+            $str.= MSTemperature::calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $temperature, $timestamsOfDevice);
             // $str.= MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $temperature);
         }
         if ($battery != NULL) {
-            $str.= MSBattery::calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $battery);
+            $str.= MSBattery::calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $battery, $timestamsOfDevice);
             //$str.="|| _Temperature null";
         }
 
         if ($pressed != NULL) {
             $boolPressed = $pressed === 'true' ? true : false;
             if ($boolPressed) {
-                $str.= MSPanicButton::saveMonitoringSensorPanicButton($usernamedb, $macaddress, $boolPressed);
+                $str.= MSPanicButton::saveMonitoringSensorPanicButton($usernamedb, $macaddress, $boolPressed, $timestamsOfDevice);
             }
         } else {
             $str.="|| _Panic Button null or false";
@@ -487,10 +491,8 @@ post('/devicepost', function($app) {
         /* send notification to user */
 
         //require_once 'notification_server/client/lib/class.websocket_client.php';
-
         //$client = new WebsocketClient;
         //$client->connect('192.168.255.139', 8000, '/monitoring_devices', 'foo.lh');
-
         //usleep(500);
 
         $jsonReturn = '{'
@@ -500,9 +502,7 @@ post('/devicepost', function($app) {
                 . '"bat":"' . $battery . '","press":"' . $pressed . '","time":"' . date("H:i:s d/m/Y ") . '"}]'
                 . '}';
         //"time":"' . date("d-m H:i:s") .
-        
         //$client->sendData($jsonReturn);
-        
 //usleep(500);
 
         $response['error'] = false;

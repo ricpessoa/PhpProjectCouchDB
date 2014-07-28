@@ -32,21 +32,21 @@ class MSBattery extends Base {
     }
 
     public function getArrayValues() {
-        return json_encode($this->arrayValues);
+        return json_encode(array_reverse($this->arrayValues));
     }
 
     public function getArrayTimes() {
-        return json_encode($this->arrayTimes);
+        return json_encode(array_reverse($this->arrayTimes));
     }
 
-    public static function saveMonitoringSensorBattery($usernameDB, $macaddress, $level, $notification) {
+    public static function saveMonitoringSensorBattery($usernameDB, $macaddress, $level, $notification, $timestamsOfDevice) {
         $monitoringSensorBattery = new MSBattery();
-        $timestamp = time();
-        $monitoringSensorBattery->_id = $macaddress . "_ms_batlvl_" . $timestamp;
+        $monitoringSensorBattery->_id = "ms_" . $timestamsOfDevice . "_" . $macaddress . "_battery";
+        //$monitoringSensorBattery->_id = $macaddress . "_ms_batlvl_" . $timestamsOfDevice;
         $monitoringSensorBattery->type = "monitoring_sensor";
         $monitoringSensorBattery->subtype = "battery";
-        $monitoringSensorBattery->value = (float)$level;
-        $monitoringSensorBattery->timestamp = $timestamp;
+        $monitoringSensorBattery->value = (float) $level;
+        $monitoringSensorBattery->timestamp = $timestamsOfDevice;
         $monitoringSensorBattery->mac_address = $macaddress;
         $monitoringSensorBattery->notification = $notification;
 
@@ -58,7 +58,7 @@ class MSBattery extends Base {
         return " - see in couchdb value battery:" . $level;
     }
 
-    public static function calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $level) {
+    public static function calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $level, $timestamsOfDevice) {
         $battery = Sensor::getSensorBatteryByUserAndDevice($usernamedb, $macaddress);
         if ($battery == NULL) {
             return "Error the device " + $macaddress + " dont have sensor battery";
@@ -69,13 +69,13 @@ class MSBattery extends Base {
         //return "received ".$minTemp ."and" .$maxTemp ."to compare".$numTemperature;
         $notification = "RANGE";
         if ($critical != null && $low != null) {
-            if ($critical <= $level)
+            if ($level <= $critical)
                 $notification = "CRITICAL";
-            else if ($low <= $level)
+            else if ($level<= $low)
                 $notification = "LOW";
         }
         //return $minTemp." - ".$numTemperature." - ".$maxTemp." pass ".$notification;
-        return MSBattery::saveMonitoringSensorBattery($usernamedb, $macaddress, $level, $notification);
+        return MSBattery::saveMonitoringSensorBattery($usernamedb, $macaddress, $level, $notification, $timestamsOfDevice);
     }
 
 }

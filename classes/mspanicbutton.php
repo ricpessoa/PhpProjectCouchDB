@@ -28,14 +28,14 @@ class MSPanicButton extends Base {
         return NULL;
     }
 
-    public static function saveMonitoringSensorPanicButton($usernameDB, $macaddress, $pressed) {
+    public static function saveMonitoringSensorPanicButton($usernameDB, $macaddress, $pressed, $timestamsOfDevice) {
         $monitoringSensorTemperature = new MSTemperature();
-        $timestamp = time();
-        $monitoringSensorTemperature->_id = $macaddress . "_ms_pb_" . $timestamp;
+        //$monitoringSensorTemperature->_id = $macaddress . "_ms_pb_" . $timestamsOfDevice;
+        $monitoringSensorTemperature->_id = "ms_" . $timestamsOfDevice . "_" . $macaddress . "_panic_button";
         $monitoringSensorTemperature->type = "monitoring_sensor";
         $monitoringSensorTemperature->subtype = "panic_button";
         $monitoringSensorTemperature->pressed = $pressed;
-        $monitoringSensorTemperature->timestamp = $timestamp;
+        $monitoringSensorTemperature->timestamp = $timestamsOfDevice;
         $monitoringSensorTemperature->mac_address = $macaddress;
 
         try {

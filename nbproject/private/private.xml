@@ -3,11 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/PhpProjectCouchDB/classes/base.php</file>
             <file>file:/var/www/PhpProjectCouchDB/index.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/classes/device.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/classes/msbattery.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/classes/mstemperature.php</file>
             <file>file:/var/www/PhpProjectCouchDB/views/sensors/_safezone.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/classes/user.php</file>
         </group>
     </open-files>
 </project-private>
