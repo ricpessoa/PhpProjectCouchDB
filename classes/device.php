@@ -129,7 +129,7 @@ class Device extends Base {
         $deviceOfUser = Device::getDevice($usernameDB, $mac_device);
         if ($isToEditDevice == "1" && $deviceOfUser != NULL) {
 //edit device name
-            if ($deviceOfUser->name_device != $name_device) {
+            if ($deviceOfUser->name_device != $name_device && trim($name_device) != '') {
                 $deviceOfUser->name_device = $name_device;
                 return Base::insertOrUpdateObjectInDB($usernameDB, $deviceOfUser, FALSE);
             }
@@ -142,9 +142,12 @@ class Device extends Base {
             //insert for first time -> deviceUser not founded
             $deviceOfDevices = Device::findTheDeviceOnDevicesDB($mac_device);
             if ($deviceOfDevices != NULL) {
+                if ($deviceOfDevices->name_device != $name_device && trim($name_device) != '') {
+                    $deviceOfDevices->name_device = $name_device;
+                }
                 $deviceOfDevices->owner = $usernameDB;
                 if (Device::updateTheOwnerDeviceOnDeviesDB($deviceOfDevices)) {
-                    return Device::saveDeviceInUserDB($deviceOfDevices);
+                    return Device::saveDeviceInUserDB($usernameDB, $deviceOfDevices);
                 }
             }
         }
@@ -209,7 +212,7 @@ class Device extends Base {
         return TRUE;
     }
 
-    public static function saveDeviceInUserDB($device) {
+    public static function saveDeviceInUserDB($userdb, $device) {
         $bones = new Bones();
 //create new device to not send the previous revision of documment in devicesDB
         $newDevice = new Device();
@@ -222,7 +225,7 @@ class Device extends Base {
         $newDevice->monitoring = TRUE;
 
         try {
-            Base::insertOrUpdateObjectInDB(User::current_user(), $newDevice, FALSE);
+            Base::insertOrUpdateObjectInDB($userdb, $newDevice, FALSE);
         } catch (SagCouchException $e) {
             $bones->error500($e);
             return FALSE;

@@ -388,52 +388,51 @@ post('/appregister', function($app) {
     }
 });
 
-post('/deviceAddOrDelete', function($app) {
-    if (isset($_POST["name"]) && isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["password"])) {
+post('/appAddNewDevice', function($app) {
 
-        $userDB = $_POST["user"];
-        $macaddress = $_POST["mac"];
-        $delete = $_POST["delete"];
+    if (isset($_POST["username"]) && isset($_POST["mac_address"])) {
+        $userDB = $_POST["username"];
+        $mac_device = $_POST["mac_address"];
+        $name_device = $_POST["name_device"];
 
-        $deleteDevice = $delete === 'true' ? true : false;
-        $response = array();
-
-        $deviceResponse = User::registeDeviceInUser($userDB, $macaddress, $deleteDevice);
-        if ($deviceResponse != NULL) {
+        $result = Device::insertOrEditDevice($userDB, $mac_device, $name_device, "0");
+        if ($result == TRUE) {
             $response['error'] = false;
-            $response['message'] = "Add device in " . $userDB . "Save successful ";
+            $response['message'] = "Add device" . $mac_device . " with name " . $name_device . " in " . $userDB . " DB ";
         } else {
             $response['error'] = true;
-            $response['message'] = "Error try to save device in " . $userDB;
+            $response['message'] = "Device not found " . $mac_device . " " . $userDB;
         }
     } else {
         $response['error'] = true;
-        $response['message'] = "Error receiving data";
+        $response['message'] = "No receive information ";
     }
+    echo json_encode($response);
 });
 /** TESTE NOTIFICATION */
-//post('/sendnotification', function($app) {
-////    Device::sendNotification();
-//    require_once 'notification_server/client/lib/class.websocket_client.php';
-//
-//    $client = new WebsocketClient;
-//    $client->connect('192.168.0.104', 8000, '/monitoring_devices', 'foo.lh');
-//
-//    usleep(5000);
-//
-////    $payload = json_encode(array(
-////        'action' => 'echo',
-////        'data' => '{username:rpessoa,mac_address:az}'
-////            ), JSON_FORCE_OBJECT);
-//    $jsonReturn = '{'
-//            . '"action":' . '"echo",'
-//            . '"data":' . '[{"username":"rpessoa","mac_address":"az"}]'
-//            . '}';
-//    $client->sendData($jsonReturn);
-//    usleep(5000);
-//    echo $jsonReturn;
-//});
+post('/sendnotification', function($app) {
+//    Device::sendNotification();
+    require_once 'notification_server/client/lib/class.websocket_client.php';
 
+    $client = new WebsocketClient;
+    $client->connect('195.23.102.92', 8000, '/monitoring_devices', 'foo.lh');
+
+    usleep(5000);
+
+//    $payload = json_encode(array(
+//        'action' => 'echo',
+//        'data' => '{username:rpessoa,mac_address:az}'
+//            ), JSON_FORCE_OBJECT);
+    $jsonReturn = '{'
+            . '"action":' . '"echo",'
+            . '"data":' . '[{"username":"rpessoa","mac_address":"az"}]'
+            . '}';
+    $client->sendData($jsonReturn);
+    usleep(5000);
+    echo $jsonReturn;
+});
+
+/* To teste monitoring of device */
 post('/devicepost', function($app) {
 
     /* from device */
