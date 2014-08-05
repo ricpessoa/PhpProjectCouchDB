@@ -409,28 +409,6 @@ post('/appAddNewDevice', function($app) {
     }
     echo json_encode($response);
 });
-/** TESTE NOTIFICATION */
-post('/sendnotification', function($app) {
-//    Device::sendNotification();
-    require_once 'notification_server/client/lib/class.websocket_client.php';
-
-    $client = new WebsocketClient;
-    $client->connect('195.23.102.92', 8000, '/monitoring_devices', 'foo.lh');
-
-    usleep(5000);
-
-//    $payload = json_encode(array(
-//        'action' => 'echo',
-//        'data' => '{username:rpessoa,mac_address:az}'
-//            ), JSON_FORCE_OBJECT);
-    $jsonReturn = '{'
-            . '"action":' . '"echo",'
-            . '"data":' . '[{"username":"rpessoa","mac_address":"az"}]'
-            . '}';
-    $client->sendData($jsonReturn);
-    usleep(5000);
-    echo $jsonReturn;
-});
 
 /* To teste monitoring of device */
 post('/devicepost', function($app) {
@@ -489,10 +467,10 @@ post('/devicepost', function($app) {
 
         /* send notification to user */
 
-        //require_once 'notification_server/client/lib/class.websocket_client.php';
-        //$client = new WebsocketClient;
-        //$client->connect('192.168.255.139', 8000, '/monitoring_devices', 'foo.lh');
-        //usleep(500);
+        require_once 'notification_server/client/lib/class.websocket_client.php';
+        $client = new WebsocketClient;
+        $client->connect('192.168.50.94', 8000, '/monitoring_devices', 'foo.lh');
+        usleep(500);
 
         $jsonReturn = '{'
                 . '"action":' . '"echo",'
@@ -501,8 +479,8 @@ post('/devicepost', function($app) {
                 . '"bat":"' . $battery . '","press":"' . $pressed . '","time":"' . date("H:i:s d/m/Y ") . '"}]'
                 . '}';
         //"time":"' . date("d-m H:i:s") .
-        //$client->sendData($jsonReturn);
-//usleep(500);
+        $client->sendData($jsonReturn);
+        usleep(500);
 
         $response['error'] = false;
         $response['message'] = $usernamedb . " found " . $str;
