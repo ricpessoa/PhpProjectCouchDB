@@ -13,8 +13,7 @@ https://github.com/reactphp/socket
 <script>
     // Client here
     var socket = null;
-    var uri = "ws://192.168.255.139:8000/monitoring_devices";
-
+    var uri = "ws://195.23.102.92:8000/monitoring_devices";
     function parseMessage(data) {
         var jsonObj = JSON.parse(data);
         return jsonObj;
