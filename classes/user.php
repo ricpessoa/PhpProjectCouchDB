@@ -194,7 +194,6 @@ $doc_json = '{"_id": "_design/application",
             $user->name = $document->name;
             $user->email = $document->email;
             $user->full_name = $document->full_name;
-            $user->devices = $document->devices;
             $user->mobile_phone = $document->mobile_phone;
             $user->country = $document->country;
             return $user;

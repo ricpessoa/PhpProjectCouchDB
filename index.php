@@ -64,6 +64,7 @@ get('/user/', function($app) {
 get('/user/:username', function($app) {
     if ($app->request('username') == User::current_user()) {
         $app->set('user', User::get_by_username($app->request('username')));
+        $app->set('numberDevices',  Device::getNumberOfDevicesOfUser($app->request('username')));
         $app->set('is_current_user', ($app->request('username') == User::current_user() ? true : false));
         $app->render('user/profile');
     } else {
@@ -399,13 +400,16 @@ post('/appAddNewDevice', function($app) {
         if ($result == TRUE) {
             $response['error'] = false;
             $response['message'] = "Add device" . $mac_device . " with name " . $name_device . " in " . $userDB . " DB ";
+            $response['code'] = 1;
         } else {
             $response['error'] = true;
             $response['message'] = "Device not found " . $mac_device . " " . $userDB;
+            $response['code'] = -1;
         }
     } else {
         $response['error'] = true;
         $response['message'] = "No receive information ";
+        $response['code'] = -3;
     }
     echo json_encode($response);
 });

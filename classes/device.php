@@ -251,6 +251,16 @@ class Device extends Base {
         return NULL;
     }
 
+    public static function getNumberOfDevicesOfUser($username) {
+        $numberDevices = 0;
+        foreach (Base::getViewToIterateBasedInUrl($username, '_design/application/_view/getDevices?reduce=false') as $_device) {
+            if ($_device->value->deleted == false) {
+                $numberDevices++;
+            }
+        }
+        return $numberDevices;
+    }
+
     public function getDeviceRevisionByID($username, $device) {
         $bones = new Bones();
         $bones->couch->setDatabase($username);
@@ -259,4 +269,5 @@ class Device extends Base {
         }
         return NULL;
     }
+
 }

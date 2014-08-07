@@ -6,7 +6,7 @@
         <div class="span4">
             <p style="text-align:center" class="lead"><b>Username: </b> <?php echo $user->name; ?></p>
             <img src="<?php echo $user->gravatar('150'); ?>" style=" display: block;margin-left: auto;margin-right: auto;" class="img-polaroid" />
-            <br> <p style="text-align:center" class="lead"><b> Number of Devices: </b> <?php echo sizeof($user->devices); ?></p>
+            <br> <p style="text-align:center" class="lead"><b> Number of Devices: </b> <?php echo $numberDevices; ?></p>
         </div>
         <div class="span8">
             <form action="<?php echo $this->make_route('/edituser') ?>" method="post" >
