@@ -7,7 +7,7 @@ class MSPanicButton extends Base {
     protected $timestamp;
     protected $mac_address;
     protected $pressed;
-    protected $seen;
+    protected $seen = FALSE;
 
     public function __construct($type) {
         parent::__construct($type);
@@ -38,6 +38,8 @@ class MSPanicButton extends Base {
         $monitoringSensorPanicButton->pressed = $pressed;
         $monitoringSensorPanicButton->timestamp = $timestamsOfDevice;
         $monitoringSensorPanicButton->mac_address = $macaddress;
+        $monitoringSensorPanicButton->seen = FALSE;
+
 
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorPanicButton, FALSE);
