@@ -7,6 +7,7 @@ class MSPanicButton extends Base {
     protected $timestamp;
     protected $mac_address;
     protected $pressed;
+    protected $seen;
 
     public function __construct($type) {
         parent::__construct($type);
@@ -29,17 +30,17 @@ class MSPanicButton extends Base {
     }
 
     public static function saveMonitoringSensorPanicButton($usernameDB, $macaddress, $pressed, $timestamsOfDevice) {
-        $monitoringSensorTemperature = new MSTemperature();
+        $monitoringSensorPanicButton = new MSPanicButton();
         //$monitoringSensorTemperature->_id = $macaddress . "_ms_pb_" . $timestamsOfDevice;
-        $monitoringSensorTemperature->_id = "ms_" . $timestamsOfDevice . "_" . $macaddress . "_panic_button";
-        $monitoringSensorTemperature->type = "monitoring_sensor";
-        $monitoringSensorTemperature->subtype = "panic_button";
-        $monitoringSensorTemperature->pressed = $pressed;
-        $monitoringSensorTemperature->timestamp = $timestamsOfDevice;
-        $monitoringSensorTemperature->mac_address = $macaddress;
+        $monitoringSensorPanicButton->_id = "ms_" . $timestamsOfDevice . "_" . $macaddress . "_panic_button";
+        $monitoringSensorPanicButton->type = "monitoring_sensor";
+        $monitoringSensorPanicButton->subtype = "panic_button";
+        $monitoringSensorPanicButton->pressed = $pressed;
+        $monitoringSensorPanicButton->timestamp = $timestamsOfDevice;
+        $monitoringSensorPanicButton->mac_address = $macaddress;
 
         try {
-            Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorTemperature, FALSE);
+            Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorPanicButton, FALSE);
         } catch (SagCouchException $e) {
             return "some error in save monitoring panic button";
         }

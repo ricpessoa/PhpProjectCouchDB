@@ -9,6 +9,7 @@ class MSGPS extends Base {
     protected $longitude;
     protected $address;
     protected $notification;
+    protected $seen = FALSE;
 
     public function __construct($type) {
         parent::__construct($type);
@@ -118,6 +119,8 @@ class MSGPS extends Base {
         $monitoringSensorGPS->mac_address = $macaddress;
         $monitoringSensorGPS->address = MSGPS::getAddress($lat, $lng);
         $monitoringSensorGPS->notification = $typeNotification;
+        $monitoringSensorGPS->seen = FALSE;
+
 
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorGPS, FALSE);
@@ -154,7 +157,7 @@ class MSGPS extends Base {
             if ($address === "") {
                 $address = "Address not found: Lat:" . $lat . " Lng:" . $lon;
             }
-        }else{
+        } else {
             $address = "Address not found: Lat:" . $lat . " Lng:" . $lon;
         }
         return $address;

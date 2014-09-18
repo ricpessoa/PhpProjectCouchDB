@@ -7,6 +7,7 @@ class MSTemperature extends Base {
     protected $timestamp;
     protected $mac_address;
     protected $notification; //{"LOW", "RANGE","HIGH"};
+    protected $seen = FALSE;
 
     public function __construct($type) {
         parent::__construct($type);
@@ -50,6 +51,7 @@ class MSTemperature extends Base {
         $monitoringSensorTemperature->timestamp = $timestamsOfDevice;
         $monitoringSensorTemperature->mac_address = $macaddress;
         $monitoringSensorTemperature->notification = $notification;
+        $monitoringSensorTemperature->seen = FALSE;
 
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorTemperature, FALSE);

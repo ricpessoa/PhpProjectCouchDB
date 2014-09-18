@@ -7,6 +7,7 @@ class MSBattery extends Base {
     protected $timestamp;
     protected $mac_address;
     protected $notification; //{"CRITICAL","LOW", "RANGE"};
+    protected $seen = FALSE;
 
     public function __construct($type) {
         parent::__construct($type);
@@ -49,6 +50,7 @@ class MSBattery extends Base {
         $monitoringSensorBattery->timestamp = $timestamsOfDevice;
         $monitoringSensorBattery->mac_address = $macaddress;
         $monitoringSensorBattery->notification = $notification;
+        $monitoringSensorBattery->seen = FALSE;
 
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorBattery, FALSE);
@@ -71,7 +73,7 @@ class MSBattery extends Base {
         if ($critical != null && $low != null) {
             if ($level <= $critical)
                 $notification = "CRITICAL";
-            else if ($level<= $low)
+            else if ($level <= $low)
                 $notification = "LOW";
         }
         //return $minTemp." - ".$numTemperature." - ".$maxTemp." pass ".$notification;
