@@ -68,7 +68,7 @@ if ($numberDevices == 0) {
                                         <td>
                                             <?php
                                             if ($sensor->enable == TRUE) {
-                                                if ($sensor->type == "panic_button" || $sensor->type == "shoe") {
+                                                if ($sensor->type == "panic_button" || $sensor->type == "shoe" ) {
                                                     ?>
                                                     <a id="bt_editsensor<?php echo $j; ?>" style="visibility:hidden;" class="btn btn-info btn-small" href="<?php echo $this->make_route('/sensors/editsensor/' . $device->_id . '/' . $sensor->type) ?>"><i class="icon-pencil icon-white"></i>  Settings</a>
                                                             <!--<button id="bt_editsensor<?php echo $j; ?>" type="button" style="visibility:hidden;" class="btn btn-info btn-small" onclick="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>"><i class="icon-pencil icon-white"></i> Settings </button>-->
@@ -123,7 +123,7 @@ if ($numberDevices == 0) {
     <script>
         $("[name='my-checkbox']").bootstrapSwitch();
 
-        $('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function (event, state) {
+        $('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
             //console.log(this); // DOM element
             //console.log(event); // jQuery event    
             var deviceID = $(this).data('deviceid');
@@ -133,7 +133,7 @@ if ($numberDevices == 0) {
             console.log("sensorID:" + sensorID + "sensorTyoe:" + sensorType + " - " + state); // true | false
             if (state == true) {
                 value = 1;
-                if (sensorType != "panic_button" || sensorType != "shoe")
+                if (sensorType != "panic_button" && sensorType != "shoe")
                     document.getElementById('bt_editsensor' + sensorID).style.visibility = "";
             } else {
                 value = 0;
@@ -142,7 +142,7 @@ if ($numberDevices == 0) {
             changeEnable(deviceID, sensorType, value);
         });
 
-        $(document).on("click", ".open-deleteDeviceModal", function () {
+        $(document).on("click", ".open-deleteDeviceModal", function() {
             var myDocId = $(this).data('id');
             var myDocRev = $(this).data('rev');
             var finalURL = '/PhpProjectCouchDB/deletedevice/' + myDocId + '/' + myDocRev;
@@ -157,10 +157,10 @@ if ($numberDevices == 0) {
                 type: 'POST',
                 url: '/PhpProjectCouchDB/sensor/setsensorenable/' + deviceID + "/" + sensorType + "/" + value,
                 context: $(this),
-                success: function () {
+                success: function() {
                     //alert("success");
                 },
-                error: function (request, status, error) {
+                error: function(request, status, error) {
                     alert('An error occurred, please try again.');
                 }
             });
