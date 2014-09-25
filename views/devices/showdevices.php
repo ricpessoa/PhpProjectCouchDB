@@ -68,7 +68,7 @@ if ($numberDevices == 0) {
                                         <td>
                                             <?php
                                             if ($sensor->enable == TRUE) {
-                                                if ($sensor->type == "panic_button") {
+                                                if ($sensor->type == "panic_button" || $sensor->type == "shoe" ) {
                                                     ?>
                                                     <a id="bt_editsensor<?php echo $j; ?>" style="visibility:hidden;" class="btn btn-info btn-small" href="<?php echo $this->make_route('/sensors/editsensor/' . $device->_id . '/' . $sensor->type) ?>"><i class="icon-pencil icon-white"></i>  Settings</a>
                                                             <!--<button id="bt_editsensor<?php echo $j; ?>" type="button" style="visibility:hidden;" class="btn btn-info btn-small" onclick="<?php echo $this->make_route('/devices/editdevice/' . $device->_id) ?>"><i class="icon-pencil icon-white"></i> Settings </button>-->
