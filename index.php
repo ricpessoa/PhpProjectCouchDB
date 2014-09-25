@@ -416,19 +416,29 @@ post('/appAddNewDevice', function($app) {
 
 /* To teste monitoring of device */
 post('/devicepost', function($app) {
-
+//m - mac address
+//la - latitude
+//ln - longitude
+//t - temperature
+//p - press button
+//b - battery
+//s - shoe status
+//ts - timestamp
     /* from device */
-    $macaddress = $_POST["mac"];
+    $macaddress = $_POST["m"];
     /* from gps */
-    $latfrom = $_POST["latfrom"];
-    $lonfrom = $_POST["lngfrom"];
+    $latfrom = $_POST["la"];
+    $lonfrom = $_POST["ln"];
     /* from temperature */
-    $temperature = $_POST["temp"];
+    $temperature = $_POST["t"];
     /* from panic button */
-    $pressed = $_POST["press"];
+    $pressed = $_POST["p"];
     /* from battery */
-    $battery = $_POST["batt"];
-    $timestamsOfDevice = $_POST["timestamp"];
+    $battery = $_POST["b"];
+    /* from shoes*/
+    $shoe = $_POST["s"];
+    
+    $timestamsOfDevice = $_POST["ts"];
     $str = "";
 
     if ($timestamsOfDevice == NULL) {
@@ -461,12 +471,21 @@ post('/devicepost', function($app) {
         }
 
         if ($pressed != NULL) {
-            $boolPressed = $pressed === 'true' ? true : false;
+            $boolPressed = $pressed === '1' ? true : false;
             if ($boolPressed) {
                 $str.= MSPanicButton::saveMonitoringSensorPanicButton($usernamedb, $macaddress, $boolPressed, $timestamsOfDevice);
             }
         } else {
             $str.="|| _Panic Button null or false";
+        }
+        
+        if($shoe !=NULL){
+        $boolRemoved = $shoe === '1' ? true : false;
+            if ($boolRemoved) {
+                $str.= MSShoe::saveMonitoringSensorShoe($usernamedb, $macaddress, $boolPressed, $timestamsOfDevice);
+            }
+        } else {
+            $str.="|| _Shoe null or false";
         }
 
         /* send notification to user */
