@@ -14,14 +14,14 @@ class MSShoe extends Base {
 
     public function getMonitoringSensorByKeys($usernameDB, $macAddress, $subtype) {
         try {
-            $monitoringSensor1 = new MSShoe();
+            $monitoringSensor = new MSShoe();
 
             foreach (Base::getViewToIterateBasedInUrl($usernameDB, '_design/application/_view/getMonitoringSensor?key=["' . $macAddress . '","' . $subtype . '"]&limit=1&descending=true') as $_monitoring1) {
-                $monitoringSensor1->timestamp = date('d/m/Y H:i:s', $_monitoring1->value->timestamp);
-                $monitoringSensor1->pressed = $_monitoring1->value->pressed;
+                $monitoringSensor->timestamp = date('d/m/Y H:i:s', $_monitoring1->value->timestamp);
+                $monitoringSensor->removed = $_monitoring1->value->removed;
             }
 
-            return $monitoringSensor1;
+            return $monitoringSensor;
         } catch (Exception $exc) {
             return exc;
         }
