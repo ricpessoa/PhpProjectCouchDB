@@ -1,4 +1,5 @@
 <script type="text/javascript" src="<?php echo $this->make_route('/js/jquery.jcryption.3.0.1.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->make_route('/js/prettify.js') ?>"></script>
 
 <div class="page-header">
     <h1>Signup</h1>
