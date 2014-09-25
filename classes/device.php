@@ -35,6 +35,11 @@ class Device extends Base {
             $sensorPanic->name_sensor = "Panic Button";
             $myArray[] = $sensorPanic;
         }
+        if ($app->form('check_shoe_send') == "1") {
+            $sensorPanic = new Sensor("shoe");
+            $sensorPanic->name_sensor = "Shoe Status";
+            $myArray[] = $sensorPanic;
+        }
         if ($app->form('check_gps_send') == "1") {
             $sensorGPS = new Sensor("GPS");
             $sensorGPS->name_sensor = "Sensor GPS";

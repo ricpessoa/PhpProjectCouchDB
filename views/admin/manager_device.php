@@ -66,6 +66,15 @@
                 $('#check_panic_bt_send').attr('checked', false);
             }
         });
+        $('#check_shoe').click(function() {
+            if ($('#check_shoe').is(':checked')) {
+                $('#check_shoe_send').val("1");
+                $('#check_shoe_send').attr('checked', true);
+            } else {
+                $('#check_shoe_send').val("0");
+                $('#check_shoe_send').attr('checked', false);
+            }
+        });
         $('#check_battery_lvl').click(function() {
             if ($('#check_battery_lvl').is(':checked')) {
                 $('#check_battery_lvl_send').val("1");
@@ -94,6 +103,8 @@ if ($deviceToEdit != null) {
     $critical_bt;
     $low_bt;
     $panicbutton = false;
+    $shoe = false;
+
 } else {
     echo 'insert';
 }
@@ -111,6 +122,8 @@ foreach ($deviceToEdit->sensors as $_sersor) {
         $max_temp = $_sersor->max_temperature;
     } else if ($_sersor->type == "panic_button") {
         $panicbutton = TRUE;
+    }else if ($_sersor->type == "shoe") {
+        $shoe = TRUE;
     }
 }
 ?>
@@ -190,6 +203,9 @@ foreach ($deviceToEdit->sensors as $_sersor) {
                 <input id="check_panic_bt" type="checkbox" name="check_" value="<?php echo ($panicbutton ? '1' : '0'); ?>" <?php echo ($panicbutton ? 'checked' : ''); ?>/> Panic Button
             </label>
             <label class="checkbox">
+                <input id="check_shoe" type="checkbox" name="check_" value="<?php echo ($shoe ? '1' : '0'); ?>" <?php echo ($shoe ? 'checked' : ''); ?>/> Shoe Status
+            </label>
+            <label class="checkbox">
                 <input id="check_battery_lvl" type="checkbox" name="check_" value="<?php echo ($battery ? '1' : '0'); ?>" <?php echo ($battery ? 'checked' : ''); ?>/> Battery Level
             </label>
             <label class="checkbox" style="display:none">
@@ -200,6 +216,9 @@ foreach ($deviceToEdit->sensors as $_sersor) {
             </label>
             <label class="checkbox" style="display:none">
                 <input id="check_panic_bt_send" type="checkbox" name="check_panic_bt_send" value="<?php echo ($panicbutton ? '1' : '0'); ?>" <?php echo ($panicbutton ? 'checked' : ''); ?>/> Test3
+            </label>
+            <label class="checkbox" style="display:none">
+                <input id="check_shoe_send" type="checkbox" name="check_shoe_send" value="<?php echo ($shoe ? '1' : '0'); ?>" <?php echo ($shoe ? 'checked' : ''); ?>/> Test5
             </label>
             <label class="checkbox" style="display:none">
                 <input id="check_battery_lvl_send" type="checkbox" name="check_battery_lvl_send" value="<?php echo ($battery ? '1' : '0'); ?>" <?php echo ($battery ? 'checked' : ''); ?>/> Test4
