@@ -1,7 +1,7 @@
 <h3>Sensor State Shoe</h3>
 <div class="panic<?php echo $i; ?>">
     <?php
-    $msShoe = MSShoe::getMonitoringSensorByKeys(User::current_user(), $device->_id, "panic_button");
+    $msShoe = MSShoe::getMonitoringSensorByKeys(User::current_user(), $device->_id, "shoe");
     if ($msShoe != NULL && $msShoe->removed === TRUE) {
         ?>
         <div class="alert alert-danger">

@@ -183,15 +183,15 @@ get('/devices/monitoringdevice/:device', function($app) {
     }
 });
 
-get('/devices/client', function($app) {
-    $deviceID = $app->request('device');
-    if (User::is_authenticated()) {
-
-        $app->render('/devices/client');
-    } else {
-        $app->redirect('/user/login');
-    }
-});
+//get('/devices/client', function($app) {
+//    $deviceID = $app->request('device');
+//    if (User::is_authenticated()) {
+//
+//        $app->render('/devices/client');
+//    } else {
+//        $app->redirect('/user/login');
+//    }
+//});
 
 /* END DEVICE */
 
