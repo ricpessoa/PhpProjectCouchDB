@@ -10,7 +10,7 @@
         </div>
     <?php } else { ?>
         <div class="alert alert-info">
-            Not yet received any information from sensor state Shoe!
+            Not yet received any information from sensor shoe!
         </div>
     <?php } ?>
 </div>

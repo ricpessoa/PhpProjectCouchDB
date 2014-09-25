@@ -7,9 +7,6 @@
         if ($sensor->type === "temperature") {
             include '_temperature.php';
         }
-        if ($sensor === "panic_button") {
-            include '_panicbutton.php';
-        }
         if ($sensor->type === "battery") {
             include '_battery.php';
         }

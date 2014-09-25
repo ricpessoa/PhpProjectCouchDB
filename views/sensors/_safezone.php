@@ -45,9 +45,9 @@
                                     <td><?php echo $safezone->name; ?></td>
                                     <td>
                                         <form action="<?php echo $this->make_route('/safezone/newsafezone') ?>" method="post">
-                                            <button id="edit_safezone" name="edit_safezone" class="btn btn-info btn-small line-height: normal;" value="true"><i class="icon-pencil icon-white"></i> Edit</button>
+                                            <span><button id="edit_safezone" name="edit_safezone" class="btn btn-info btn-small" value="true"><i class="icon-pencil icon-white"></i> Edit</button></span>
                                             <input id="id_safezone_to_edit" name="id_safezone_to_edit" type="hidden" value="<?php echo $safezone->_id; ?>" >
-                                            <button data-toggle="modal" data-id="<?php echo $safezone->_id; ?>" data-rev="<?php echo $safezone->_rev; ?>" data-dev="<?php echo $safezone->device; ?>" title="Delete this Safezone" class="open-deleteSafezoneModal btn btn-danger  btn-small line-height: normal;" href="#deleteSafezoneModal"><i class="icon-trash icon-white"></i> Delete</button>
+                                            <samp><button data-toggle="modal" data-id="<?php echo $safezone->_id; ?>" data-rev="<?php echo $safezone->_rev; ?>" data-dev="<?php echo $safezone->device; ?>" title="Delete this Safezone" class="open-deleteSafezoneModal btn btn-danger  btn-small" href="#deleteSafezoneModal"><i class="icon-trash icon-white"></i> Delete</button></samp>
                                         </form>
                                     </td>
                                 </tr>
