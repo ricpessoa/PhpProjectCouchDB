@@ -29,7 +29,11 @@ class Sensor extends Base {
                 $sensor = new Sensor("panic_button");
                 $sensor->enable = $_sensor->value->enable;
                 array_push($sensors, $_sensor->value->type);
-            } else if ($_sensor->value->type == "temperature") {
+            }else if ($_sensor->value->type == "shoe") {
+                $sensor = new Sensor("shoe");
+                $sensor->enable = $_sensor->value->enable;
+                array_push($sensors, $_sensor->value->type);
+            }else if ($_sensor->value->type == "temperature") {
                 $sTemperature = new Temperature();
                 $sTemperature->name_sensor = $_sensor->value->name_sensor;
                 $sTemperature->min_temperature = $_sensor->value->min_temperature;
@@ -62,7 +66,12 @@ class Sensor extends Base {
                 $sensor->enable = $_sensor->value->enable;
                 array_push($sensors, $_sensor->value->type);
                 return $sensors;
-            } else if ($_sensor->value->type == "temperature" && $type == "temperature") {
+            } else if ($_sensor->value->type == "shoe" && $type == "shoe") {
+                $sensor = new Sensor("shoe");
+                $sensor->enable = $_sensor->value->enable;
+                array_push($sensors, $_sensor->value->type);
+                return $sensors;
+            }else if ($_sensor->value->type == "temperature" && $type == "temperature") {
                 $sTemperature = new Temperature();
                 $sTemperature->name_sensor = $_sensor->value->name_sensor;
                 $sTemperature->min_temperature = $_sensor->value->min_temperature;

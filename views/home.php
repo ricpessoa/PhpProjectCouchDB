@@ -46,6 +46,10 @@
                                 include 'sensors/monitorsensors/_ms_panicbutton.php';
                                 $numberSensors++;
                             }
+                            if ($sensor->type === "shoe" && $sensor->enable == TRUE) {
+                                include 'sensors/monitorsensors/_ms_shoe.php';
+                                $numberSensors++;
+                            }
                             if ($sensor->type === "battery" && $sensor->enable == TRUE) {
                                 include 'sensors/monitorsensors/_ms_battery.php';
                                 $numberSensors++;

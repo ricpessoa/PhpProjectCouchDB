@@ -285,55 +285,59 @@ $doc_json = '{"_id": "_design/application",
 
         $devicejson = '{
    "_id": "az",
-   "_rev": "267-37c9af7a-195c-485b-bf83-84437cec5669",
+   "name_device": "az teste",
    "sensors": {
-       "1": {
+       "4": {
            "name_sensor": "Panic Button",
            "enable": true,
            "type": "panic_button"
        },
-       "2": {
+       "5": {
            "name_sensor": "Sensor GPS",
            "enable": true,
            "type": "GPS"
        },
-       "3": {
-           "min_temperature": 12,
-           "max_temperature": 88,
+       "6": {
+           "min_temperature": "20",
+           "max_temperature": "35",
            "name_sensor": "Sensor Temperature",
            "enable": true,
            "type": "temperature"
        },
-       "4": {
-           "critical_battery": 10,
-           "low_battery": 50,
+       "7": {
+           "critical_battery": "15",
+           "low_battery": "25",
            "name_sensor": "Battery Level",
            "enable": true,
            "type": "battery"
        }
    },
-   "timestamp": 1406131957525,
+   "timestamp": 1403214734,
+   "owner": "rpessoa",
+   "deleted": false,
    "monitoring": true,
-   "type": "device",
-   "name_device": "az teste"
+   "type": "device"
 }';
-        $msjson = '{"_id": "az_1396963000", "type": "monitoring_sensor", "subtype": "temperature", "value": 29, "timestamp": "1396963000", "mac_address": "az"}';
+        //Safezone
+        $msjson = '{"_id": "safezone_1411573598808","address": "Instituto Superior de Engenharia do Porto, Rua São Tomé, 4200-485 Porto, Portugal","name": "ISEP","latitude": 41.177863,"longitude": -8.608292,"radius": 500,"notification": "ALL","timestamp": 1411573596,"device": "az","type": "safezone"}';
         $bones->couch->post($msjson);
-        $msjson = '{"_id": "az_1396960000",  "type": "monitoring_sensor", "subtype": "temperature", "value": 27, "timestamp": "1396960000", "mac_address": "az"}';
+        //Battery
+        $msjson = '{"_id": "ms_1411567684_az_battery","timestamp": "1411567684", "mac_address": "az","subtype": "battery","value": 5,"notification": "CRITICAL","seen": true,"type": "monitoring_sensor"}';
         $bones->couch->post($msjson);
-        $msjson = '{"_id": "az_1396959100",  "type": "monitoring_sensor", "subtype": "temperature", "value": 26, "timestamp": "1396959100", "mac_address": "az"}';
+        $msjson = '{"_id": "ms_1411574888_az_battery","timestamp": "1411574888","mac_address": "az","subtype": "battery","value": 15,"notification": "CRITICAL","seen": true,"type": "monitoring_sensor"}';
         $bones->couch->post($msjson);
-        $msjson = '{"_id": "az_1396959000",  "type": "monitoring_sensor", "subtype": "temperature", "value": 25, "timestamp": "1396959000", "mac_address": "az"}';
+        //GPS
+        $msjson = '{"_id": "ms_1411567684_az_gps","timestamp": "1411567684","mac_address": "az","address": "Travessa Doutor Carlos Pires Felgueiras 47, 4470-157 Maia, Portugal","subtype": "GPS","notification": "CHECK-OUT","longitude": "-8.624164","latitude": "41.23206","seen": true,"type": "monitoring_sensor"}';
         $bones->couch->post($msjson);
-        $msjson = '{"_id": "az_1396963001",  "type": "monitoring_sensor", "subtype": "panic_button", "pressed": true, "timestamp": "1396963000", "mac_address": "az"}';
+        $msjson = '{"_id": "ms_1411635283_az_gps","timestamp": "1411574888","mac_address": "az","address": "Rua Doutor António Bernardino de Almeida 431, 4200-072 Porto, Portugal","subtype": "GPS","notification": "CHECK-IN","longitude": "-8.606329","latitude": "41.178501","seen": true,"type": "monitoring_sensor"}';
         $bones->couch->post($msjson);
-        $msjson = '{"_id": "az_1396963005", "type": "monitoring_sensor", "subtype": "GPS", "latitude": 41.411981, "longitude": -8.509985, "timestamp": "1396963000", "mac_address": "az"}';
+        //Temperature
+        $msjson = '{"_id": "ms_1411567684_az_temperature","timestamp": "1411567684","mac_address": "az","subtype": "temperature","value": 24,"notification": "RANGE","seen": true,"type": "monitoring_sensor"}';
         $bones->couch->post($msjson);
-        $msjson = '{"_id": "az_1396963004", "type": "monitoring_sensor", "subtype": "GPS", "latitude": 41.106466, "longitude": -8.626827, "timestamp": "1396963000", "mac_address": "az"}';
+        $msjson = '{"_id": "ms_1411497762_az_temperature","timestamp": 1411574888,"mac_address": "az","subtype": "temperature","value": 1,"notification": "LOW","seen": true,"type": "monitoring_sensor"}';
         $bones->couch->post($msjson);
-        $msjson = '{"_id": "az_1396963003", "type": "monitoring_sensor", "subtype": "GPS", "latitude": 41.11082, "longitude": -8.629301, "timestamp": "1396963000", "mac_address": "az"}';
-        $bones->couch->post($msjson);
-        $msjson = '{"_id": "az_1396963002", "type": "monitoring_sensor", "subtype": "GPS", "latitude": 41.112544, "longitude": -8.629665, "timestamp": "1396963000", "mac_address": "az"}';
+        //PanicButton
+        $msjson = '{"_id": "ms_1411497620_az_panic_button","timestamp": 1411567684,"mac_address": "az","pressed": true,"subtype": "panic_button","value": null,"seen": true,"type": "monitoring_sensor"}';
         $bones->couch->post($msjson);
         try {
             $bones->couch->post($devicejson);

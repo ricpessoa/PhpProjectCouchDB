@@ -3,7 +3,6 @@
 class MSPanicButton extends Base {
 
     protected $subtype;
-    protected $value;
     protected $timestamp;
     protected $mac_address;
     protected $pressed;
