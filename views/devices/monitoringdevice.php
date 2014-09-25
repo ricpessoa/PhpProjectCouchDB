@@ -52,23 +52,27 @@ if ($deviceMacAddress != NULL) {
     //            console.log(json.data[0].bat);
     //            console.log(json.data[0].press);
     //            console.log(json.data[0].username + " ?? " + '<?php echo User::current_user(); ?>')
-                //if (json.data[0].username == '<?php echo User::current_user(); ?>') {
-                var str = "--------------------------------------------\n";
-                str += "Device MAC Adrress: " + json.data[0].mac_address + " on " + json.data[0].time + " \n";
-                if (json.data[0].lat != "" & json.data[0].log != "") {
-                    str += "\t Sensor GPS: latitude:" + json.data[0].lat + " longitude:" + json.data[0].log + "\n";
+                if (json.data[0].username == '<?php echo User::current_user(); ?>') {
+                    var str = "--------------------------------------------\n";
+                    str += "Device MAC Adrress: " + json.data[0].mac_address + " on " + json.data[0].time + " \n";
+                    if (json.data[0].lat != "" & json.data[0].log != "") {
+                        str += "\t Sensor GPS: latitude:" + json.data[0].lat + " longitude:" + json.data[0].log + "\n";
+                    }
+                    if (json.data[0].tmp != "") {
+                        str += "\t Sensor Temperature: " + json.data[0].tmp + " ºC\n";
+                    }
+                    if (json.data[0].bat != "") {
+                        str += "\t Battery Level: " + json.data[0].bat + " %\n";
+                    }
+                    if (json.data[0].press != "") {
+                        str += "\t Sensor Panic Button: pressed " + json.data[0].press + "\n";
+                    }
+                    if (json.data[0].remov != "") {
+                        str += "\t Sensor of Shoe: removed " + json.data[0].remov + "\n";
+                    }
+                    str += "--------------------------------------------";
+                    writeToScreen(str);
                 }
-                if (json.data[0].tmp != "") {
-                    str += "\t Sensor Temperature: " + json.data[0].tmp + " ºC\n";
-                }
-                if (json.data[0].bat != "") {
-                    str += "\t Battery Level: " + json.data[0].bat + " %\n";
-                }
-                if (json.data[0].press != "") {
-                    str += "\t Sensor Panic Button: pressed " + json.data[0].press + "\n";
-                }
-                str += "--------------------------------------------";
-                writeToScreen(str);
             }
         }
         function close() {
@@ -124,9 +128,9 @@ if ($deviceMacAddress != NULL) {
 } else {
     ?>
     <div class="alert alert-danger">
-            <h4>Alert!</h4>
-            <?php echo 'This device dont exist!' ?>
-        </div>
+        <h4>Alert!</h4>
+        <?php echo 'This device dont exist!' ?>
+    </div>
     <?php
 }
 /*
@@ -134,4 +138,4 @@ if ($deviceMacAddress != NULL) {
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-echo 'Username ' . $userName . ' device name filter ' . $deviceMacAddress;
+//echo 'Username ' . $userName . ' device name filter ' . $deviceMacAddress;

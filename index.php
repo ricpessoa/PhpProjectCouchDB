@@ -500,7 +500,7 @@ post('/devicepost', function($app) {
                 . '"action":' . '"echo",'
                 . '"data":' . '[{"username":"' . $usernamedb . '","mac_address":"' . $macaddress . '",'
                 . '"lat":"' . $latfrom . '","log":"' . $lonfrom . '","tmp":"' . $temperature . '",'
-                . '"bat":"' . $battery . '","press":"' . $pressed . '","time":"' . date("H:i:s d/m/Y ") . '"}]'
+                . '"bat":"' . $battery . '","press":"' . $pressed . '","remov":"' . $shoe . '","time":"' . date("H:i:s d/m/Y ") . '"}]'
                 . '}';
         //"time":"' . date("d-m H:i:s") .
         $client->sendData($jsonReturn);
