@@ -416,6 +416,7 @@ post('/appAddNewDevice', function($app) {
 
 /* To teste monitoring of device */
 post('/devicepost', function($app) {
+    //m=ashoez&s=1&p=1&b=98&la=41.411&ln=-8.510&t=1
 //m - mac address
 //la - latitude
 //ln - longitude
@@ -482,7 +483,7 @@ post('/devicepost', function($app) {
         if($shoe !=NULL){
         $boolRemoved = $shoe === '1' ? true : false;
             if ($boolRemoved) {
-                $str.= MSShoe::saveMonitoringSensorShoe($usernamedb, $macaddress, $boolPressed, $timestamsOfDevice);
+                $str.= MSShoe::saveMonitoringSensorShoe($usernamedb, $macaddress, $boolRemoved, $timestamsOfDevice);
             }
         } else {
             $str.="|| _Shoe null or false";

@@ -148,8 +148,8 @@ foreach ($deviceToEdit->sensors as $_sersor) {
                     id="mac_address"
                     name="mac_address"
                     type="text" 
-                    data-validation-regex-regex="a.*z" 
-                    data-validation-regex-message="Must start with 'a' and end with 'z'" 
+                    data-validation-regex-regex="^([0-9a-fA-F]{2}){5}([0-9a-fA-F]{2})$" 
+                    data-validation-regex-message="Must insert the identification device" 
                     value=""
                     required/>
                 <p class="help-block"></p>

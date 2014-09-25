@@ -5,7 +5,7 @@ class MSShoe extends Base {
     protected $subtype;
     protected $timestamp;
     protected $mac_address;
-    protected $pressed;
+    protected $removed;
     protected $seen = FALSE;
 
     public function __construct($type) {
@@ -30,10 +30,10 @@ class MSShoe extends Base {
 
     public static function saveMonitoringSensorShoe($usernameDB, $macaddress, $removed, $timestamsOfDevice) {
         $monitoringSensorShoe = new MSShoe();
-        $monitoringSensorShoe->_id = "ms_" . $timestamsOfDevice . "_" . $macaddress . "_panic_button";
+        $monitoringSensorShoe->_id = "ms_" . $timestamsOfDevice . "_" . $macaddress . "_shoe";
         $monitoringSensorShoe->type = "monitoring_sensor";
         $monitoringSensorShoe->subtype = "shoe";
-        $monitoringSensorShoe->pressed = $removed;
+        $monitoringSensorShoe->removed = $removed;
         $monitoringSensorShoe->timestamp = $timestamsOfDevice;
         $monitoringSensorShoe->mac_address = $macaddress;
         $monitoringSensorShoe->seen = FALSE;
