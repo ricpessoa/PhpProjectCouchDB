@@ -8,7 +8,6 @@ class User extends Base {
     protected $salt;
     protected $password_sha;
     protected $roles;
-    protected $devices;
     protected $country;
     protected $mobile_phone;
 
@@ -32,7 +31,6 @@ class User extends Base {
         }
 
         $this->roles = array();
-        $this->devices = array();
 
         $this->name = preg_replace('/[^a-z0-9-]/', '', strtolower($username));
         $this->_id = 'org.couchdb.user:' . $this->name;
@@ -65,11 +63,7 @@ class User extends Base {
 
         $bones->couch->setDatabase($username);
 //create the views
-//
-        //
-        //
-
-$doc_json = '{"_id": "_design/application",
+        $doc_json = '{"_id": "_design/application",
    "language": "javascript",
    "views": {
        "getSafezones": {
@@ -89,34 +83,24 @@ $doc_json = '{"_id": "_design/application",
        }
    }
 }';
-
-//        $doc_json = '{
-//   "_id": "_design/application",
-//   "language": "javascript",
-//   "views": {
-//       "getSafezones": {
-//           "map": "function(doc) {\n  if(doc.type == ' . "'" . safezone . "'" . ')  \n   emit(doc.type, doc);\n}",
-//           "reduce": "_count"
-//       },
-//       "getDevices": {
-//           "map": "function(doc) {\nif(doc.type == ' . "'" . device . "'" . ')\n  emit(doc.type, doc);\n}\n",
-//           "reduce": "_count"
-//       },
-//       "getSensors": {
-//           "map": "function(doc) {\nif(doc.sensors){\nfor(var i in doc.sensors)\n  emit(doc._id,doc.sensors[i]);\n}}",
-//           "reduce": "_count"
-//       },
-//       "getMonitoringSensor": {
-//           "map": "function(doc) {\nif(doc.type == ' . "'" . monitoring_sensor . "'" . '){ \n  emit([doc.mac_address,doc.subtype], doc);\n}\n}"
-//       }
-//   }
-//}';
         try {
             $bones->couch->post($doc_json);
         } catch (SagCouchException $exc) {
             echo $exc->getTraceAsString();
             $bones->set('error', 'Problem creating user');
         }
+
+//Create a profile document         
+
+        $msjson = '{"_id": "profile","name": "'.$this->name.'","email": "'.$this->email.'","full_name": "'.$this->full_name.'","country": "'.$this->country.'","mobile_phone": "'.$this->mobile_phone.'","type":"profile"}';
+
+        try {
+            $bones->couch->post($msjson);
+        } catch (SagCouchException $exc) {
+            echo $exc->getTraceAsString();
+            $bones->set('error', 'Problem creating user');
+        }
+
         /* ONLY FOR TEST PROPOSE */
         $this->createFakeData($username);
     }

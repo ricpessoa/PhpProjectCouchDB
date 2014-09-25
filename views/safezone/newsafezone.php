@@ -85,8 +85,8 @@
             </div>
             <div id="div_SelectNotification" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
                 <label class="control-label">Notification Settings:</label>
-                <select id="notification_settings" class="input-medium">
-                    <option id="NONE" value="NONE">None</option>
+                <select id="notification_settings" class="input-medium" class="required">
+                    <option id="" value="">Select Notification</option>
                     <option id="CHECK_INS_ONLY" value="CHECK_INS_ONLY">Check-in events</option>
                     <option id="CHECK_OUTS_ONLY" value="CHECK_OUTS_ONLY">Check-out events</option>
                     <option id="ALL" value="ALL">Both events</option>
