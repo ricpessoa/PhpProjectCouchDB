@@ -165,48 +165,48 @@ class User extends Base {
         }
     }
 
-    public static function get_by_username($username = null) {
-        $bones = new Bones();
-        $bones->couch->setDatabase('_users');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-        $user = new User();
+//    public static function get_by_username($username = null) {
+//        $bones = new Bones();
+//        $bones->couch->setDatabase('_users');
+//        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+//        $user = new User();
+//
+//        try {
+//            $document = $bones->couch->get('org.couchdb.user:' . $username)->body;
+//            $user->_id = $document->_id;
+//            $user->name = $document->name;
+//            $user->email = $document->email;
+//            $user->full_name = $document->full_name;
+//            $user->mobile_phone = $document->mobile_phone;
+//            $user->country = $document->country;
+//            return $user;
+//        } catch (SagCouchException $e) {
+//            if ($e->getCode() == "404") {
+//                $bones->error404();
+//            } else {
+//                $bones->error500();
+//            }
+//        }
+//    }
 
-        try {
-            $document = $bones->couch->get('org.couchdb.user:' . $username)->body;
-            $user->_id = $document->_id;
-            $user->name = $document->name;
-            $user->email = $document->email;
-            $user->full_name = $document->full_name;
-            $user->mobile_phone = $document->mobile_phone;
-            $user->country = $document->country;
-            return $user;
-        } catch (SagCouchException $e) {
-            if ($e->getCode() == "404") {
-                $bones->error404();
-            } else {
-                $bones->error500();
-            }
-        }
-    }
-
-    public function updateUserProfile($user) {
-        $bones = new Bones();
-        $bones->couch->setDatabase('_users');
-        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
-
-        $document = $bones->couch->get('org.couchdb.user:' . $user->name)->body;
-        $document->email = $user->email;
-        $document->full_name = $user->full_name;
-        $document->country = $user->country;
-        $document->mobile_phone = $user->mobile_phone;
-
-        try {
-            $bones->couch->put($document->_id, $document);
-        } catch (SagCouchException $exc) {
-            echo $exc->getTraceAsString();
-            return NULL;
-        }
-    }
+//    public function updateUserProfile($user) {
+//        $bones = new Bones();
+//        $bones->couch->setDatabase('_users');
+//        $bones->couch->login($bones->config->db_admin_user, $bones->config->db_admin_password);
+//
+//        $document = $bones->couch->get('org.couchdb.user:' . $user->name)->body;
+//        $document->email = $user->email;
+//        $document->full_name = $user->full_name;
+//        $document->country = $user->country;
+//        $document->mobile_phone = $user->mobile_phone;
+//
+//        try {
+//            $bones->couch->put($document->_id, $document);
+//        } catch (SagCouchException $exc) {
+//            echo $exc->getTraceAsString();
+//            return NULL;
+//        }
+//    }
 
     public function isValidEmail($email) {
         $bones = new Bones();

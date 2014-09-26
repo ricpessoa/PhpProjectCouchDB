@@ -1,4 +1,4 @@
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqUwWysKF_x_SkHDgB-q_NeaqBHpPTlME&sensor=false&libraries=places"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0MqefKdvXwvIfHcipfBjT9aP2eMH2Wks&sensor=false&libraries=places"></script>
 <!--<script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3)" type="text/javascript"></script>-->
 <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3,[geocoder])" type="text/javascript"></script>
 <script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
@@ -83,21 +83,21 @@
                 <label class="control-label">Name:</label>
                 <input id="txt_name" type="text" size="35" value="">
             </div>
-            <div id="div_SelectNotification" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
-                <label class="control-label">Notification Settings:</label>
-                <select id="notification_settings" class="input-medium" class="required">
-                    <option id="" value="">Select Notification</option>
-                    <option id="CHECK_INS_ONLY" value="CHECK_INS_ONLY">Check-in events</option>
-                    <option id="CHECK_OUTS_ONLY" value="CHECK_OUTS_ONLY">Check-out events</option>
-                    <option id="ALL" value="ALL">Both events</option>
-                </select>
-            </div>
+
             <div id = "div_buttons" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
+                <div id="div_SelectNotification" class="row-fluid" style="margin-top: 10px;margin-bottom:10px;">
+                    <label class="control-label">Notification Settings:</label>
+                    <select id="notification_settings" class="input-medium" required>
+                        <option id="ALL" value="ALL">Both events</option>
+                        <option id="CHECK_INS_ONLY" value="CHECK_INS_ONLY">Check-in events</option>
+                        <option id="CHECK_OUTS_ONLY" value="CHECK_OUTS_ONLY">Check-out events</option>
+                    </select>
+                </div>
                 <form id="form_new_safezone" action="<?php echo $this->make_route('/safezone') ?>" method="post">
                     <button id="bt_back" type="button" class="btn btn-small" onclick="javascript:showSearchAddress()">Back</button>
                     <button id="bt_save" type="button" class="btn-primary btn-small" onclick="javascript:saveSafezoneInDb(objJsonSafezone.safezones.length - 1)">Save Safezone</button>
                     <button id="bt_editLocation" type="button" class="btn-info btn-small" onclick="javascript:showSearchAddress();
-                        passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].address, objJsonSafezone.safezones[0].latitude, objJsonSafezone.safezones[0].longitude);"><i class="icon-map-marker icon-white"></i> Edit Locations</button>
+                            passSafezoneOfPoiToTempMarker(objJsonSafezone.safezones[0].address, objJsonSafezone.safezones[0].latitude, objJsonSafezone.safezones[0].longitude);"><i class="icon-map-marker icon-white"></i> Edit Locations</button>
                     <button id="bt_next" type="button" class="btn btn-small" onclick="javascript:pressNext(selectedGeofence);
                             showEditRadius();">Next</button>
                     <input id="safezone" type="hidden" name="safezone">
@@ -117,7 +117,7 @@
     window.update = <?php echo $editDevice; ?>;
     window.deviceAddress = "<?php echo $macAddressOfDevice; ?>";
 
-    $(document).ready(function() {
+    $(document).ready(function () {
 
         window.map = new mxn.Mapstraction('map', 'googlev3');
         var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
@@ -132,7 +132,7 @@
             findUserLocation();
             insertGeofenceHandler();
             showSearchAddress();
-        }else {
+        } else {
             console.log('<?php echo '{"safezones"' . ":" . $editSafezone . "}"; ?>');
             showEditRadius();
             getSafezones('<?php echo '{"safezones"' . ":" . $editSafezone . "}"; ?>');
@@ -149,19 +149,19 @@
 
     mxn.register('googlev3', {
         Mapstraction: {
-            addExtras: function() {
+            addExtras: function () {
                 var me = this;
-                me.markerAdded.addHandler(function(name, source, args) {
+                me.markerAdded.addHandler(function (name, source, args) {
                     // enable dragend event for google
                     args.marker.dragend = new mxn.Event('dragend', args.marker);
-                    google.maps.event.addListener(args.marker.proprietary_marker, 'dragend', function(latlng) {
+                    google.maps.event.addListener(args.marker.proprietary_marker, 'dragend', function (latlng) {
                         //infowindow.open(map,marker);
                         var point = args.marker.proprietary_marker.getPosition();
                         console.log("dragend" + point);
                         args.marker.dragend.fire({location: new mxn.LatLonPoint(point.lat(), point.lng())});
                     });
 
-                    google.maps.event.addListener(args.marker.proprietary_marker, 'click', function() {
+                    google.maps.event.addListener(args.marker.proprietary_marker, 'click', function () {
                         var point = args.marker.proprietary_marker.getPosition();
                         console.log("click: " + point);
                         showStreetViewBasedInCoordinates(point.lat(), point.lng());

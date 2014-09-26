@@ -20,7 +20,7 @@
                 <div class="control-group">
                     <label class="control-label" for="email">Email address</label>
                     <div class="controls">
-                        <input type="email" name="email" id="email" value="<?php echo $profile->email; ?>" required>
+                        <input type="email" name="email" id="email" value="<?php echo $profile->email; ?>" readonly="readonly">
                         <p class="help-block"></p>
                     </div>
                 </div>

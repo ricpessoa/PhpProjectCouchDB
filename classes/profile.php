@@ -45,6 +45,24 @@ class Profile extends Base {
         return NULL;
     }
 
+    public function updateUserProfile($profile) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($profile->name);
+
+        $document = $bones->couch->get('profile')->body;
+        $document->email = $profile->email;
+        $document->full_name = $profile->full_name;
+        $document->country = $profile->country;
+        $document->mobile_phone = $profile->mobile_phone;
+
+        try {
+            $bones->couch->put($document->_id, $document);
+        } catch (SagCouchException $exc) {
+            echo $exc->getTraceAsString();
+            return NULL;
+        }
+    }
+    
     public function gravatar($size = '50') {
         return 'http://www.gravatar.com/avatar/?gravatar_id=' . md5(strtolower($this->email)) . '&size=' . $size;
     }

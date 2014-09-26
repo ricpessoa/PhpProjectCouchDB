@@ -81,13 +81,13 @@ get('/user/:username', function($app) {
 
 post('/edituser', function($app) {
     if (User::is_authenticated()) {
-        $user = new User();
-        $user->name = User::current_user();
-        $user->email = $app->form('email');
-        $user->full_name = $app->form('full_name');
-        $user->country = $app->form('country');
-        $user->mobile_phone = $app->form('mobile_phone');
-        User::updateUserProfile($user);
+        $profile = new Profile();
+        $profile->name = User::current_user();
+        $profile->email = $app->form('email');
+        $profile->full_name = $app->form('full_name');
+        $profile->country = $app->form('country');
+        $profile->mobile_phone = $app->form('mobile_phone');
+        Profile::updateUserProfile($profile);
         $app->redirect('/user/' . User::current_user());
     } else {
         $app->redirect('/user/login');
