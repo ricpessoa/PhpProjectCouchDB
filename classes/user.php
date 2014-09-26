@@ -92,14 +92,14 @@ class User extends Base {
 
 //Create a profile document         
 
-        $msjson = '{"_id": "profile","name": "'.$this->name.'","email": "'.$this->email.'","full_name": "'.$this->full_name.'","country": "'.$this->country.'","mobile_phone": "'.$this->mobile_phone.'","type":"profile"}';
-
-        try {
-            $bones->couch->post($msjson);
-        } catch (SagCouchException $exc) {
-            echo $exc->getTraceAsString();
-            $bones->set('error', 'Problem creating user');
-        }
+//        $msjson = '{"_id": "profile","name": "'.$this->name.'","email": "'.$this->email.'","full_name": "'.$this->full_name.'","country": "'.$this->country.'","mobile_phone": "'.$this->mobile_phone.'","type":"profile"}';
+//
+//        try {
+//            $bones->couch->post($msjson);
+//        } catch (SagCouchException $exc) {
+//            echo $exc->getTraceAsString();
+//            $bones->set('error', 'Problem creating user');
+//        }
 
         /* ONLY FOR TEST PROPOSE */
         $this->createFakeData($username);
