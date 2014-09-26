@@ -3,11 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/rpessoa/Desktop/PhpProjectCouchDB/views/safezone/newsafezone.php</file>
+            <file>file:/home/rpessoa/Desktop/PhpProjectCouchDB/classes/safezone.php</file>
             <file>file:/home/rpessoa/Desktop/PhpProjectCouchDB/index.php</file>
-            <file>file:/home/rpessoa/Desktop/PhpProjectCouchDB/views/sensors/_safezone.php</file>
             <file>file:/home/rpessoa/Desktop/PhpProjectCouchDB/classes/user.php</file>
-            <file>file:/home/rpessoa/Desktop/PhpProjectCouchDB/views/sensors/monitorsensors/_ms_shoe.php</file>
+            <file>file:/home/rpessoa/Desktop/PhpProjectCouchDB/views/user/profile.php</file>
+            <file>file:/home/rpessoa/Desktop/PhpProjectCouchDB/classes/profile.php</file>
         </group>
     </open-files>
 </project-private>

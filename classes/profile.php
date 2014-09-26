@@ -29,4 +29,24 @@ class Profile extends Base {
         }
     }
 
+    public static function getProfileByUsername($username) {
+        $bones = new Bones();
+        $bones->couch->setDatabase($username);
+        $_profile = $bones->couch->get("profile")->body;
+        $profile = new Profile();
+        if ($_profile) {
+            $profile->name = $_profile->name;
+            $profile->email = $_profile->email;
+            $profile->full_name = $_profile->full_name;
+            $profile->country = $_profile->country;
+            $profile->mobile_phone = $_profile->mobile_phone;
+            return $profile;
+        }
+        return NULL;
+    }
+
+    public function gravatar($size = '50') {
+        return 'http://www.gravatar.com/avatar/?gravatar_id=' . md5(strtolower($this->email)) . '&size=' . $size;
+    }
+
 }

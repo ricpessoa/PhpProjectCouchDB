@@ -29,9 +29,7 @@ post('/signup', function($app) {
     $user->full_name = $app->form('full_name');
     $user->email = $app->form('email');
     $user->signup($app->form('username'), $app->form('password'), $app->form('email'));
-    Profile::createProfile($app->form('username'), $app->form('email'), $app->form('full_name'), "", "");
-
-
+    Profile::createProfile($app->form('username'), $app->form('username') ,$app->form('email'), $app->form('full_name'), "", "");
     $app->set('success', 'Thanks for Signing Up ' . $user->full_name . '!');
     $app->render('home');
 });
@@ -70,7 +68,8 @@ get('/user/', function($app) {
 
 get('/user/:username', function($app) {
     if ($app->request('username') == User::current_user()) {
-        $app->set('user', User::get_by_username($app->request('username')));
+        //$app->set('user', User::get_by_username($app->request('username')));
+        $app->set('profile', Profile::getProfileByUsername(User::current_user()));
         $app->set('numberDevices',  Device::getNumberOfDevicesOfUser($app->request('username')));
         $app->set('is_current_user', ($app->request('username') == User::current_user() ? true : false));
         $app->render('user/profile');

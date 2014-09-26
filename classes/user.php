@@ -91,7 +91,6 @@ class User extends Base {
         }
 
 //Create a profile document         
-
 //        $msjson = '{"_id": "profile","name": "'.$this->name.'","email": "'.$this->email.'","full_name": "'.$this->full_name.'","country": "'.$this->country.'","mobile_phone": "'.$this->mobile_phone.'","type":"profile"}';
 //
 //        try {
@@ -249,10 +248,10 @@ class User extends Base {
         $this->_id = 'org.couchdb.user:' . $this->name;
         $this->salt = $bones->couch->generateIDs(1)->body->uuids[0];
         $this->password_sha = sha1($password . $this->salt);
+        Profile::createProfile($this->name, $this->name, $email, $app->form('full_name'), "", "");
 
         try {
             $bones->couch->put($this->_id, $this->to_json());
-//$bones->couch->send("PUT", "/".$this->name); 
         } catch (SagCouchException $e) {
             if ($e->getCode() == "409") {
                 return -2; //the username already exist
