@@ -101,8 +101,10 @@ class MSGPS extends Base {
             if ($saveMonitoringSensorGPS) {
                 $str.= MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification, $timestamsOfDevice);
             } else {
-                $str.="not necessary to save!!!";
+                $str.="not saved";
             }
+        }else{
+            $str.= "save location: ".MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, "LOCATION", $timestamsOfDevice);
         }
         return $str;
     }

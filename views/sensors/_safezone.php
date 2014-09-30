@@ -16,7 +16,7 @@
         <script src="http://openlayers.org/api/OpenLayers.js"></script>
         <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(openlayers)" type="text/javascript"></script>
         -->
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqUwWysKF_x_SkHDgB-q_NeaqBHpPTlME&sensor=false"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0MqefKdvXwvIfHcipfBjT9aP2eMH2Wks&sensor=false"></script>
         <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3)" type="text/javascript"></script>
         <script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
 
