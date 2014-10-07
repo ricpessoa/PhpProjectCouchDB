@@ -25,8 +25,6 @@ function getSafezones(dataSafezone) {
         nameAddress = objJsonSafezone.safezones[x].address;
 
         constructInfoBubbleToSafezone(marker, objJsonSafezone.safezones[x].name, objJsonSafezone.safezones[x].address, objJsonSafezone.safezones[x].latitude, objJsonSafezone.safezones[x].longitude, objJsonSafezone.safezones[x]['radius']);
-        //if (update)
-        //   marker.setDraggable(true);
 
         if (window.update)
             deviceAddress = objJsonSafezone.safezones[x].device;
@@ -34,8 +32,6 @@ function getSafezones(dataSafezone) {
         arrayMarkersSafezones[x] = marker;
         arrayOfSafezones[x] = safezone;
         map.addMarker(arrayMarkersSafezones[x]);
-        //if (update)
-        //  addHandlerToDragAndDropSafezoneMarker(arrayMarkersSafezones[x]);
     }
     if (objJsonSafezone.safezones.length >= 2) {
         map.autoCenterAndZoom();
@@ -56,10 +52,6 @@ function saveSafezoneInDb(pos) {
         revision = ' "_rev":"' + objJsonSafezone.safezones[pos]._rev + '",';
 
     var dataJsonSend = '{"_id":"' + objJsonSafezone.safezones[pos]._id + '",' + revision + '"address":"' + objJsonSafezone.safezones[pos].address + '","name":"' + document.getElementById("txt_name").value + '","latitude":' + objJsonSafezone.safezones[pos].latitude + ',"longitude":' + objJsonSafezone.safezones[pos].longitude + ',"radius":' + objJsonSafezone.safezones[pos].radius + ',"notification":"' + notification + '","device":"' + window.deviceAddress + '"}';
-    //sentPOSTRequest(urlWriteSafezone, '{"safezone":' + dataJsonSend + '}', function(status) {
-    //    console.log("sucessfull " + status);
-    //window.location = "dashboardSafezones";
-    //});
     var selc = document.getElementById("safezone").value = dataJsonSend;
     $("#form_new_safezone").submit();
 
@@ -74,15 +66,6 @@ function constructInfoBubbleToSafezone(marker, name, addr, lat, lon, safetyRadiu
         marker.setInfoBubble("<h3><strong>" + name + "</strong></h3><br>address:" + addr + " <br>lat: " + lat + " lon: " + lon + " safetyRadius: " + safetyRadius + "<br>");
 }
 
-/******** GET POIS FROM RAILS*/
-/*
- function getPOIS(lat, long, i) {
- point = new mxn.LatLonPoint(lat, long);
- var marker = new mxn.Marker(point);
- window["map" + i].addMarker(marker);
- window["map" + i].autoCenterAndZoom();
- }*/
-
 function getPOIS(datapois, i) {
 
     objJsonPOI = jQuery.parseJSON(datapois);
@@ -94,14 +77,8 @@ function getPOIS(datapois, i) {
 
         nameAddress = objJsonPOI.pois[x].address;
 
-        //constructInfoBubbleToPOI(marker, objJsonPOI.pois[x].Name, objJsonPOI.pois[x].Address, objJsonPOI.pois[x].Latitude, objJsonPOI.pois[x].Longitude);
-        //if (update)
-        //  marker.setDraggable(true);
-
         arrayOfPOI[x] = marker;
         window["map" + i].addMarker(arrayOfPOI[x]);
-        //if (update==true)
-        // addHandlerToDragAndDropPoi(arrayOfPOI[x]);
 
     }
     ;
@@ -113,7 +90,7 @@ function getPOIS(datapois, i) {
 }
 function findUserLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+        navigator.geolocation.getCurrentPosition(function (position) {
             var point = new mxn.LatLonPoint(position.coords.latitude, position.coords.longitude);
             map.setCenterAndZoom(point, 10);
         });
@@ -137,6 +114,25 @@ function insertTempMarkers(addr, lat, lng) {
     marker.openInfoBubble.addHandler(myboxopened);
 }
 
+function insertMarkersOnMonitoring(addr, lat, lng) {
+    var point = new mxn.LatLonPoint(lat, lng);
+    var marker = new mxn.Marker(point);
+    marker.setDraggable(false);
+
+    newArrayPoint.push([lat, lng]);
+
+    constructInfoBubbleToPOI(marker, addr, addr, lat, lng)
+    map.addMarker(marker);
+    marker.setDraggable(false);
+
+    newMarkers.push(marker);
+    newAddress.push(addr);
+    marker.openInfoBubble.addHandler(myboxopened);
+    map.autoCenterAndZoom();
+
+}
+
+
 function passSafezoneOfPoiToTempMarker(addr, lat, lng) {
     //console.log("Address: "+addr+" , "+lat+" , "+lng);
     document.getElementById('bt_next').style.visibility = "";
@@ -152,13 +148,13 @@ function passSafezoneOfPoiToTempMarker(addr, lat, lng) {
 }
 
 function insertGeofenceHandler() {
-    map.click.addHandler(function(event_name, event_source, event_args) {
+    map.click.addHandler(function (event_name, event_source, event_args) {
         removePreviousSearch();
 
         var coords = event_args.location;
         console.log("Mouse Click at: " + coords.lat + ' / ' + coords.lon);
 
-        getAddressBasedOnCoordinates(coords.lat, coords.lon, function() {
+        getAddressBasedOnCoordinates(coords.lat, coords.lon, function () {
 
             insertTempMarkers(nameAddress, coords.lat, coords.lon);
 
@@ -173,17 +169,15 @@ function insertGeofenceHandler() {
 /****** GET ON GOOGLE MAPS API THE ADDRESS OF POINT CLICKED */
 function getAddressBasedOnCoordinates(lat, lon, callback) {
     var latlng = new google.maps.LatLng(lat, lon);
-    geocoder.geocode({'latLng': latlng}, function(results, status) {
+    geocoder.geocode({'latLng': latlng}, function (results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             if (results[1]) {
                 window.nameAddress = results[1].formatted_address;
                 callback(nameAddress);
             } else {
-                //alert('No results found');
                 callback("undefined");
             }
         } else {
-            //alert('Geocoder failed due to: ' + status);
             callback("undefined");
         }
     });
@@ -204,11 +198,11 @@ function constructInfoBubbleToSafezone(marker, name, addr, lat, lon, safetyRadiu
 }
 
 function addHandlerTempGeofences(marker) {
-    marker.dragend.addHandler(function(name, source, args) {
+    marker.dragend.addHandler(function (name, source, args) {
         var index = newMarkers.indexOf(source);
         newMarkers[index].closeBubble();
 
-        getAddressBasedOnCoordinates(args.location.lat, args.location.lng, function() {
+        getAddressBasedOnCoordinates(args.location.lat, args.location.lng, function () {
             newAddress[index] = nameAddress;
             newArrayPoint[index][0] = args.location.lat;
             newArrayPoint[index][1] = args.location.lng;
@@ -228,11 +222,9 @@ function searchAddress() {
     }
     ;
 
-    geocoder.geocode({'address': texaddress + ", PT"}, function(results, status) {
+    geocoder.geocode({'address': texaddress + ", PT"}, function (results, status) {
 
         if (status == google.maps.GeocoderStatus.OK) {
-            //map.setCenter(results[0].geometry.location);
-            //console.log("resultado:"+results.length);
             for (var i = 0; i < results.length; i++) {
                 insertTempMarkers(results[i].formatted_address, results[i].geometry.location.lat(), results[i].geometry.location.lng());
             }
@@ -241,14 +233,11 @@ function searchAddress() {
             } else if (results.length == 1) {
                 selectGeofence(0); // when found only one result auto select 
             }
-            ;
-
         } else {
             alert('Geocode was not successful for the following reason: ' + status);
         }
         addTableOfSearchResult(newAddress);
         document.getElementById('myDynamicTable').style.visibility = "visible"; //to force show the table
-
     });
 }
 
@@ -260,16 +249,9 @@ function codeLatLng(lat, lon, index, fn) {
     var lat = parseFloat(lat);
     var lng = parseFloat(lon);
     var latlng = new google.maps.LatLng(lat, lng);
-    geocoder.geocode({'latLng': latlng}, function(results, status) {
+    geocoder.geocode({'latLng': latlng}, function (results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             if (results[1]) {
-                //map.setZoom(11);
-                //marker = new google.maps.Marker({
-                //    position: latlng,
-                //    map: map
-                //});
-                // infowindow.setContent(results[1].formatted_address);
-                // infowindow.open(map, marker);
                 console.log("inside->" + lat + "," + lon + " - " + results[1].formatted_address);
                 fn(results[0].formatted_address, index);
             } else {
@@ -436,7 +418,7 @@ function showStreetViewBasedInCoordinates(lat, lon) {
         enableCloseButton: false
     };
 
-    streetViewService.getPanoramaByLocation(fenway, 50, function(streetViewPanoramaData, status) {
+    streetViewService.getPanoramaByLocation(fenway, 50, function (streetViewPanoramaData, status) {
         if (status === google.maps.StreetViewStatus.OK) {
             // ok
             console.log("streetView founded");
@@ -456,7 +438,7 @@ function showStreetView(lat, lon, addressToLookup) {
     // then we call the geocode function with the address we want to use as parameter
     var latlng = new google.maps.LatLng(lat, lon);
 
-    geocoder.geocode({'address': addressToLookup + ',Portugal'}, function(results, status) {
+    geocoder.geocode({'address': addressToLookup + ',Portugal'}, function (results, status) {
         // set the lookTo var to contain the coordinates of the address entered above
         var lookTo = latlng;
         // if the address is found and the geocoder function returned valid coordinates
@@ -474,7 +456,7 @@ function showStreetView(lat, lon, addressToLookup) {
             // initialize a new streetviewService object
             var service = new google.maps.StreetViewService;
             // call the "getPanoramaByLocation" function of the Streetview Services to return the closest streetview position for the entered coordinates
-            service.getPanoramaByLocation(pano.getPosition(), 50, function(panoData) {
+            service.getPanoramaByLocation(pano.getPosition(), 50, function (panoData) {
                 // if the function returned a result
                 if (panoData != null) {
                     // the GPS coordinates of the streetview camera position
@@ -530,7 +512,7 @@ function initializeAutoComplete() {
     var componentRestrictions = {country: 'pt'};
     autocomplete.setComponentRestrictions(componentRestrictions);
 
-    google.maps.event.addListener(autocomplete, 'place_changed', function() {
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
         removePreviousSearch();
 
         var place = autocomplete.getPlace();

@@ -29,7 +29,7 @@ post('/signup', function($app) {
     $user->full_name = $app->form('full_name');
     $user->email = $app->form('email');
     $user->signup($app->form('username'), $app->form('password'), $app->form('email'));
-    Profile::createProfile($app->form('username'), $app->form('username') ,$app->form('email'), $app->form('full_name'), "", "");
+    Profile::createProfile($app->form('username'), $app->form('username'), $app->form('email'), $app->form('full_name'), "", "");
     $app->set('success', 'Thanks for Signing Up ' . $user->full_name . '!');
     $app->render('home');
 });
@@ -70,7 +70,7 @@ get('/user/:username', function($app) {
     if ($app->request('username') == User::current_user()) {
         //$app->set('user', User::get_by_username($app->request('username')));
         $app->set('profile', Profile::getProfileByUsername(User::current_user()));
-        $app->set('numberDevices',  Device::getNumberOfDevicesOfUser($app->request('username')));
+        $app->set('numberDevices', Device::getNumberOfDevicesOfUser($app->request('username')));
         $app->set('is_current_user', ($app->request('username') == User::current_user() ? true : false));
         $app->render('user/profile');
     } else {
@@ -173,12 +173,17 @@ post('/deletedevice/:id/:rev', function($app) {
     }
 });
 
+
+//Monitoring
 get('/devices/monitoringdevice/:device', function($app) {
     $deviceID = $app->request('device');
     if (User::is_authenticated()) {
         if ($deviceID != "") {
             $device = Device::getDevice(User::current_user(), $deviceID);
             if ($device != NULL) {
+                $safezones = Safezone::getSafezonesByUserAndDevice(User::current_user(), $device->_id);
+                //$app->set('jsonSafezones', Safezone::getArrayOfSafezonesToJson($safezones)); //need get the safzones objects
+                //$app->set('numberSafezones', sizeof($safezones)); //need get the safezones of device
                 $app->set('deviceMacAddress', $device->_id);
                 $app->set('userName', User::current_user());
             }
@@ -188,16 +193,6 @@ get('/devices/monitoringdevice/:device', function($app) {
         $app->redirect('/user/login');
     }
 });
-
-//get('/devices/client', function($app) {
-//    $deviceID = $app->request('device');
-//    if (User::is_authenticated()) {
-//
-//        $app->render('/devices/client');
-//    } else {
-//        $app->redirect('/user/login');
-//    }
-//});
 
 /* END DEVICE */
 
@@ -375,6 +370,7 @@ post('/appregister', function($app) {
         $user->full_name = $name;
         $user->email = $email;
         $respRegister = $user->appRegister($name, $email, $username, $password);
+        Profile::createProfile($username, $username, $email, $name, "", "");
 
         if ($respRegister == -1) {
             $response['error'] = true;
@@ -422,31 +418,30 @@ post('/appAddNewDevice', function($app) {
 
 /* To teste monitoring of device */
 post('/devicepost', function($app) {
-    //m=ashoez&s=1&p=1&b=98&la=41.411&ln=-8.510&t=1
-//m - mac address
-//la - latitude
-//ln - longitude
-//t - temperature
-//p - press button
-//b - battery
-//s - shoe status
-//ts - timestamp
-    /* from device */
-    $macaddress = $_POST["m"];
-    /* from gps */
-    $latfrom = $_POST["la"];
-    $lonfrom = $_POST["ln"];
-    /* from temperature */
-    $temperature = $_POST["t"];
-    /* from panic button */
-    $pressed = $_POST["p"];
-    /* from battery */
-    $battery = $_POST["b"];
-    /* from shoes*/
-    $shoe = $_POST["s"];
-    
-    $timestamsOfDevice = $_POST["ts"];
     $str = "";
+    $nameAddress = "";
+    $latfrom = null;
+    $lonfrom = null;
+    /* from device */
+    $macaddress = $_POST["M"]; // M - Mac address
+    /* from gps */
+    $coordinator = $_POST["G"]; // G- GPS N41º24.0043',W008º30.0035'
+    if ($coordinator != NULL) {
+        $arrayCoordinators = explode(",", $coordinator);
+        $latfrom = MSGPS::receiveLatCoordinator($arrayCoordinators[0]);
+        $lonfrom = MSGPS::receiveLngCoordinator($arrayCoordinators[1]);
+    }
+    /* from temperature */
+    $temperature = $_POST["T"];
+    /* from panic button */
+    $pressed = $_POST["P"];
+    /* from battery */
+    $battery = $_POST["B"];
+    /* from shoes */
+    $shoe = $_POST["S"];
+
+    $timestamsOfDevice = $_POST["TS"];
+
 
     if ($timestamsOfDevice == NULL) {
         $str.= "TIMESTAMP SERVER ||";
@@ -464,35 +459,39 @@ post('/devicepost', function($app) {
         /* test only for when user delete device */
 //$devices = User::registeDeviceInUser("rpessoa", $macaddress, TRUE);
         if ($latfrom != NULL && $lonfrom != NULL) {
-            $str.= MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom, $timestamsOfDevice);
+            //$str.= MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom, $timestamsOfDevice);
+            $nameAddress = MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom, $timestamsOfDevice);
+            $str.=" GPS OK ";
         } else {
-            $str.="|| _GPS null";
+            $str.=" || GPS null || ";
         }
         if ($temperature != NULL) {
             $str.= MSTemperature::calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $temperature, $timestamsOfDevice);
-            // $str.= MSTemperature::saveMonitoringSensorTemperature($usernamedb, $macaddress, $temperature);
         }
         if ($battery != NULL) {
             $str.= MSBattery::calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $battery, $timestamsOfDevice);
-            //$str.="|| _Temperature null";
         }
 
         if ($pressed != NULL) {
-            $boolPressed = $pressed === '1' ? true : false;
+            $boolPressed = $pressed === "1" ? true : false;
             if ($boolPressed) {
                 $str.= MSPanicButton::saveMonitoringSensorPanicButton($usernamedb, $macaddress, $boolPressed, $timestamsOfDevice);
+            }else{
+                $str.= " PB = FALSE ";
             }
         } else {
-            $str.="|| _Panic Button null or false";
+            $str.=" || PB null || ";
         }
-        
-        if($shoe !=NULL){
-        $boolRemoved = $shoe === '1' ? true : false;
+
+        if ($shoe != NULL) {
+            $boolRemoved = $shoe == 1 ? true : false;
             if ($boolRemoved) {
                 $str.= MSShoe::saveMonitoringSensorShoe($usernamedb, $macaddress, $boolRemoved, $timestamsOfDevice);
+            }else{
+                $str.= " S = FALSE ";
             }
         } else {
-            $str.="|| _Shoe null or false";
+            $str.="|| Shoe null ||";
         }
 
         /* send notification to user */
@@ -505,7 +504,7 @@ post('/devicepost', function($app) {
         $jsonReturn = '{'
                 . '"action":' . '"echo",'
                 . '"data":' . '[{"username":"' . $usernamedb . '","mac_address":"' . $macaddress . '",'
-                . '"lat":"' . $latfrom . '","log":"' . $lonfrom . '","tmp":"' . $temperature . '",'
+                . '"lat":"' . $latfrom . '","log":"' . $lonfrom . '","address":"' . $nameAddress . '","tmp":"' . $temperature . '",'
                 . '"bat":"' . $battery . '","press":"' . $pressed . '","remov":"' . $shoe . '","time":"' . date("H:i:s d/m/Y ") . '"}]'
                 . '}';
         //"time":"' . date("d-m H:i:s") .
@@ -516,7 +515,13 @@ post('/devicepost', function($app) {
         $response['message'] = $usernamedb . " found " . $str;
 //echo ''.$usernamedb;
     }
-    echo json_encode($response);
+    if ($response['error'] == FALSE) {
+        echo $str;
+        //echo "coordinators=" . $coordinator . " & ". $arrayCoordinators[0]." 2: ". $arrayCoordinators[1]. " s=" . $shoe . " b=" . $battery . " lat=" . $latfrom . " lng=" . $lonfrom;
+    } else {
+        echo json_encode("error receiving data! Device " . $macaddress);
+    }
+    //echo json_encode($response);
 });
 
 

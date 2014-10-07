@@ -120,11 +120,11 @@
     $(document).ready(function () {
 
         window.map = new mxn.Mapstraction('map', 'googlev3');
-        var latlon = new mxn.LatLonPoint(51.50733, -0.12769);
+        var latlon = new mxn.LatLonPoint(39.586831, -8.210716);
         map.addExtras();
         map.enableScrollWheelZoom();
         window.geocoder = new google.maps.Geocoder();
-        map.setCenterAndZoom(latlon, 10);
+        map.setCenterAndZoom(latlon, 6);
         //getSafezones('<%=@mySafezones%>');
         map.removeAllPolylines();
         map.removeAllMarkers();

@@ -248,7 +248,6 @@ class User extends Base {
         $this->_id = 'org.couchdb.user:' . $this->name;
         $this->salt = $bones->couch->generateIDs(1)->body->uuids[0];
         $this->password_sha = sha1($password . $this->salt);
-        Profile::createProfile($this->name, $this->name, $email, $app->form('full_name'), "", "");
 
         try {
             $bones->couch->put($this->_id, $this->to_json());

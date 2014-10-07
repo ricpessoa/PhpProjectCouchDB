@@ -55,9 +55,11 @@ class MSBattery extends Base {
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorBattery, FALSE);
         } catch (SagCouchException $e) {
-            return "some error in save monitoring battery";
+            //return "some error in save monitoring battery";
+            return " B ERROR ";
         }
-        return " - see in couchdb value battery:" . $level;
+        //return " - see in couchdb value battery:" . $level;
+        return " B OK ";
     }
 
     public static function calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $level, $timestamsOfDevice) {

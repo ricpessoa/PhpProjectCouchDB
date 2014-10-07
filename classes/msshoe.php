@@ -42,9 +42,11 @@ class MSShoe extends Base {
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorShoe, FALSE);
         } catch (SagCouchException $e) {
-            return "some error in save monitoring shoe";
+            //return "some error in save monitoring shoe";
+            return " S ERROR ";
         }
-        return " - see in couchdb value Shoe:" . $removed;
+        //return " - see in couchdb value Shoe:" . $removed;
+        return " S OK ";
     }
 
 }

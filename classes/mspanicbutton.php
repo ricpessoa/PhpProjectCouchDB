@@ -43,9 +43,11 @@ class MSPanicButton extends Base {
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorPanicButton, FALSE);
         } catch (SagCouchException $e) {
-            return "some error in save monitoring panic button";
+            //return "some error in save monitoring panic button";
+            return " PB ERROR ";
         }
-        return " - see in couchdb value PANIC BUTTON:" . $pressed;
+        //return " - see in couchdb value PANIC BUTTON:" . $pressed;
+        return " PB OK ";
     }
 
 }

@@ -68,7 +68,7 @@ class MSGPS extends Base {
 
         foreach ($safezonesArray as $_safezone) {
             $distanceFromSafezoneToCoordinatorReceived = MSGPS::haversineGreatCircleDistance($_safezone->latitude, $_safezone->longitude, $lat, $lng);
-            $str.=$_safezone->name;
+            //$str.=$_safezone->name;
 
             if ($distanceFromSafezoneToCoordinatorReceived <= $_safezone->radius) {
                 $smalldistance = $distanceFromSafezoneToCoordinatorReceived;
@@ -89,7 +89,7 @@ class MSGPS extends Base {
         $saveMonitoringSensorGPS = false;
 
         if ($smalldistance < INF && $bestSafezone != NULL) {
-            $str.="small distance:" . $smalldistance;
+            //$str.="small distance:" . $smalldistance;
             if ($bestSafezone->notification === "ALL") {
                 $saveMonitoringSensorGPS = TRUE;
             } else if ($bestSafezone->notification === "CHECK_INS_ONLY" && $inside == TRUE) {
@@ -99,12 +99,13 @@ class MSGPS extends Base {
             }
 
             if ($saveMonitoringSensorGPS) {
-                $str.= MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification, $timestamsOfDevice);
+                $str = MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification, $timestamsOfDevice);
             } else {
-                $str.="not saved";
+                $str = "error";
             }
-        }else{
-            $str.= "save location: ".MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, "LOCATION", $timestamsOfDevice);
+        } else {
+            //$str.= "save location: ".MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, "LOCATION", $timestamsOfDevice);
+            $str = MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, "LOCATION", $timestamsOfDevice);
         }
         return $str;
     }
@@ -127,9 +128,11 @@ class MSGPS extends Base {
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorGPS, FALSE);
         } catch (SagCouchException $e) {
-            return "some error in save monitoring gps";
+            //return "some error in save monitoring gps";
+            return "error";
         }
-        return " - see in couchdb " . $usernameDB . "," . $macaddress . ", " . $lat . "," . $lng . "," . $typeNotification;
+        //return " - see in couchdb " . $usernameDB . "," . $macaddress . ", " . $lat . "," . $lng . "," . $typeNotification;
+        return $monitoringSensorGPS->address;
     }
 
     public function haversineGreatCircleDistance($latitudeFrom, $longitudeFrom, $latitudeTo, $longitudeTo, $earthRadius = 6371000) {
@@ -163,6 +166,50 @@ class MSGPS extends Base {
             $address = "Address not found: Lat:" . $lat . " Lng:" . $lon;
         }
         return $address;
+    }
+
+// Converts DMS ( Degrees / minutes / seconds ) 
+// to decimal format longitude / latitude
+
+    public static function receiveLatCoordinator($latString) {
+        $array = MSGPS::parseCoordinator($latString);
+        if ($array[0] != NULL && $array[1] != NULL && $array[2] != NULL && $array[3] != NULL) {
+            $latfrom = MSGPS::DMStoDEC($array[1], $array[2], $array[3]);
+            if ($latID == "S") {
+                $latfrom = $latfrom * -1;
+            }
+            return $latfrom;
+        }
+        return NULL;
+    }
+
+    public static function receiveLngCoordinator($lngString) {
+        $array = MSGPS::parseCoordinator($lngString);
+        if ($array[0] != NULL && $array[1] != NULL && $array[2] != NULL && $array[3] != NULL) {
+            $lonfrom = MSGPS::DMStoDEC($array[1], $array[2], $array[3]);
+            if ($array[0] == "W") {
+                $lonfrom = $lonfrom * -1;
+            }
+            return $lonfrom;
+        }
+        return NULL;
+    }
+
+    public static function parseCoordinator($strCoordinator) {
+        $coor_id = $strCoordinator{0};
+        $strToParse = substr($strCoordinator, 1);
+        $arrayPart = explode(chr(176), $strToParse);
+        $degree = $arrayPart[0];
+        $strToParse = $arrayPart[1];
+        $strToParse = substr($strToParse, 0, -1);
+        $arrayPart = explode(".", $strToParse);
+        $minutes = $arrayPart[0];
+        $seconds = $arrayPart[1];
+        return array($coor_id, $degree, $minutes, $seconds*0.006);
+    }
+
+    public static function DMStoDEC($deg, $min, $sec) {
+        return $deg + ((($min * 60) + ($sec)) / 3600);
     }
 
 }

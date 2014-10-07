@@ -56,9 +56,11 @@ class MSTemperature extends Base {
         try {
             Base::insertOrUpdateObjectInDB($usernameDB, $monitoringSensorTemperature, FALSE);
         } catch (SagCouchException $e) {
-            return "some error in save monitoring temperature";
+           // return "some error in save monitoring temperature";
+            return " T ERROR ";
         }
-        return " - see in couchdb value TEMPERATURE:" . $temperature;
+        //return " - see in couchdb value TEMPERATURE:" . $temperature;
+        return " T OK ";
     }
 
     public function calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $numTemperature, $timestamsOfDevice) {

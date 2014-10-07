@@ -1,8 +1,13 @@
 <?php
 if ($deviceMacAddress != NULL) {
     ?>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC0MqefKdvXwvIfHcipfBjT9aP2eMH2Wks&sensor=false"></script>
+    <script src="http://mapstraction.com/mxn/build/latest/mxn.js?(googlev3)" type="text/javascript"></script>
+    <script type="text/javascript" src="<?php echo $this->make_route('/js/mapfunctions.js') ?>"></script>
+
 
     <script>
+
         // Client here
         var socket = null;
         var uri = "ws://195.23.102.92:8000/monitoring_devices";
@@ -44,19 +49,20 @@ if ($deviceMacAddress != NULL) {
             }
             socket.onmessage = function (e) {
                 var json = parseMessage(e.data);
-    //            console.log("json:" + json);
-    //            console.log("action:" + json.action);
-    //            console.log("username:" + json.data[0].username);
-    //            console.log(json.data[0].lat + " - " + json.data[0].log);
-    //            console.log(json.data[0].tmp);
-    //            console.log(json.data[0].bat);
-    //            console.log(json.data[0].press);
-    //            console.log(json.data[0].username + " ?? " + '<?php echo User::current_user(); ?>')
-                if (json.data[0].username == '<?php echo User::current_user(); ?>') {
+//                            console.log("json:" + json);
+//                            console.log("action:" + json.action);
+//                            console.log("username:" + json.data[0].username);
+//                            console.log(json.data[0].lat + " - " + json.data[0].log);
+//                            console.log(json.data[0].tmp);
+//                            console.log(json.data[0].bat);
+//                            console.log(json.data[0].press);
+//                            console.log(json.data[0].username + " ?? " + '<?php echo User::current_user(); ?>')
+                if (json.data[0].username == '<?php echo User::current_user(); ?>' && json.data[0].mac_address == '<?php echo $deviceMacAddress; ?>') {
                     var str = "--------------------------------------------\n";
                     str += "Device MAC Adrress: " + json.data[0].mac_address + " on " + json.data[0].time + " \n";
                     if (json.data[0].lat != "" & json.data[0].log != "") {
                         str += "\t Sensor GPS: latitude:" + json.data[0].lat + " longitude:" + json.data[0].log + "\n";
+                        insertMarkersOnMonitoring(json.data[0].address, json.data[0].lat, json.data[0].log);
                     }
                     if (json.data[0].tmp != "") {
                         str += "\t Sensor Temperature: " + json.data[0].tmp + " ºC\n";
@@ -107,11 +113,14 @@ if ($deviceMacAddress != NULL) {
             connect();
         });
     </script>
-
+    <div class="span8">
+        <!--Body content to MAP-->
+        <div id="map"></div>
+    </div>
     <div class="bs-docs-example span10">
         <span id="lbl_connected" class="label label-success pull-right">Connected</span>
         <span id="lbl_disconnected" class="label pull-right">Disconnected</span>
-        <textarea id="screenMonitoring" class="span10" style="margin-top: 15px;"rows="20" ></textarea>
+        <textarea id="screenMonitoring" class="span10" style="margin-top: 15px;"rows="10" ></textarea>
     </div>
     <form id="frmInput" action="" class="pull-right" onsubmit="return false;">
         <div id="input">
@@ -123,7 +132,18 @@ if ($deviceMacAddress != NULL) {
             <button type="button" class="btn btn-danger" id="clear">Clear</button>
         </div>
     </form>
-
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //var map = new mxn.Mapstraction('map', 'openlayers');
+            window.map = new mxn.Mapstraction('map', 'googlev3');
+            var latlon = new mxn.LatLonPoint(39.586831, -8.210716);
+            //map.addExtras();
+            map.enableScrollWheelZoom();
+            //window.geocoder = new google.maps.Geocoder();
+            map.setCenterAndZoom(latlon, 6);
+            //getSafezones('<?php echo '{"safezones"' . ":" . $jsonSafezones . "}"; ?>');           
+        });
+    </script>
     <?php
 } else {
     ?>
