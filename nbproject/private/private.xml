@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/var/www/PhpProjectCouchDB/classes/user.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/classes/profile.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/views/devices/monitoringdevice.php</file>
             <file>file:/var/www/PhpProjectCouchDB/index.php</file>
-            <file>file:/var/www/PhpProjectCouchDB/classes/base.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/classes/msgps.php</file>
+            <file>file:/var/www/PhpProjectCouchDB/public/js/mapfunctions.js</file>
         </group>
     </open-files>
 </project-private>

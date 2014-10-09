@@ -60,7 +60,7 @@ class MSGPS extends Base {
 
     public function calcIfCheckInOrCheckOut($username, $macaddress, $lat, $lng, $timestamsOfDevice) {
         $safezonesArray = Safezone::getSafezonesByUserAndDevice($username, $macaddress);
-        $str = "";
+        $address = "";
         $smalldistance = INF;
         $inside = false;
         $bestSafezone = NULL;
@@ -99,15 +99,16 @@ class MSGPS extends Base {
             }
 
             if ($saveMonitoringSensorGPS) {
-                $str = MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification, $timestamsOfDevice);
+                $address = MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, $typeNotification, $timestamsOfDevice);
             } else {
                 $str = "error";
             }
         } else {
+            $typeNotification = "LOCATION";
             //$str.= "save location: ".MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, "LOCATION", $timestamsOfDevice);
-            $str = MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, "LOCATION", $timestamsOfDevice);
+            $address = MSGPS::saveMonitoringSensorGPS($username, $macaddress, $lat, $lng, "LOCATION", $timestamsOfDevice);
         }
-        return $str;
+        return array($address,$typeNotification);
     }
 
     public function saveMonitoringSensorGPS($usernameDB, $macaddress, $lat, $lng, $typeNotification, $timestamsOfDevice) {

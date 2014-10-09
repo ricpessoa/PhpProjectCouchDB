@@ -35,7 +35,11 @@ post('/signup', function($app) {
 });
 
 get('/login', function($app) {
-    $app->render('user/login');
+    if (!User::is_authenticated()) {
+        $app->render('user/login');
+    } else {
+        $app->redirect('/');
+    }
 });
 
 post('/login', function($app) {
@@ -416,9 +420,9 @@ post('/appAddNewDevice', function($app) {
     echo json_encode($response);
 });
 
-/* To teste monitoring of device */
+/**method to receive information from device*/
 post('/devicepost', function($app) {
-    $str = "";
+    //$str = "";
     $nameAddress = "";
     $latfrom = null;
     $lonfrom = null;
@@ -444,7 +448,7 @@ post('/devicepost', function($app) {
 
 
     if ($timestamsOfDevice == NULL) {
-        $str.= "TIMESTAMP SERVER ||";
+        //$str.= "TIMESTAMP SERVER ||";
         $timestamsOfDevice = time(); //if empty give timestamp of server
     }
     $response = array();
@@ -452,46 +456,43 @@ post('/devicepost', function($app) {
 
     if ($usernamedb == NULL) {
         /* test only for when user add new device */
-//$devices = User::registeDeviceInUser("rpessoa", $macaddress, FALSE);
         $response['error'] = true;
         $response['message'] = "Device not found to user: " . $macaddress . " - " . $devices;
     } else {
         /* test only for when user delete device */
-//$devices = User::registeDeviceInUser("rpessoa", $macaddress, TRUE);
         if ($latfrom != NULL && $lonfrom != NULL) {
-            //$str.= MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom, $timestamsOfDevice);
-            $nameAddress = MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom, $timestamsOfDevice);
-            $str.=" GPS OK ";
+            $arrayGPS = MSGPS::calcIfCheckInOrCheckOut($usernamedb, $macaddress, $latfrom, $lonfrom, $timestamsOfDevice);
+            //$str.=" GPS OK ";
         } else {
-            $str.=" || GPS null || ";
+            //$str.=" || GPS null || ";
         }
         if ($temperature != NULL) {
-            $str.= MSTemperature::calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $temperature, $timestamsOfDevice);
+            MSTemperature::calcIfLowOrRangeOrHighTemperature($usernamedb, $macaddress, $temperature, $timestamsOfDevice);
         }
         if ($battery != NULL) {
-            $str.= MSBattery::calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $battery, $timestamsOfDevice);
+            MSBattery::calcIfCriticalLowOrRangeBatteryLevel($usernamedb, $macaddress, $battery, $timestamsOfDevice);
         }
 
         if ($pressed != NULL) {
             $boolPressed = $pressed === "1" ? true : false;
             if ($boolPressed) {
-                $str.= MSPanicButton::saveMonitoringSensorPanicButton($usernamedb, $macaddress, $boolPressed, $timestamsOfDevice);
-            }else{
-                $str.= " PB = FALSE ";
+                MSPanicButton::saveMonitoringSensorPanicButton($usernamedb, $macaddress, $boolPressed, $timestamsOfDevice);
+            } else {
+                //$str.= " PB = FALSE ";
             }
         } else {
-            $str.=" || PB null || ";
+            //$str.=" || PB null || ";
         }
 
         if ($shoe != NULL) {
             $boolRemoved = $shoe == 1 ? true : false;
             if ($boolRemoved) {
-                $str.= MSShoe::saveMonitoringSensorShoe($usernamedb, $macaddress, $boolRemoved, $timestamsOfDevice);
-            }else{
-                $str.= " S = FALSE ";
+                MSShoe::saveMonitoringSensorShoe($usernamedb, $macaddress, $boolRemoved, $timestamsOfDevice);
+            } else {
+                //$str.= " S = FALSE ";
             }
         } else {
-            $str.="|| Shoe null ||";
+            //$str.="|| Shoe null ||";
         }
 
         /* send notification to user */
@@ -504,7 +505,7 @@ post('/devicepost', function($app) {
         $jsonReturn = '{'
                 . '"action":' . '"echo",'
                 . '"data":' . '[{"username":"' . $usernamedb . '","mac_address":"' . $macaddress . '",'
-                . '"lat":"' . $latfrom . '","log":"' . $lonfrom . '","address":"' . $nameAddress . '","tmp":"' . $temperature . '",'
+                . '"lat":"' . $latfrom . '","log":"' . $lonfrom . '","address":"' . $arrayGPS[0]. '","gps_notification":"' . $arrayGPS[1]. '","tmp":"' . $temperature . '",'
                 . '"bat":"' . $battery . '","press":"' . $pressed . '","remov":"' . $shoe . '","time":"' . date("H:i:s d/m/Y ") . '"}]'
                 . '}';
         //"time":"' . date("d-m H:i:s") .
@@ -512,14 +513,16 @@ post('/devicepost', function($app) {
         usleep(500);
 
         $response['error'] = false;
-        $response['message'] = $usernamedb . " found " . $str;
+        $response['message'] = $usernamedb;
 //echo ''.$usernamedb;
     }
     if ($response['error'] == FALSE) {
-        echo $str;
+        echo chr(6); // OK
+        //echo $str;
         //echo "coordinators=" . $coordinator . " & ". $arrayCoordinators[0]." 2: ". $arrayCoordinators[1]. " s=" . $shoe . " b=" . $battery . " lat=" . $latfrom . " lng=" . $lonfrom;
     } else {
-        echo json_encode("error receiving data! Device " . $macaddress);
+        echo chr(24); //not ok
+        //echo json_encode("error receiving data! Device " . $macaddress);
     }
     //echo json_encode($response);
 });

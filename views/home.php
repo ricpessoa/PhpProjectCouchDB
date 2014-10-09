@@ -82,13 +82,12 @@
 <?php } else { ?>
 
     <div class="hero-unit">
-        <h1>Welcome to Backend!</h1>
-        <p>This backend is a sample framework to connect with couchDB</p>
-        <p> 
-            <a href="<?php echo $this->make_route('/signup') ?>"  class="btn btn-primary btn-large">Signup Now</a>
-            <a href="<?php echo $this->make_route('/login') ?>"  class="btn btn-success btn-large">Login</a>
-        </p>
-        <p>You can sign up or log in </p>
+       
+        <div class="text-center">
+            <img src="public/img/ic_site_childsafe_logo.png" class="img-responsive center-block" />
+            <p></p><p>Welcome to platform monitoring Children</p>
+        </div>
+        <br><br><p>To use this platform you need <a href="<?php echo $this->make_route('/signup') ?>"  class="btn btn-primary btn-large">Signup</a> or  <a href="<?php echo $this->make_route('/login') ?>"  class="btn btn-success btn-large">Login</a></p>
     </div>
 
 <?php } ?>

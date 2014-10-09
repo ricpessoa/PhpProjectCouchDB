@@ -3,6 +3,8 @@ window.arrayOfSafezones = new Array();
 window.arrayMarkersSafezones = new Array();
 window.arrayOfPOI = new Array();
 window.objJsonSafezone;
+window.points = new Array();
+
 var newMarkers = new Array();
 var newAddress = new Array();
 var newArrayPoint = new Array();
@@ -114,9 +116,20 @@ function insertTempMarkers(addr, lat, lng) {
     marker.openInfoBubble.addHandler(myboxopened);
 }
 
-function insertMarkersOnMonitoring(addr, lat, lng) {
+function insertMarkersOnMonitoring(addr, lat, lng, notify) {
     var point = new mxn.LatLonPoint(lat, lng);
     var marker = new mxn.Marker(point);
+    if (notify == "CHECK-IN") {
+        marker.setIcon("http://maps.google.com/mapfiles/ms/icons/green-dot.png", [32, 32]);
+        marker.setIconAnchor([16, 31])
+    } else if(notify == "CHECK-OUT"){
+        marker.setIcon("http://maps.google.com/mapfiles/ms/icons/red-dot.png", [32, 32]);
+        marker.setIconAnchor([16, 31])
+    }else if (notify == "LOCATION") {
+        marker.setIcon("http://maps.google.com/mapfiles/ms/icons/yellow-dot.png", [32, 32]);
+        marker.setIconAnchor([16, 31])
+
+    }
     marker.setDraggable(false);
 
     newArrayPoint.push([lat, lng]);
@@ -124,6 +137,15 @@ function insertMarkersOnMonitoring(addr, lat, lng) {
     constructInfoBubbleToPOI(marker, addr, addr, lat, lng)
     map.addMarker(marker);
     marker.setDraggable(false);
+    //adding features to map
+    points.push(point);
+    console.log("size:" + points.length);
+
+    if (points.length > 1) {
+        var linestring = new mxn.Polyline(points);
+        linestring.setColor('#00F');
+        map.addPolyline(linestring)
+    }
 
     newMarkers.push(marker);
     newAddress.push(addr);

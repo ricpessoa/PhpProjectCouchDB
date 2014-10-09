@@ -49,20 +49,20 @@ if ($deviceMacAddress != NULL) {
             }
             socket.onmessage = function (e) {
                 var json = parseMessage(e.data);
-//                            console.log("json:" + json);
-//                            console.log("action:" + json.action);
-//                            console.log("username:" + json.data[0].username);
-//                            console.log(json.data[0].lat + " - " + json.data[0].log);
-//                            console.log(json.data[0].tmp);
-//                            console.log(json.data[0].bat);
-//                            console.log(json.data[0].press);
-//                            console.log(json.data[0].username + " ?? " + '<?php echo User::current_user(); ?>')
+    //                            console.log("json:" + json);
+    //                            console.log("action:" + json.action);
+    //                            console.log("username:" + json.data[0].username);
+    //                            console.log(json.data[0].lat + " - " + json.data[0].log);
+    //                            console.log(json.data[0].tmp);
+    //                            console.log(json.data[0].bat);
+    //                            console.log(json.data[0].press);
+    //                            console.log(json.data[0].username + " ?? " + '<?php echo User::current_user(); ?>')
                 if (json.data[0].username == '<?php echo User::current_user(); ?>' && json.data[0].mac_address == '<?php echo $deviceMacAddress; ?>') {
                     var str = "--------------------------------------------\n";
                     str += "Device MAC Adrress: " + json.data[0].mac_address + " on " + json.data[0].time + " \n";
                     if (json.data[0].lat != "" & json.data[0].log != "") {
-                        str += "\t Sensor GPS: latitude:" + json.data[0].lat + " longitude:" + json.data[0].log + "\n";
-                        insertMarkersOnMonitoring(json.data[0].address, json.data[0].lat, json.data[0].log);
+                        str += "\t Sensor GPS: latitude:" + json.data[0].lat + " longitude:" + json.data[0].log +" [" + json.data[0].gps_notification+ "]\n";
+                        insertMarkersOnMonitoring(json.data[0].address, json.data[0].lat, json.data[0].log,json.data[0].gps_notification);
                     }
                     if (json.data[0].tmp != "") {
                         str += "\t Sensor Temperature: " + json.data[0].tmp + " ºC\n";
@@ -141,6 +141,12 @@ if ($deviceMacAddress != NULL) {
             map.enableScrollWheelZoom();
             //window.geocoder = new google.maps.Geocoder();
             map.setCenterAndZoom(latlon, 6);
+            map.addControls({
+                pan: true,
+                zoom: 'small',
+                map_type: true
+            });
+            
             //getSafezones('<?php echo '{"safezones"' . ":" . $jsonSafezones . "}"; ?>');           
         });
     </script>

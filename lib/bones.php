@@ -1,7 +1,7 @@
 <?php
 
 header('Content-Type: text/html; charset=utf-8'); //add this line for special characters 
-
+date_default_timezone_set("Europe/Lisbon"); // add time zone to Lisboan
 define('ROOT', __DIR__ . '/..');
 
 require_once ROOT . '/lib/bootstrap.php';
